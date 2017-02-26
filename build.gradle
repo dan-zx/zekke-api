@@ -1,0 +1,51 @@
+plugins {
+    id 'java'
+    id 'war'
+    id 'jacoco'
+}
+
+group 'com.zekke'
+version '1.0-SNAPSHOT'
+sourceCompatibility = JavaVersion.VERSION_1_8
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+[compileJava, compileTestJava]*.options*.compilerArgs = ['-Xlint']
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    assertjVersion            = '3.5.2'
+    groovyVersion             = '2.4.7'
+    jspVersion                = '2.3.1'
+    logbackVersion            = '1.2.1'
+    servletVersion            = '3.1.0'
+    testNgVersion             = '6.10'
+}
+
+dependencies {
+    // WEB
+    providedCompile "javax.servlet:javax.servlet-api:${servletVersion}"
+    providedCompile "javax.servlet.jsp:javax.servlet.jsp-api:${jspVersion}"
+
+    // LOGGING
+    compile "ch.qos.logback:logback-classic:${logbackVersion}"
+    runtime "org.codehaus.groovy:groovy:${groovyVersion}"
+
+     // TEST
+    testCompile "org.testng:testng:${testNgVersion}"
+    testCompile "org.assertj:assertj-core:${assertjVersion}"
+}
+
+test.useTestNG()
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.4'
+}
