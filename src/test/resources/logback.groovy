@@ -4,4 +4,7 @@ appender('console', ConsoleAppender) {
     }
 }
 
+logger('org.hibernate.validator', WARN)
+logger('org.jboss.logging', WARN)
+
 root(ALL, ['console'])

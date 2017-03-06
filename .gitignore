@@ -1,6 +1,7 @@
 # Generated files
 target/
 build/
+bin/
 .gradle/
 *.class
 dist/
