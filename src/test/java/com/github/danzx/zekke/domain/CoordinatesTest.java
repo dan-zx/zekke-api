@@ -15,8 +15,6 @@
  */
 package com.github.danzx.zekke.domain;
 
-import static com.github.danzx.zekke.domain.Coordinates.newLatLng;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Set;
@@ -38,29 +36,65 @@ public class CoordinatesTest extends BaseValitionTest {
     private static final double INVALID_LOWER_LAT = Coordinates.MIN_LATITUDE - 1;
     private static final double INVALID_UPPER_LNG = Coordinates.MAX_LONGITUDE + 1;
     private static final double INVALID_LOWER_LNG = Coordinates.MIN_LONGITUDE - 1;
-    private static final Coordinates VALID_COORDINATES = newLatLng(19.054492, -98.283176);
+    private static final Coordinates VALID_COORDINATES = Coordinates.ofLatLng(19.054492, -98.283176);
 
     @Test
     @Parameters(method = "invalidLatLng")
     public void shouldFailValidationWhenLatLngAreOutOfBounds(double lat, double lng) {
-        Set<ConstraintViolation<Coordinates>> violations = validator().validate(newLatLng(lat, lng));
+        Set<ConstraintViolation<Coordinates>> violations = validator().validate(Coordinates.ofLatLng(lat, lng));
         assertThat(violations).isNotEmpty();
     }
 
+    @Test
+    public void shouldEqualsBeTrueWhenSameReference() {
+        assertThat(VALID_COORDINATES.equals(VALID_COORDINATES)).isTrue();
+    }
+
+    @Test
+    public void shouldEqualsBeTrueWhenObjectsAreNotTheSameReference() {
+        Coordinates testCoords = Coordinates.ofLatLng(VALID_COORDINATES.getLatitude(), VALID_COORDINATES.getLongitude());
+        assertThat(VALID_COORDINATES.equals(testCoords)).isTrue();
+    }
+
+    @Test
+    public void shouldEqualsBeFalseWhenNull() {
+        assertThat(VALID_COORDINATES.equals(null)).isFalse();
+    }
+
+    @Test
+    public void shouldEqualsBeFalseWhenComparingWithDifferentObject() {
+        assertThat(VALID_COORDINATES.equals(new CoordinatesTest())).isFalse();
+    }
+
+    @Test
+    public void shouldEqualsBeFalseWhenAtLeastOnePropertyIsDifferent() {
+        Coordinates testCoords = Coordinates.ofLatLng(13.492, VALID_COORDINATES.getLongitude());
+        assertThat(VALID_COORDINATES.equals(testCoords)).isFalse();
+
+        testCoords = Coordinates.ofLatLng(VALID_COORDINATES.getLatitude(), -52.276);
+        assertThat(VALID_COORDINATES.equals(testCoords)).isFalse();
+    }
+
+    @Test
+    public void shouldHashCodeBeEqualWhenSameObjectReference() {
+        Coordinates testCoords = Coordinates.ofLatLng(VALID_COORDINATES.getLatitude(), VALID_COORDINATES.getLongitude());
+        assertThat(VALID_COORDINATES.hashCode()).isEqualTo(VALID_COORDINATES.hashCode()).isEqualTo(testCoords.hashCode());
+    }
+
     protected Object[][] invalidLatLng() {
-        return new Object[][]{
-                {INVALID_UPPER_LAT, VALID_COORDINATES.getLongitude()},
-                {INVALID_UPPER_LAT, INVALID_UPPER_LNG},
-                {VALID_COORDINATES.getLatitude(), INVALID_UPPER_LNG},
-                {INVALID_LOWER_LAT, VALID_COORDINATES.getLongitude()},
-                {INVALID_LOWER_LAT, INVALID_UPPER_LNG},
-                {VALID_COORDINATES.getLatitude(), INVALID_UPPER_LNG},
-                {INVALID_UPPER_LAT, VALID_COORDINATES.getLongitude()},
-                {INVALID_UPPER_LAT, INVALID_LOWER_LNG},
-                {VALID_COORDINATES.getLatitude(), INVALID_LOWER_LNG},
-                {INVALID_LOWER_LAT, VALID_COORDINATES.getLongitude()},
-                {INVALID_LOWER_LAT, INVALID_LOWER_LNG},
-                {VALID_COORDINATES.getLatitude(), INVALID_LOWER_LNG}
+        return new Object[][] {
+            {INVALID_UPPER_LAT, VALID_COORDINATES.getLongitude()},
+            {INVALID_UPPER_LAT, INVALID_UPPER_LNG},
+            {VALID_COORDINATES.getLatitude(), INVALID_UPPER_LNG},
+            {INVALID_LOWER_LAT, VALID_COORDINATES.getLongitude()},
+            {INVALID_LOWER_LAT, INVALID_UPPER_LNG},
+            {VALID_COORDINATES.getLatitude(), INVALID_UPPER_LNG},
+            {INVALID_UPPER_LAT, VALID_COORDINATES.getLongitude()},
+            {INVALID_UPPER_LAT, INVALID_LOWER_LNG},
+            {VALID_COORDINATES.getLatitude(), INVALID_LOWER_LNG},
+            {INVALID_LOWER_LAT, VALID_COORDINATES.getLongitude()},
+            {INVALID_LOWER_LAT, INVALID_LOWER_LNG},
+            {VALID_COORDINATES.getLatitude(), INVALID_LOWER_LNG}
         };
     }
 }

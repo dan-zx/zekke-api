@@ -48,7 +48,7 @@ public class Coordinates {
      * @param latitude a double between {@value #MIN_LATITUDE} and {@value #MAX_LATITUDE}.
      * @param longitude a double between {@value #MIN_LONGITUDE} and {@value #MAX_LONGITUDE}.
      */
-    public static Coordinates newLatLng(double latitude, double longitude) {
+    public static Coordinates ofLatLng(double latitude, double longitude) {
         return new Coordinates(latitude, longitude);
     }
 

@@ -15,6 +15,7 @@ repositories {
 }
 
 ext {
+    beanUtilsVersion   = '1.9.3'
     groovyVersion      = '2.4.7'
     javaxInjectVersion = '1'
     junitParamsVersion = '1.0.6'
@@ -31,6 +32,7 @@ dependencies {
      // TEST
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile "pl.pragmatists:JUnitParams:${junitParamsVersion}"
+    testCompile "commons-beanutils:commons-beanutils:${beanUtilsVersion}"
 }
 
 jacocoTestReport {

@@ -4,6 +4,7 @@ appender('console', ConsoleAppender) {
     }
 }
 
+logger('org.apache.commons.beanutils', WARN)
 logger('org.hibernate.validator', WARN)
 logger('org.jboss.logging', WARN)
 
