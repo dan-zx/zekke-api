@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** Bean validation logic. */
-package com.github.danzx.zekke.util.constraints.validator;
+/** Bean validation annotations. */
+package com.github.danzx.zekke.constraint;

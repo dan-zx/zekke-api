@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.util.constraints.validator;
+package com.github.danzx.zekke.constraint.validator;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import com.github.danzx.zekke.util.constraint.FloatRange;
+import com.github.danzx.zekke.constraint.FloatRange;
 
 /**
- * Validate that the float value is between min and max included.
+ * Validate that the double value is between min and max included.
  * 
  * @author Daniel Pedraza-Arcega
  */
-public class FloatRangeValidator implements ConstraintValidator<FloatRange, Float>{
+public class DoubleRangeValidator implements ConstraintValidator<FloatRange, Double>{
 
     private FloatRange meta;
 
@@ -36,9 +36,9 @@ public class FloatRangeValidator implements ConstraintValidator<FloatRange, Floa
 
 
     @Override
-    public boolean isValid(Float value, ConstraintValidatorContext context) {
+    public boolean isValid(Double value, ConstraintValidatorContext context) {
         if (value == null) return true;
-        float fValue = value.floatValue();
-        return meta.min() <= fValue && fValue <= meta.max();
+        double dValue = value.doubleValue();
+        return meta.min() <= dValue && dValue <= meta.max();
     }
 }

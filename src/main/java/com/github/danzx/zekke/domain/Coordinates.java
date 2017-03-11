@@ -17,7 +17,7 @@ package com.github.danzx.zekke.domain;
 
 import java.util.Objects;
 
-import com.github.danzx.zekke.util.constraint.FloatRange;
+import com.github.danzx.zekke.constraint.FloatRange;
 
 /**
  * Represents the geographic location of a place in a map.

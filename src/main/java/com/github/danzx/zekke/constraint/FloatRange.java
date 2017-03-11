@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.github.danzx.zekke.util.constraint;
+package com.github.danzx.zekke.constraint;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.FIELD;
@@ -25,8 +25,8 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-import com.github.danzx.zekke.util.constraints.validator.DoubleRangeValidator;
-import com.github.danzx.zekke.util.constraints.validator.FloatRangeValidator;
+import com.github.danzx.zekke.constraint.validator.DoubleRangeValidator;
+import com.github.danzx.zekke.constraint.validator.FloatRangeValidator;
 
 /**
  * Validate that the float/double value is between min and max included.
