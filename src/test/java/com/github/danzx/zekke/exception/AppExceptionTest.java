@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Method;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -37,25 +38,24 @@ public class AppExceptionTest extends BaseValitionTest {
 
     @Test
     public void shouldHaveNoCauseNorMessage() {
-        assertThat(new AppException.Builder().build()).isNotNull().hasNoCause().hasMessage(null).extracting("messageKey", "messageArgs").containsExactly(null, null);
-        assertThat(new AppException.Builder().messageKey(null).build()).isNotNull().hasNoCause().hasMessage(null).extracting("messageKey", "messageArgs").containsExactly(null, null);
+        assertThat(new AppException.Builder().build()).isNotNull().hasNoCause().hasMessage(null).extracting("messageKey", "messageArgs").containsExactly(Optional.empty(), null);
     }
 
     @Test
     public void shouldHaveMessage() {
-        String messageKey = "test.message";
+        Optional<String> messageKey = Optional.of("test.message");
         assertThat(new AppException.Builder()
-                .messageKey(messageKey)
+                .messageKey(messageKey.get())
                 .build())
                 .isNotNull().hasMessage("Test message").hasNoCause().extracting("messageKey", "messageArgs").containsExactly(messageKey, null);
     }
 
     @Test
     public void shouldHaveMessageWithArg() {
-        String messageKey = "test.message_with_arg";
+        Optional<String> messageKey = Optional.of("test.message_with_arg");
         Object[] args = {5};
         assertThat(new AppException.Builder()
-                .messageKey(messageKey)
+                .messageKey(messageKey.get())
                 .messageArgs(args[0])
                 .build())
                 .isNotNull().hasMessage("Test message with 5").hasNoCause().extracting("messageKey", "messageArgs").containsExactly(messageKey, args);
@@ -67,7 +67,7 @@ public class AppExceptionTest extends BaseValitionTest {
         assertThat(new AppException.Builder()
                 .message(message)
                 .build())
-                .isNotNull().hasMessage(message).hasNoCause().extracting("messageKey", "messageArgs").containsExactly(null, null);
+                .isNotNull().hasMessage(message).hasNoCause().extracting("messageKey", "messageArgs").containsExactly(Optional.empty(), null);
     }
 
     @Test
@@ -75,16 +75,16 @@ public class AppExceptionTest extends BaseValitionTest {
         assertThat(new AppException.Builder()
                 .cause(new NullPointerException())
                 .build())
-                .isNotNull().hasMessage(null).hasCauseExactlyInstanceOf(NullPointerException.class).extracting("messageKey", "messageArgs").containsExactly(null, null);
+                .isNotNull().hasMessage(null).hasCauseExactlyInstanceOf(NullPointerException.class).extracting("messageKey", "messageArgs").containsExactly(Optional.empty(), null);
     }
 
     @Test
     public void shouldHaveMessageWithArgsAndCause() {
-        String messageKey = "test.message_with_args";
+        Optional<String> messageKey = Optional.of("test.message_with_args");
         Object[] args = {5, "other"};
         assertThat(new AppException.Builder()
                 .cause(new NullPointerException())
-                .messageKey(messageKey)
+                .messageKey(messageKey.get())
                 .messageArgs(args[0], args[1])
                 .build())
                 .isNotNull().hasMessage("Test message with 5 and other").hasCauseExactlyInstanceOf(NullPointerException.class).extracting("messageKey", "messageArgs").containsExactly(messageKey, args);

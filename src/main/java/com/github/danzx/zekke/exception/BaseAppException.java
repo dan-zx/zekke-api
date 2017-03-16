@@ -16,6 +16,7 @@
 package com.github.danzx.zekke.exception;
 
 import java.util.Locale;
+import java.util.Optional;
 
 import javax.validation.constraints.NotNull;
 
@@ -32,7 +33,7 @@ public abstract class BaseAppException extends RuntimeException {
 
     private static final long serialVersionUID = -298618049284453181L;
 
-    private final String messageKey;
+    private final Optional<String> messageKey;
     private final Object[] messageArgs;
 
     /**
@@ -41,7 +42,7 @@ public abstract class BaseAppException extends RuntimeException {
      * @param builder a builder.
      */
     protected BaseAppException(BaseAppExceptionBuilder<? extends BaseAppException> builder) {
-        super(builder.messageOrNull(), builder.throwable);
+        super(builder.getMessage(), builder.throwable);
         this.messageKey = builder.messageKey;
         this.messageArgs = builder.messageArgs;
     }
@@ -51,8 +52,7 @@ public abstract class BaseAppException extends RuntimeException {
      * @return the localized version of the this exception's message.
      */
     public String getMessage(@NotNull Locale locale) {
-        if (messageKey != null) return Messages.getMessage(messageKey, locale, messageArgs);
-        return getMessage();
+        return messageKey.map(messageKey -> Messages.getMessage(messageKey, locale, messageArgs)).orElse(getMessage());
     }
 
     /**
@@ -64,13 +64,18 @@ public abstract class BaseAppException extends RuntimeException {
     public static abstract class BaseAppExceptionBuilder<E extends BaseAppException> {
 
         private String message;
-        private String messageKey;
+        private Optional<String> messageKey;
         private Object[] messageArgs;
         private Throwable throwable;
 
+        /** Constructor. */
+        protected BaseAppExceptionBuilder() {
+            messageKey = Optional.empty();
+        }
+
         /** @param messageKey the key for the desired message. */
         public BaseAppExceptionBuilder<E> messageKey(@NotBlank String messageKey) {
-            this.messageKey = messageKey;
+            this.messageKey = Optional.of(messageKey);
             message = null;
             return this;
         }
@@ -78,7 +83,7 @@ public abstract class BaseAppException extends RuntimeException {
         /** @param message the message of the exception. */
         public BaseAppExceptionBuilder<E> message(@NotBlank String message) {
             this.message = message;
-            messageKey = null;
+            messageKey = Optional.empty();
             return this;
         }
 
@@ -102,9 +107,8 @@ public abstract class BaseAppException extends RuntimeException {
             return this;
         }
 
-        private String messageOrNull() {
-            if (messageKey != null) return Messages.getMessage(messageKey, messageArgs);
-            return message;
+        private String getMessage() {
+            return messageKey.map(messageKey -> Messages.getMessage(messageKey, messageArgs)).orElse(message);
         }
 
         /** @return a new exception of type {@code E}. */
