@@ -15,6 +15,8 @@
  */
 package com.github.danzx.zekke.util;
 
+import static java.lang.Character.toLowerCase;
+
 /**
  * Various string utilities.
  *
@@ -27,6 +29,9 @@ public class Strings {
     public static final String TAB = "\t";
     public static final String NEW_LINE = "\n";
 
+    private static final char DOUBLE_QUOTES = '"';
+    private static final char UNDERSCORE = '_';
+
     private Strings() {
         throw new AssertionError();
     }
@@ -37,5 +42,38 @@ public class Strings {
      */
     public static boolean isBlank(String s) {
         return s.trim().isEmpty();
+    }
+
+    /** 
+     * Converts a string in ALL_CAPS into PascalCase.
+     * 
+     * @param allCapsStr a string in ALL_CAPS case.
+     * @return the same string in PascalCase.
+     */
+    public static String allCapsToPascalCase(String allCapsStr) {
+        if (isBlank(allCapsStr)) return allCapsStr;
+        StringBuilder pascalCaseBuilder = new StringBuilder();
+        char[] allCapsChars = allCapsStr.toCharArray();
+        boolean wasPreviousCharUnderscore = false;
+        for (int i = 0; i < allCapsChars.length; i++) {
+            if (wasPreviousCharUnderscore) {
+                if (allCapsChars[i] == UNDERSCORE) continue;
+                pascalCaseBuilder.append(allCapsChars[i]);
+                wasPreviousCharUnderscore = false;
+            } else {
+                if (allCapsChars[i] != UNDERSCORE && i != 0) pascalCaseBuilder.append(toLowerCase(allCapsChars[i]));
+                else if (allCapsChars[i] == UNDERSCORE) wasPreviousCharUnderscore = true;
+                else pascalCaseBuilder.append(allCapsChars[i]);
+            }
+        }
+        return pascalCaseBuilder.toString();
+    }
+
+    /**
+     * @param a string. 
+     * @return the given string between double quotes.
+     */
+    public static String quoted(String s) {
+        return s == null ? null : DOUBLE_QUOTES + s + DOUBLE_QUOTES;
     }
 }

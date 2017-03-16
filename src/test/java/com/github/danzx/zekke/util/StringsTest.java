@@ -15,6 +15,10 @@
  */
 package com.github.danzx.zekke.util;
 
+import static com.github.danzx.zekke.util.Strings.allCapsToPascalCase;
+import static com.github.danzx.zekke.util.Strings.isBlank;
+import static com.github.danzx.zekke.util.Strings.quoted;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
@@ -30,12 +34,43 @@ public class StringsTest {
 
     @Test
     public void shouldReturnFalseWithNonBlankStrings() {
-        assertThat(Strings.isBlank("\nnon blank ")).isFalse();
+        assertThat(isBlank("\nnon blank ")).isFalse();
     }
 
     @Test
     @Parameters(source = BlankStringProvider.class)
     public void shouldReturnTrueWithBlankStrings(String blankString) {
-        assertThat(Strings.isBlank(blankString)).isTrue();
+        assertThat(isBlank(blankString)).isTrue();
+    }
+
+    @Test
+    @Parameters(method = "allCapsStrings")
+    public void shouldConvertAllCapsToPascalCase(String allCaps) {
+        assertThat(allCapsToPascalCase(allCaps)).isNotBlank().isEqualTo("AllCaps");
+    }
+
+    @Test
+    @Parameters(source = BlankStringProvider.class)
+    public void shouldNotConvertAllCapsToPascalCaseWhenBlankIsGiven(String blankString) {
+        assertThat(allCapsToPascalCase(blankString)).isEqualTo(blankString);
+    }
+
+    @Test
+    public void shouldQuote() {
+        assertThat(quoted("lol")).isNotBlank().isEqualTo("\"lol\"");
+    }
+
+    @Test
+    public void shouldNotQuoteWhenNullIsGiven() {
+        assertThat(quoted(null)).isNull();
+    }
+
+    protected Object[] allCapsStrings() {
+        return new Object[][] {
+            {"ALL_CAPS"},
+            {"ALL__CAPS"},
+            {"_ALL_CAPS"},
+            {"ALL_CAPS_"}
+        };
     }
 }
