@@ -15,30 +15,18 @@
  */
 package com.github.danzx.zekke.constraint.validator;
 
-import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import com.github.danzx.zekke.constraint.FloatRange;
-
 /**
- * Validate that the double value is between min and max included.
+ * Validate double values are between min and max included.
  * 
  * @author Daniel Pedraza-Arcega
  */
-public class DoubleRangeValidator implements ConstraintValidator<FloatRange, Double>{
-
-    private FloatRange meta;
-
-    @Override
-    public void initialize(FloatRange constraintAnnotation) {
-        meta = constraintAnnotation;
-    }
-
+public class DoubleRangeValidator extends BaseFloatingPointRangeValidator<Double> {
 
     @Override
     public boolean isValid(Double value, ConstraintValidatorContext context) {
         if (value == null) return true;
-        double dValue = value.doubleValue();
-        return meta.min() <= dValue && dValue <= meta.max();
+        return isInRange(value);
     }
 }

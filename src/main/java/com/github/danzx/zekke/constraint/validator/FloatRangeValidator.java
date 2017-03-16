@@ -15,30 +15,18 @@
  */
 package com.github.danzx.zekke.constraint.validator;
 
-import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import com.github.danzx.zekke.constraint.FloatRange;
-
 /**
- * Validate that the float value is between min and max included.
+ * Validate float values are between min and max included.
  * 
  * @author Daniel Pedraza-Arcega
  */
-public class FloatRangeValidator implements ConstraintValidator<FloatRange, Float>{
-
-    private FloatRange meta;
-
-    @Override
-    public void initialize(FloatRange constraintAnnotation) {
-        meta = constraintAnnotation;
-    }
-
+public class FloatRangeValidator extends BaseFloatingPointRangeValidator<Float> {
 
     @Override
     public boolean isValid(Float value, ConstraintValidatorContext context) {
         if (value == null) return true;
-        float fValue = value.floatValue();
-        return meta.min() <= fValue && fValue <= meta.max();
+        return isInRange(value);
     }
 }
