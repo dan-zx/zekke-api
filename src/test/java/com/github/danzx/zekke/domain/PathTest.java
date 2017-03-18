@@ -52,11 +52,11 @@ public class PathTest {
         assertThat(TEST_PATH.equals(testPath2)).isFalse();
 
         copy(TEST_PATH, testPath2);
-        testPath2.setFrom(newTestWaypoint1());
+        testPath2.setToWaypoint(3L);
         assertThat(TEST_PATH.equals(testPath2)).isFalse();
-
+        
         copy(TEST_PATH, testPath2);
-        testPath2.setTo(newTestWaypoint2());
+        testPath2.setFromWaypoint(3L);
         assertThat(TEST_PATH.equals(testPath2)).isFalse();
     }
 
@@ -68,24 +68,10 @@ public class PathTest {
 
     private static Path newTestPath() {
         Path testPath = new Path();
-        testPath.setTo(newTestWaypoint1());
-        testPath.setFrom(newTestWaypoint2());
+        testPath.setFromWaypoint(1L);
+        testPath.setToWaypoint(9L);
         testPath.setDistance(100.4235);
         return testPath;
-    }
-
-    private static Waypoint newTestWaypoint1() {
-        Waypoint testPoi = new Walkway();
-        testPoi.setId(1);
-        testPoi.setCoordinates(Coordinates.ofLatLng(19.054492, -98.283176));
-        return testPoi;
-    }
-
-    private static Waypoint newTestWaypoint2() {
-        Waypoint testPoi = new Walkway();
-        testPoi.setId(2);
-        testPoi.setCoordinates(Coordinates.ofLatLng(21.4235601, -101.546821));
-        return testPoi;
     }
 
     private void copy(Path src, Path dest) {

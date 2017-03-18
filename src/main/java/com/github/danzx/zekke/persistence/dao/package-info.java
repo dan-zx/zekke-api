@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** MongoDB persistent objects. */
-package com.github.danzx.zekke.persistent.mongodb;
+/** Persistence Data Access Objects. */
+package com.github.danzx.zekke.persistence.dao;

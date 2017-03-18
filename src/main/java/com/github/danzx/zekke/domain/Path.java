@@ -17,38 +17,44 @@ package com.github.danzx.zekke.domain;
 
 import java.util.Objects;
 
+import org.mongodb.morphia.annotations.Property;
+
 /**
- * A connection between two waypoints.
+ * Represents the connection between waypoints.
  *
  * @author Daniel Pedraza-Arcega
  */
 public class Path {
 
-    private Waypoint from;
-    private Waypoint to;
-    private double distance;
+    @Property("from_waypoint")
+    private Long fromWaypoint;
+    
+    @Property("to_waypoint")
+    private Long toWaypoint;
 
-    public Waypoint getFrom() {
-        return from;
+    private Double distance;
+
+    public Long getFromWaypoint() {
+        return fromWaypoint;
     }
 
-    public void setFrom(Waypoint from) {
-        this.from = from;
+    public void setFromWaypoint(Long fromWaypoint) {
+        this.fromWaypoint = fromWaypoint;
     }
 
-    public Waypoint getTo() {
-        return to;
+    public Long getToWaypoint() {
+        return toWaypoint;
     }
 
-    public void setTo(Waypoint to) {
-        this.to = to;
+    public void setToWaypoint(Long toWaypoint) {
+        this.toWaypoint = toWaypoint;
     }
 
-    public double getDistance() {
+    public Double getDistance() {
         return distance;
     }
 
-    public void setDistance(double distance) {
+    public void setDistance(Double distance) {
         this.distance = distance;
     }
 
@@ -57,23 +63,18 @@ public class Path {
         if (this == obj) return true;
         if (!(obj instanceof Path)) return false;
         Path other = (Path) obj;
-        return Objects.equals(from, other.from) &&
-               Objects.equals(to, other.to) &&
+        return Objects.equals(fromWaypoint, other.fromWaypoint) &&
+               Objects.equals(toWaypoint, other.toWaypoint) &&
                Objects.equals(distance, other.distance);
-
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(from, to, distance);
+        return Objects.hash(fromWaypoint, toWaypoint, distance);
     }
 
     @Override
     public String toString() {
-        return "Path{" +
-                "(" + (from == null ? null : from.getId()) +
-                ")->(" + (to == null ? null : to.getId()) +
-                "), distance=" + distance +
-                '}';
+        return "{ from_waypoint: " + fromWaypoint + ", to_waypoint:" + toWaypoint + ", distance:" + distance + " }";
     }
 }

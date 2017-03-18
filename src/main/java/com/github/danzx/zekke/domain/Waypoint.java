@@ -15,35 +15,67 @@
  */
 package com.github.danzx.zekke.domain;
 
-import java.util.HashSet;
+import static com.github.danzx.zekke.util.Strings.quoted;
+
 import java.util.Objects;
 import java.util.Set;
 
+import org.mongodb.morphia.annotations.Embedded;
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Id;
+
 /**
- * Generic location in a map.
+ * Represents a location in a map.
  *
  * @author Daniel Pedraza-Arcega
  */
-public abstract class Waypoint {
+@Entity("waypoints")
+public class Waypoint {
 
-    private int id;
-    private Coordinates coordinates;
-    private Set<Path> paths = new HashSet<>();
+    public enum Type {POI, WALKWAY}
+    
+    @Id
+    private Long id;
+    
+    private String name;
+    private Type type;
+    
+    @Embedded
+    private Point location;
+    
+    @Embedded
+    private Set<Path> paths;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public Coordinates getCoordinates() {
-        return coordinates;
+    public String getName() {
+        return name;
     }
 
-    public void setCoordinates(Coordinates coordinates) {
-        this.coordinates = coordinates;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Point getLocation() {
+        return location;
+    }
+
+    public void setLocation(Point location) {
+        this.location = location;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 
     public Set<Path> getPaths() {
@@ -60,11 +92,19 @@ public abstract class Waypoint {
         if (!(obj instanceof Waypoint)) return false;
         Waypoint other = (Waypoint) obj;
         return Objects.equals(id, other.id) &&
-               Objects.equals(coordinates, other.coordinates);
+               Objects.equals(name, other.name) && 
+               Objects.equals(location, other.location) &&
+               Objects.equals(type, other.type);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, coordinates);
+        return Objects.hash(id, name, location, type);
+    }
+
+    @Override
+    public String toString() {
+        return "{ _id:" + id + ", name:" + quoted(name) + ", location:" + location + ", type:"
+                + type + ", paths:" + paths + " }";
     }
 }

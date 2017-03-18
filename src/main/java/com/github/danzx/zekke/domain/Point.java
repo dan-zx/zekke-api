@@ -13,36 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.persistent.mongodb;
+package com.github.danzx.zekke.domain;
 
 import java.util.Arrays;
-import java.util.Objects;
 
-import com.github.danzx.zekke.domain.Coordinates;
+import com.github.danzx.zekke.constraint.FloatRange;
 
 /**
  * Represents a geometric point.
  * 
+ * @see <a href="http://geojson.org/geojson-spec.html">The GeoJSON Format Specification</a>
  * @author Daniel Pedraza-Arcega
  */
-public class Point extends GeoJson {
+public class Point {
 
+    private static final String POINT_TYPE = "Point";
     private static final int COORDINATES_ARRAY_SIZE = 2;
     private static final int LONGITUDE_INDEX = 0;
     private static final int LATITUDE_INDEX = 1;
 
+    public static final double MAX_LATITUDE = 90;
+    public static final double MIN_LATITUDE = -MAX_LATITUDE;
+    public static final double MAX_LONGITUDE = 180;
+    public static final double MIN_LONGITUDE = -MAX_LONGITUDE;
+
+    private final String type;
     private Double[] coordinates;
 
     public Point() {
-        super(GeometryType.POINT);
+        type = POINT_TYPE;
     }
 
-    /** Creates a new Point with the values of the given Coordinates object. */
-    public static Point of(Coordinates coordinates) {
-        Point point = new Point();
-        point.setLongitude(coordinates.getLongitude());
-        point.setLatitude(coordinates.getLatitude());
-        return point;
+    public String getType() {
+        return type;
     }
 
     public Double[] getCoordinates() {
@@ -53,7 +56,7 @@ public class Point extends GeoJson {
         return coordinates == null ? null : coordinates[LONGITUDE_INDEX];
     }
 
-    public void setLongitude(double latitude) {
+    public void setLongitude(@FloatRange(min = MIN_LONGITUDE, max = MAX_LONGITUDE) Double latitude) {
         initCoordinatesIfNecessary();
         coordinates[LONGITUDE_INDEX] = latitude;
     }
@@ -62,7 +65,7 @@ public class Point extends GeoJson {
         return coordinates == null ? null : coordinates[LATITUDE_INDEX];
     }
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(@FloatRange(min = MIN_LATITUDE, max = MAX_LATITUDE) Double latitude) {
         initCoordinatesIfNecessary();
         coordinates[LATITUDE_INDEX] = latitude;
     }
@@ -73,12 +76,12 @@ public class Point extends GeoJson {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), coordinates);
+        return Arrays.hashCode(coordinates);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (!super.equals(obj)) return false;
+        if (this == obj) return true;
         if (!(obj instanceof Point)) return false;
         Point other = (Point) obj;
         return Arrays.equals(coordinates, other.coordinates);

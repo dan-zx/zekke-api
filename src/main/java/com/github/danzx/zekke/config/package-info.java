@@ -13,20 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.domain;
-
-/**
- * A waypoint that joins other waypoints in a map.
- * 
- * @author Daniel Pedraza-Arcega
- */
-public class Walkway extends Waypoint {
-
-    @Override
-    public String toString() {
-        return "Walkway{" +
-                "id=" + getId() +
-                ", coordinates=" + getCoordinates() +
-                '}';
-    }
-}
+/** Application configuration. */
+package com.github.danzx.zekke.config;

@@ -19,6 +19,7 @@ ext {
     groovyVersion      = '2.4.7'
     javaxInjectVersion = '1'
     junitParamsVersion = '1.0.6'
+    morphiaVersion     = '1.3.2'
 }
 
 dependencies {
@@ -28,6 +29,9 @@ dependencies {
 
     // OTHERS
     runtime "org.codehaus.groovy:groovy:${groovyVersion}"
+
+    // MongoDB
+    compile "org.mongodb.morphia:morphia:${morphiaVersion}"
 
      // TEST
     testCompile 'org.springframework.boot:spring-boot-starter-test'
