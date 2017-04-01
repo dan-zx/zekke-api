@@ -56,9 +56,9 @@ public class Point {
         return coordinates == null ? null : coordinates[LONGITUDE_INDEX];
     }
 
-    public void setLongitude(@FloatRange(min = MIN_LONGITUDE, max = MAX_LONGITUDE) Double latitude) {
+    public void setLongitude(@FloatRange(min = MIN_LONGITUDE, max = MAX_LONGITUDE) Double longitude) {
         initCoordinatesIfNecessary();
-        coordinates[LONGITUDE_INDEX] = latitude;
+        coordinates[LONGITUDE_INDEX] = longitude;
     }
 
     public Double getLatitude() {
@@ -82,8 +82,16 @@ public class Point {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof Point)) return false;
-        Point other = (Point) obj;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        return isPointEqualTo((Point) obj);
+    }
+
+    /**
+     * Use this method to complete your equals method.
+     * @see {@link #equals(Object)}
+     */
+    protected boolean isPointEqualTo(Point other) {
         return Arrays.equals(coordinates, other.coordinates);
     }
 

@@ -14,6 +14,7 @@
 package com.github.danzx.zekke.persistence.dao.morphia;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.constraints.NotNull;
 
@@ -61,8 +62,8 @@ public abstract class BaseMorphiaCrudDao<C, ID> implements CrudDao<C, ID> {
 
     /** {@inheritDoc} */
     @Override
-    public C findById(ID id) {
-        return datastore.createQuery(collectionClass).field(ID_FIELD).equal(id).get();
+    public Optional<C> findById(ID id) {
+        return Optional.ofNullable(datastore.createQuery(collectionClass).field(ID_FIELD).equal(id).get());
     }
 
     /** {@inheritDoc} */

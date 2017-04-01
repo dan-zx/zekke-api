@@ -26,7 +26,6 @@ import org.mongodb.morphia.annotations.Property;
  */
 public class Path {
 
-    @Property("from_waypoint")
     private Long fromWaypoint;
     
     @Property("to_waypoint")
@@ -61,8 +60,16 @@ public class Path {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof Path)) return false;
-        Path other = (Path) obj;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        return isPathEqualTo((Path) obj);
+    }
+
+    /**
+     * Use this method to complete your equals method.
+     * @see {@link #equals(Object)}
+     */
+    protected boolean isPathEqualTo(Path other) {
         return Objects.equals(fromWaypoint, other.fromWaypoint) &&
                Objects.equals(toWaypoint, other.toWaypoint) &&
                Objects.equals(distance, other.distance);

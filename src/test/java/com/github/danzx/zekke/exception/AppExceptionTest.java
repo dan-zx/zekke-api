@@ -27,14 +27,14 @@ import javax.validation.ConstraintViolation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.github.danzx.zekke.test.BaseValitionTest;
+import com.github.danzx.zekke.test.BaseValidationTest;
 import com.github.danzx.zekke.test.paramprovider.BlankStringProvider;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 
 @RunWith(JUnitParamsRunner.class)
-public class AppExceptionTest extends BaseValitionTest {
+public class AppExceptionTest extends BaseValidationTest {
 
     @Test
     public void shouldHaveNoCauseNorMessage() {

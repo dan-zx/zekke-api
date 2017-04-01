@@ -16,6 +16,7 @@
 package com.github.danzx.zekke.persistence.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.constraints.NotNull;
 
@@ -37,9 +38,9 @@ public interface WaypointDao extends CrudDao<Waypoint, Long> {
      * @param location a location.
      * @param maxDistance limits the results to those Waypoints that are at most the specified
      *        distance from the location (meters).
-     * @return a Waypoint or {@code null} if not found.
+     * @return an optional Waypoint.
      */
-    Waypoint findNearest(@NotNull Point location, double maxDistance);
+    Optional<Waypoint> findNearest(@NotNull Point location, double maxDistance);
 
     /**
      * Finds the POIs by a name similar to given.
@@ -50,21 +51,23 @@ public interface WaypointDao extends CrudDao<Waypoint, Long> {
     List<Waypoint> findPoisByNameLike(@NotBlank String name);
 
     /**
-     * Finds the POIs that are within the bounds of a circle.
+     * Finds the POIs that are within the bounds of a rectangle, you must specify the bottom left
+     * and top right corners of the rectangle.
      * 
-     * @param location the center of the circle.
-     * @param radius the circle’s radius measured in meters.
+     * @param bottomLeftPoint the bottom left coordinates.
+     * @param upperRightPoint the upper right coordinates.
      * @return a list of POIs or an empty list.
      */
-    List<Waypoint> findPoisWithinCircle(@NotNull Point location, double radius);
+    List<Waypoint> findPoisWithinBox(@NotNull Point bottomLeftPoint, @NotNull Point upperRightPoint);
 
     /**
-     * Finds the POI names that are within the bounds of a circle.
+     * Finds the POI names that are within the bounds of a rectangle, you must specify the bottom
+     * left and top right corners of the rectangle.
      * 
      * @param name a partial name.
-     * @param location the center of the circle.
-     * @param radius the circle’s radius measured in meters.
+     * @param bottomLeftPoint the bottom left coordinates.
+     * @param upperRightPoint the upper right coordinates.
      * @return a list of POI names or an empty list.
      */
-    List<String> findNamesWithinCircleLike(@NotBlank String name, @NotNull Point location, double radius);
+    List<String> findNamesWithinBoxLike(@NotBlank String name, @NotNull Point bottomLeftCoordinates, @NotNull Point upperRightCoordinates);
 }

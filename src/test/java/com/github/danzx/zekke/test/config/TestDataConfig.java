@@ -13,23 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.test;
+package com.github.danzx.zekke.test.config;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
+import org.springframework.boot.test.context.TestConfiguration;
 
-import org.junit.BeforeClass;
+import com.github.danzx.zekke.config.DataConfig;
+import com.github.danzx.zekke.config.MongoSettings;
 
-public abstract class BaseValitionTest {
+import com.github.fakemongo.Fongo;
 
-    private static Validator validator;
+import com.mongodb.MongoClient;
 
-    @BeforeClass
-    public static void setUpValidator() {
-        validator = Validation.buildDefaultValidatorFactory().getValidator();
-    }
+@TestConfiguration
+public class TestDataConfig extends DataConfig {
 
-    protected static Validator validator() {
-        return validator;
+    @Override
+    public MongoClient mongoClient(MongoSettings mongoDbSettings) {
+        return new Fongo(mongoDbSettings.getDatabase()).getMongo();
     }
 }

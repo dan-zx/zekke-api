@@ -30,13 +30,13 @@ import javax.validation.ConstraintViolation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.github.danzx.zekke.test.BaseValitionTest;
+import com.github.danzx.zekke.test.BaseValidationTest;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 
 @RunWith(JUnitParamsRunner.class)
-public class PointTest extends BaseValitionTest {
+public class PointTest extends BaseValidationTest {
 
     private static final double INVALID_UPPER_LAT = MAX_LATITUDE + 1;
     private static final double INVALID_LOWER_LAT = MIN_LATITUDE - 1;

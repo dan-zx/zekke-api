@@ -20,6 +20,8 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.github.danzx.zekke.util.Strings;
+
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 
@@ -47,10 +49,12 @@ public class MongoSettings {
     public MongoSettings(@Value("${mongodb.host}") String host,
                          @Value("${mongodb.port}") Integer port,
                          @Value("${mongodb.db}") @NotBlank String database, 
-                         @Value("${mongodb.db.user}") @NotBlank String userName, 
-                         @Value("${mongodb.db.password}") @NotBlank String password) {
+                         @Value("${mongodb.db.user}") String userName, 
+                         @Value("${mongodb.db.password}") String password) {
         address = port == null ? new ServerAddress(host) : new ServerAddress(host, port);
-        credential = MongoCredential.createCredential(userName, database, password.toCharArray());
+        String dbUsername = userName == null ? Strings.EMPTY : userName;
+        char[] passwordChars = password == null ? new char[0] : password.toCharArray();
+        credential = MongoCredential.createCredential(dbUsername, database, passwordChars);
         this.database = database;
     }
 

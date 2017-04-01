@@ -21,6 +21,8 @@ import org.apache.commons.beanutils.BeanUtils;
 
 import org.junit.Test;
 
+import com.github.danzx.zekke.domain.Waypoint.Type;
+
 public class WaypointTest {
 
     private static final Waypoint TEST_WAYPOINT = newTestWaypoint();
@@ -56,6 +58,10 @@ public class WaypointTest {
         assertThat(TEST_WAYPOINT.equals(waypoint2)).isFalse();
 
         copy(TEST_WAYPOINT, waypoint2);
+        waypoint2.setType(Type.WALKWAY);
+        assertThat(TEST_WAYPOINT.equals(waypoint2)).isFalse();
+
+        copy(TEST_WAYPOINT, waypoint2);
         waypoint2.setLocation(new Point());
         waypoint2.getLocation().setLatitude(21.4235601);
         waypoint2.getLocation().setLongitude(-101.546821);
@@ -75,7 +81,7 @@ public class WaypointTest {
         testWaypoint.getLocation().setLatitude(19.054492);
         testWaypoint.getLocation().setLongitude(-98.283176);
         testWaypoint.setName("waypoint_1");
-        testWaypoint.setType(Waypoint.Type.POI);
+        testWaypoint.setType(Type.POI);
         return testWaypoint;
     }
 

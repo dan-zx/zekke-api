@@ -25,32 +25,29 @@ import javax.validation.ConstraintViolation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.github.danzx.zekke.test.BaseValitionTest;
+import com.github.danzx.zekke.test.BaseValidationTest;
 import com.github.danzx.zekke.test.paramprovider.BlankStringProvider;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 
 @RunWith(JUnitParamsRunner.class)
-public class MongoSettingsTest extends BaseValitionTest {
-
-    private static final int PORT = 4343;
+public class MongoSettingsTest extends BaseValidationTest {
 
     @Test
     @Parameters(source = BlankStringProvider.class)
-    public void shouldFailValidationWhenParamsAreBlank(String blank) throws Exception {
+    public void shouldFailValidationWhenDatabaseIsBlank(String blank) throws Exception {
         Constructor<MongoSettings> constructor = MongoSettings.class.getConstructor(String.class, Integer.class, String.class, String.class, String.class);
-        Object[] parameterValues = {null, null, blank, blank, blank};
+        Object[] parameterValues = {null, null, blank, null, null};
         Set<ConstraintViolation<MongoSettings>> violations = validator().forExecutables().validateConstructorParameters(constructor, parameterValues);
-        assertThat(violations).isNotEmpty().hasSize(3);
+        assertThat(violations).isNotEmpty().hasSize(1);
     }
 
     @Test
-    @Parameters(source = BlankStringProvider.class)
-    public void shouldFailValidationWhenParamsAreBlank2(String blank) throws Exception {
-        Constructor<MongoSettings> constructor = MongoSettings.class.getConstructor(String.class, Integer.class, String.class, String.class, String.class);
-        Object[] parameterValues = {null, PORT, blank, blank, blank};
-        Set<ConstraintViolation<MongoSettings>> violations = validator().forExecutables().validateConstructorParameters(constructor, parameterValues);
-        assertThat(violations).isNotEmpty().hasSize(3);
+    public void shouldConstructObject() {
+        String anyString = "234redfsc";
+        int anyPort = 3532;
+        new MongoSettings(anyString, anyPort, anyString, anyString, anyString);
+        new MongoSettings(null, null, anyString, null, null);
     }
 }

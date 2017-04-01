@@ -16,6 +16,7 @@
 package com.github.danzx.zekke.persistence.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.constraints.NotNull;
 
@@ -33,9 +34,9 @@ public interface CrudDao<E, ID> {
      * Finds an entity by its id.
      * 
      * @param id an id object.
-     * @return the entity or {@code null} if not found.
+     * @return the optional entity.
      */
-    E findById(@NotNull ID id);
+    Optional<E> findById(@NotNull ID id);
 
     /**
      * Finds all entities.

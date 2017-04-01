@@ -22,7 +22,7 @@ import java.util.Set;
 
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
+import org.mongodb.morphia.annotations.PostLoad;
 
 /**
  * Represents a location in a map.
@@ -30,12 +30,9 @@ import org.mongodb.morphia.annotations.Id;
  * @author Daniel Pedraza-Arcega
  */
 @Entity("waypoints")
-public class Waypoint {
+public class Waypoint extends BaseEntity<Long> {
 
     public enum Type {POI, WALKWAY}
-    
-    @Id
-    private Long id;
     
     private String name;
     private Type type;
@@ -45,14 +42,6 @@ public class Waypoint {
     
     @Embedded
     private Set<Path> paths;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -86,12 +75,27 @@ public class Waypoint {
         this.paths = paths;
     }
 
+    @PostLoad
+    public void initPaths() {
+        if (paths != null) {
+            paths.stream().forEach(path -> path.setFromWaypoint(getId()));
+        }
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof Waypoint)) return false;
-        Waypoint other = (Waypoint) obj;
-        return Objects.equals(id, other.id) &&
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        return isWaypointEqualTo((Waypoint) obj);
+    }
+
+    /**
+     * Use this method to complete your equals method.
+     * @see {@link #equals(Object)}
+     */
+    protected boolean isWaypointEqualTo(Waypoint other) {
+        return isEntityEqualTo(other) &&
                Objects.equals(name, other.name) && 
                Objects.equals(location, other.location) &&
                Objects.equals(type, other.type);
@@ -99,12 +103,12 @@ public class Waypoint {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, location, type);
+        return Objects.hash(super.hashCode(), name, location, type);
     }
 
     @Override
     public String toString() {
-        return "{ _id:" + id + ", name:" + quoted(name) + ", location:" + location + ", type:"
+        return "{ _id:" + getId() + ", name:" + quoted(name) + ", location:" + location + ", type:"
                 + type + ", paths:" + paths + " }";
     }
 }
