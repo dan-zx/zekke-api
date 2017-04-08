@@ -50,8 +50,9 @@ public abstract class BaseMorphiaCrudDao<C, ID> implements CrudDao<C, ID> {
 
     /** {@inheritDoc} */
     @Override
-    public void save(C collectionEntity) {
+    public C save(C collectionEntity) {
         datastore.save(collectionEntity);
+        return collectionEntity;
     }
 
     /** {@inheritDoc} */

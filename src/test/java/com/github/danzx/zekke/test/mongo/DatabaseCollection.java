@@ -30,18 +30,19 @@ import org.json.JSONObject;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-public enum AppCollection {
+public enum DatabaseCollection {
 
-    WAYPOINTS("waypoints", "/data/mongo/waypoints.json");
+    WAYPOINTS, SEQUENCES;
 
+    private static final String COLLECTION_FILE_PATH_FORMAT = "/data/mongo/collections/%s.json";
     private static final Cache<String, List<Document>> COLLECTION_CACHE = CacheBuilder.newBuilder().build();
 
     private final String collectionName;
     private final String jsonClasspathFile;
 
-    private AppCollection(String collectionName, String jsonClasspathFile) {
-        this.collectionName = collectionName;
-        this.jsonClasspathFile = jsonClasspathFile;
+    DatabaseCollection() {
+        collectionName = name().toLowerCase();
+        jsonClasspathFile = String.format(COLLECTION_FILE_PATH_FORMAT, collectionName);
     }
 
     public String collectionName() {

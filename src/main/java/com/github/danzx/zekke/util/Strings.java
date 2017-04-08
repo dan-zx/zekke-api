@@ -16,6 +16,7 @@
 package com.github.danzx.zekke.util;
 
 import static java.lang.Character.toLowerCase;
+import static java.lang.Character.toUpperCase;
 
 /**
  * Various string utilities.
@@ -45,28 +46,28 @@ public class Strings {
     }
 
     /** 
-     * Converts a string in ALL_CAPS into PascalCase.
+     * Converts a string in ALL_CAPS into camelCase or CamelCase.
      * 
      * @param allCapsStr a string in ALL_CAPS case.
-     * @return the same string in PascalCase.
+     * @param isUpperCamelCase if is upper or lower camel case.
+     * @return the same string in camelCase or CamelCase.
      */
-    public static String allCapsToPascalCase(String allCapsStr) {
+    public static String allCapsToCamelCase(String allCapsStr, boolean isUpperCamelCase) {
         if (isBlank(allCapsStr)) return allCapsStr;
-        StringBuilder pascalCaseBuilder = new StringBuilder();
+        StringBuilder camelCaseBuilder = new StringBuilder();
         char[] allCapsChars = allCapsStr.toCharArray();
-        boolean wasPreviousCharUnderscore = false;
+        boolean lower = false;
         for (int i = 0; i < allCapsChars.length; i++) {
-            if (wasPreviousCharUnderscore) {
-                if (allCapsChars[i] == UNDERSCORE) continue;
-                pascalCaseBuilder.append(allCapsChars[i]);
-                wasPreviousCharUnderscore = false;
-            } else {
-                if (allCapsChars[i] != UNDERSCORE && i != 0) pascalCaseBuilder.append(toLowerCase(allCapsChars[i]));
-                else if (allCapsChars[i] == UNDERSCORE) wasPreviousCharUnderscore = true;
-                else pascalCaseBuilder.append(allCapsChars[i]);
+            char character = allCapsChars[i];
+            if (character == UNDERSCORE) lower = false;
+            else if (lower) camelCaseBuilder.append(toLowerCase(character));
+            else {
+                if (!isUpperCamelCase && camelCaseBuilder.length() == 0) camelCaseBuilder.append(toLowerCase(character));
+                else camelCaseBuilder.append(toUpperCase(character));
+                lower = true;
             }
         }
-        return pascalCaseBuilder.toString();
+        return camelCaseBuilder.toString();
     }
 
     /**

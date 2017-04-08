@@ -45,6 +45,15 @@ public class PointTest extends BaseValidationTest {
     private static final Point VALID_POINT = newPoint(19.054492, -98.283176);
 
     @Test
+    public void shouldCreateEmptyPoint() {
+        Point point = new Point();
+        assertThat(point.getType()).isNotBlank();
+        assertThat(point.getLongitude()).isNull();
+        assertThat(point.getLatitude()).isNull();
+        assertThat(point.getCoordinates()).isNull();
+    }
+
+    @Test
     @Parameters(method = "invalidLatitudes")
     public void shouldFailValidationWhenLatitudeIsOutOfBounds(double lat) throws Exception {
         Point point = new Point();
@@ -67,8 +76,6 @@ public class PointTest extends BaseValidationTest {
     @Test
     public void shouldCoordinatesBeNotNullWhenLatitudeIsSet() {
         Point point = new Point();
-        assertThat(point.getCoordinates()).isNull();
-        assertThat(point.getLatitude()).isNull();
         double lat = 19.3423;
         point.setLatitude(lat);
         assertThat(point.getCoordinates()).isNotNull();
@@ -78,8 +85,6 @@ public class PointTest extends BaseValidationTest {
     @Test
     public void shouldCoordinatesBeNotNullWhenLongitudeIsSet() {
         Point point = new Point();
-        assertThat(point.getCoordinates()).isNull();
-        assertThat(point.getLongitude()).isNull();
         double lng = 103.754;
         point.setLongitude(lng);
         assertThat(point.getCoordinates()).isNotNull();

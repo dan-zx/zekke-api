@@ -49,8 +49,9 @@ public interface CrudDao<E, ID> {
      * Saves the given entity.
      *  
      * @param entity an entity.
+     * @return the updated entity.
      */
-    void save(@NotNull E entity);
+    E save(@NotNull E entity);
 
     /**
      * Deletes an entity by id.

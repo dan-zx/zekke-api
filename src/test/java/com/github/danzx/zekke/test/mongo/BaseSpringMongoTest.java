@@ -31,6 +31,7 @@ import com.github.danzx.zekke.test.IntegrationTest;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.UpdateOptions;
 
 @IntegrationTest
 public class BaseSpringMongoTest {
@@ -47,7 +48,14 @@ public class BaseSpringMongoTest {
     @Before
     public void before() throws Exception {
         database = mongoClient.getDatabase(mongoDbSettings.getDatabase());
-        initCollection(database, AppCollection.WAYPOINTS);
+        for (DatabaseFunction function : DatabaseFunction.values()) {
+            initFunction(database, function);
+        }
+        for (DatabaseCollection collection : DatabaseCollection.values()) {
+            initCollection(database, collection);
+        }
+        // This doesn't work on Fongo :(
+        //database.runCommand(new Document("$eval", "db.loadServerScripts()"));
     }
 
     @After
@@ -55,8 +63,15 @@ public class BaseSpringMongoTest {
         database.drop();
     }
 
-    private void initCollection(MongoDatabase database, AppCollection appCollection) {
-        MongoCollection<Document> mongoCollection = database.getCollection(appCollection.collectionName());
-        mongoCollection.insertMany(appCollection.documents());
+    private void initFunction(MongoDatabase database, DatabaseFunction function) {
+        database.getCollection("system.js").updateOne(
+                new Document("_id", function.functionName()),
+                new Document("$set", function.document()),
+                new UpdateOptions().upsert(true));
+    }
+
+    private void initCollection(MongoDatabase database, DatabaseCollection collection) {
+        MongoCollection<Document> mongoCollection = database.getCollection(collection.collectionName());
+        mongoCollection.insertMany(collection.documents());
     }
 }

@@ -15,7 +15,11 @@
  */
 package com.github.danzx.zekke.util;
 
-import static com.github.danzx.zekke.util.Strings.allCapsToPascalCase;
+import static com.github.danzx.zekke.util.Strings.BLANK_SPACE;
+import static com.github.danzx.zekke.util.Strings.EMPTY;
+import static com.github.danzx.zekke.util.Strings.NEW_LINE;
+import static com.github.danzx.zekke.util.Strings.TAB;
+import static com.github.danzx.zekke.util.Strings.allCapsToCamelCase;
 import static com.github.danzx.zekke.util.Strings.isBlank;
 import static com.github.danzx.zekke.util.Strings.quoted;
 
@@ -46,13 +50,19 @@ public class StringsTest {
     @Test
     @Parameters(method = "allCapsStrings")
     public void shouldConvertAllCapsToPascalCase(String allCaps) {
-        assertThat(allCapsToPascalCase(allCaps)).isNotBlank().isEqualTo("AllCaps");
+        assertThat(allCapsToCamelCase(allCaps, true)).isNotBlank().isEqualTo("AllCaps");
     }
 
     @Test
-    @Parameters(source = BlankStringProvider.class)
-    public void shouldNotConvertAllCapsToPascalCaseWhenBlankIsGiven(String blankString) {
-        assertThat(allCapsToPascalCase(blankString)).isEqualTo(blankString);
+    @Parameters(method = "allCapsStrings")
+    public void shouldConvertAllCapsToCamelCase(String allCaps) {
+        assertThat(allCapsToCamelCase(allCaps, false)).isNotBlank().isEqualTo("allCaps");
+    }
+
+    @Test
+    @Parameters(method = "blankStringsAndCasing")
+    public void shouldNotConvertAllCapsToFormatWhenBlankIsGiven(String blankString, boolean isUpperCamelCase) {
+        assertThat(allCapsToCamelCase(blankString, isUpperCamelCase)).isEqualTo(blankString);
     }
 
     @Test
@@ -71,6 +81,19 @@ public class StringsTest {
             {"ALL__CAPS"},
             {"_ALL_CAPS"},
             {"ALL_CAPS_"}
+        };
+    }
+
+    public static Object[] blankStringsAndCasing() {
+        return new Object[][]{
+            {EMPTY, false},
+            {BLANK_SPACE, false},
+            {NEW_LINE, false},
+            {TAB, false},
+            {EMPTY, true},
+            {BLANK_SPACE, true},
+            {NEW_LINE, true},
+            {TAB, true},
         };
     }
 }

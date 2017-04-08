@@ -22,7 +22,9 @@ import java.util.Set;
 
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.PostLoad;
+import org.mongodb.morphia.annotations.EntityListeners;
+
+import com.github.danzx.zekke.persistence.listener.mongo.WaypointMongoLifecycleListener;
 
 /**
  * Represents a location in a map.
@@ -30,6 +32,7 @@ import org.mongodb.morphia.annotations.PostLoad;
  * @author Daniel Pedraza-Arcega
  */
 @Entity("waypoints")
+@EntityListeners(WaypointMongoLifecycleListener.class)
 public class Waypoint extends BaseEntity<Long> {
 
     public enum Type {POI, WALKWAY}
@@ -73,13 +76,6 @@ public class Waypoint extends BaseEntity<Long> {
 
     public void setPaths(Set<Path> paths) {
         this.paths = paths;
-    }
-
-    @PostLoad
-    public void initPaths() {
-        if (paths != null) {
-            paths.stream().forEach(path -> path.setFromWaypoint(getId()));
-        }
     }
 
     @Override
