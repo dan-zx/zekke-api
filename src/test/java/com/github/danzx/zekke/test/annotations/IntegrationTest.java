@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.test;
+package com.github.danzx.zekke.test.annotations;
 
+import static com.github.danzx.zekke.test.config.TestProfiles.TESTING;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -23,12 +24,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
-import com.github.danzx.zekke.test.config.TestDataConfig;
-
+@SpringBootTest
 @TestPropertySource(locations="classpath:test.properties")
-@SpringBootTest(classes = TestDataConfig.class)
+@ActiveProfiles(TESTING)
 @Retention(RUNTIME)
 @Target(TYPE)
 @Inherited

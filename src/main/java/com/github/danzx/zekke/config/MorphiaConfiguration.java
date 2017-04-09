@@ -15,33 +15,26 @@
  */
 package com.github.danzx.zekke.config;
 
-import static java.util.Collections.singletonList;
-
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.mongodb.MongoClient;
 
 /**
- * MongoDB configuration.
+ * Morphia configuration.
  * 
  * @author Daniel Pedraza-Arcega
  */
 @Configuration
-public class DataConfig {
+public class MorphiaConfiguration {
 
     @Bean
-    public Datastore datastore(MongoClient mongoClient, MongoSettings mongoDbSettings) {
+    public Datastore datastore(MongoClient mongoClient, @Value("${mongodb.db}") String database) {
         return new Morphia()
             .mapPackage("com.github.danzx.zekke.domain")
-            .createDatastore(mongoClient, mongoDbSettings.getDatabase());
-    }
-
-    @Bean
-    public MongoClient mongoClient(MongoSettings mongoDbSettings) {
-        return new MongoClient(mongoDbSettings.getAddress(), singletonList(mongoDbSettings.getCredential()));
+            .createDatastore(mongoClient, database);
     }
 }

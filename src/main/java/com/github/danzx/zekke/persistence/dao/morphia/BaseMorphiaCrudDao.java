@@ -13,6 +13,8 @@
  */
 package com.github.danzx.zekke.persistence.dao.morphia;
 
+import static com.github.danzx.zekke.persistence.internal.mongo.CommonFields.ID;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -32,15 +34,13 @@ import com.github.danzx.zekke.persistence.dao.CrudDao;
  */
 public abstract class BaseMorphiaCrudDao<C, ID> implements CrudDao<C, ID> {
 
-    protected static final String ID_FIELD = "_id";
-
     private final Datastore datastore;
     private final Class<C> collectionClass;
 
     /**
      * Constructor.
      * 
-     * @param datastore a non null {@link Datastore}
+     * @param datastore a non null Datastore
      * @param collectionClass a non null class matching the type of this DAO.
      */
     protected BaseMorphiaCrudDao(@NotNull Datastore datastore, @NotNull Class<C> collectionClass) {
@@ -64,7 +64,7 @@ public abstract class BaseMorphiaCrudDao<C, ID> implements CrudDao<C, ID> {
     /** {@inheritDoc} */
     @Override
     public Optional<C> findById(ID id) {
-        return Optional.ofNullable(datastore.createQuery(collectionClass).field(ID_FIELD).equal(id).get());
+        return Optional.ofNullable(datastore.createQuery(collectionClass).field(ID).equal(id).get());
     }
 
     /** {@inheritDoc} */

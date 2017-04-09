@@ -16,7 +16,7 @@ repositories {
 
 ext {
     beanUtilsVersion   = '1.9.3'
-    fongoVersion       = '2.0.12'
+    embedMongoVersion  = '2.0.0'
     guavaVersion       = '21.0'
     groovyVersion      = '2.4.7'
     ioUtilsVersion     = '2.5'
@@ -41,7 +41,7 @@ dependencies {
     testCompile "pl.pragmatists:JUnitParams:${junitParamsVersion}"
     testCompile "commons-beanutils:commons-beanutils:${beanUtilsVersion}"
     testCompile "com.google.guava:guava:${guavaVersion}"
-    testCompile "com.github.fakemongo:fongo:${fongoVersion}"
+    testCompile "de.flapdoodle.embed:de.flapdoodle.embed.mongo:${embedMongoVersion}"
 }
 
 jacocoTestReport {

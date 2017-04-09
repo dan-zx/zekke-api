@@ -13,25 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.persistence.listener.mongo;
-
-import static com.github.danzx.zekke.util.Collections2.isNullOrEmpty;
-
-import org.mongodb.morphia.annotations.PostLoad;
-
-import com.github.danzx.zekke.domain.Waypoint;
-import com.mongodb.DBObject;
+package com.github.danzx.zekke.persistence.internal;
 
 /**
- * MongoDB lifecycle listener for the Waypoints collection.
+ * Sequence of underlying datastores.
  * 
  * @author Daniel Pedraza-Arcega
  */
-public class WaypointMongoLifecycleListener extends MongoLifecycleListener<Waypoint> {
+public interface Sequence {
 
-    @Override
-    @PostLoad
-    protected void postLoad(Waypoint entity, DBObject dbObj) {
-        if (!isNullOrEmpty(entity.getPaths())) entity.getPaths().stream().forEach(path -> path.setFromWaypoint(entity.getId()));
-    }
+    /** @return the identifier of this sequence. */
+    String id();
+
+    /** @return the callable function to get the next value. */
+    String nextValueFunctionCall();
 }

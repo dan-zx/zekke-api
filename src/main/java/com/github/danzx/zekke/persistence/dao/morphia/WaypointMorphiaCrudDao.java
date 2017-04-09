@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 
 import org.mongodb.morphia.Datastore;
 
@@ -27,6 +28,8 @@ import org.springframework.stereotype.Repository;
 import com.github.danzx.zekke.domain.Point;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.persistence.dao.WaypointDao;
+import com.github.danzx.zekke.persistence.internal.mongo.MongoSequence;
+import com.github.danzx.zekke.persistence.internal.mongo.MongoSequenceManager;
 
 /**
  * Waypoint Morphia CRUD DAO.
@@ -36,8 +39,20 @@ import com.github.danzx.zekke.persistence.dao.WaypointDao;
 @Repository
 public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> implements WaypointDao {
 
-    public @Inject WaypointMorphiaCrudDao(Datastore datastore) {
+    private final MongoSequenceManager sequenceManager;
+
+    public @Inject WaypointMorphiaCrudDao(Datastore datastore, @NotNull MongoSequenceManager sequenceManager) {
         super(datastore, Waypoint.class);
+        this.sequenceManager = sequenceManager;
+    }
+
+    @Override
+    public Waypoint save(Waypoint waypoint) {
+        if (waypoint.getId() == null) {
+            long id = sequenceManager.getNextSequenceValue(MongoSequence.WAYPOINT_ID);
+            waypoint.setId(id);
+        }
+        return super.save(waypoint);
     }
 
     @Override

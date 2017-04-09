@@ -22,11 +22,11 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
-import com.github.danzx.zekke.config.MongoSettings;
-import com.github.danzx.zekke.test.IntegrationTest;
+import com.github.danzx.zekke.test.annotations.IntegrationTest;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -41,21 +41,21 @@ public class BaseSpringMongoTest {
     @Rule public final SpringMethodRule springMethodRule = new SpringMethodRule();
 
     @Inject private MongoClient mongoClient;
-    @Inject private MongoSettings mongoDbSettings;
+    @Value("${mongodb.db}") private String databaseName;
 
     private MongoDatabase database;
 
     @Before
     public void before() throws Exception {
-        database = mongoClient.getDatabase(mongoDbSettings.getDatabase());
+        database = mongoClient.getDatabase(databaseName);
         for (DatabaseFunction function : DatabaseFunction.values()) {
             initFunction(database, function);
         }
         for (DatabaseCollection collection : DatabaseCollection.values()) {
             initCollection(database, collection);
         }
-        // This doesn't work on Fongo :(
-        //database.runCommand(new Document("$eval", "db.loadServerScripts()"));
+
+        database.runCommand(new Document("$eval", "db.loadServerScripts()"));
     }
 
     @After

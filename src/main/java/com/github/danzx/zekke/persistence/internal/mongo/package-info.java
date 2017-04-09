@@ -13,22 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.test.config;
-
-import org.springframework.boot.test.context.TestConfiguration;
-
-import com.github.danzx.zekke.config.DataConfig;
-import com.github.danzx.zekke.config.MongoSettings;
-
-import com.github.fakemongo.Fongo;
-
-import com.mongodb.MongoClient;
-
-@TestConfiguration
-public class TestDataConfig extends DataConfig {
-
-    @Override
-    public MongoClient mongoClient(MongoSettings mongoDbSettings) {
-        return new Fongo(mongoDbSettings.getDatabase()).getMongo();
-    }
-}
+/** Internal persistent Mongo classes. */
+package com.github.danzx.zekke.persistence.internal.mongo;

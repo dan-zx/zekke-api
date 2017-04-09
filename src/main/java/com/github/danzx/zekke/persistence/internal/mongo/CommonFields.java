@@ -13,25 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.persistence.listener.mongo;
-
-import static com.github.danzx.zekke.util.Collections2.isNullOrEmpty;
-
-import org.mongodb.morphia.annotations.PostLoad;
-
-import com.github.danzx.zekke.domain.Waypoint;
-import com.mongodb.DBObject;
+package com.github.danzx.zekke.persistence.internal.mongo;
 
 /**
- * MongoDB lifecycle listener for the Waypoints collection.
+ * Common fields in collections.
  * 
  * @author Daniel Pedraza-Arcega
  */
-public class WaypointMongoLifecycleListener extends MongoLifecycleListener<Waypoint> {
+public class CommonFields {
 
-    @Override
-    @PostLoad
-    protected void postLoad(Waypoint entity, DBObject dbObj) {
-        if (!isNullOrEmpty(entity.getPaths())) entity.getPaths().stream().forEach(path -> path.setFromWaypoint(entity.getId()));
+    public static final String ID = "_id";
+    public static final String FUNCTION_RESULT = "retval";
+
+    protected CommonFields() {
+        throw new AssertionError();
     }
 }
