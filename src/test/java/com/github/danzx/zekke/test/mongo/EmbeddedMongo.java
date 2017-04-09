@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.test.config;
+package com.github.danzx.zekke.test.mongo;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -21,23 +21,29 @@ import java.net.UnknownHostException;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.mongodb.MongoClient;
 
+import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
 import de.flapdoodle.embed.mongo.MongodStarter;
 import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
+import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
 import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.runtime.Network;
 
 @Component
 public class EmbeddedMongo {
 
-    private static final MongodStarter MONGO_STARTER = MongodStarter.getDefaultInstance();
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmbeddedMongo.class);
+    private static final MongodStarter MONGO_STARTER = MongodStarter.getInstance(mongodConfig());
 
     private final String bindIp;
     private final int port;
@@ -72,5 +78,11 @@ public class EmbeddedMongo {
 
     public MongoClient getMongo() {
         return mongo;
+    }
+
+    private static IRuntimeConfig mongodConfig() {
+        return new RuntimeConfigBuilder()
+            .defaultsWithLogger(Command.MongoD, LOGGER)
+            .build();
     }
 }

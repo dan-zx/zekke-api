@@ -15,9 +15,10 @@
  */
 package com.github.danzx.zekke.persistence.internal.mongo;
 
-import static com.github.danzx.zekke.persistence.internal.mongo.CommonFields.FUNCTION_RESULT;
-import static com.github.danzx.zekke.persistence.internal.mongo.CommonFields.ID;
+
 import static com.github.danzx.zekke.persistence.internal.mongo.MongoSequence.COLLECTION_NAME;
+import static com.github.danzx.zekke.persistence.internal.mongo.MongoSequence.Fields.FUNCTION_RESULT;
+import static com.github.danzx.zekke.persistence.internal.mongo.MongoSequence.Fields.ID;
 import static com.github.danzx.zekke.persistence.internal.mongo.MongoSequence.Fields.SEQ;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -67,6 +68,6 @@ public class MongoSequenceManager implements SequenceManager {
 
     @Override
     public void setSequenceValue(Sequence sequence, long newValue) {
-        sequencesCollection.updateOne(eq(SEQ, sequence.id()), new Document("$set", new Document(SEQ, newValue)));
+        sequencesCollection.updateOne(eq(ID, sequence.id()), new Document("$set", new Document(SEQ, newValue)));
     }
 }

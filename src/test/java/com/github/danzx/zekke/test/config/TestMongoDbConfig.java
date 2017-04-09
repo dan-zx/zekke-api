@@ -21,6 +21,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import com.github.danzx.zekke.test.mongo.EmbeddedMongo;
+
 import com.mongodb.MongoClient;
 
 @Profile(TESTING)

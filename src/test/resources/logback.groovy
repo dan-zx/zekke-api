@@ -5,8 +5,8 @@ appender('console', ConsoleAppender) {
 }
 
 logger('javax.management', WARN)
-logger('com.github.fakemongo', WARN)
 logger('com.mongodb', WARN)
+logger('de.flapdoodle.embed', WARN)
 logger('org.apache.catalina', WARN)
 logger('org.apache.commons.beanutils', WARN)
 logger('org.apache.coyote', WARN)
@@ -18,5 +18,7 @@ logger('org.jvnet.hk2', WARN)
 logger('org.mongodb.driver', WARN)
 logger('org.mongodb.morphia', WARN)
 logger('org.springframework', WARN)
+
+logger('com.github.danzx.zekke.test.mongo.EmbeddedMongo', WARN)
 
 root(ALL, ['console'])

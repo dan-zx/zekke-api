@@ -15,7 +15,7 @@
  */
 package com.github.danzx.zekke.test.mongo;
 
-import static com.github.danzx.zekke.test.utils.FilesUtil.readClasspathFileToString;
+import static com.github.danzx.zekke.test.util.FilesUtil.readClasspathFileToString;
 
 import java.util.ArrayList;
 import java.util.List;
