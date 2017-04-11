@@ -1,7 +1,7 @@
 [
    {
       "_id":1,
-      "name":"Ciudad de México",
+      "name":"Ciudad de Mexico",
       "type":"POI",
       "paths":[
          {
@@ -19,7 +19,7 @@
    },
    {
       "_id":2,
-      "name":"Querétaro",
+      "name":"Queretaro",
       "type":"POI",
       "paths":[
          {
@@ -88,7 +88,7 @@
    },
    {
       "_id":5,
-      "name":"León",
+      "name":"Leon",
       "type":"POI",
       "paths":[
          {
