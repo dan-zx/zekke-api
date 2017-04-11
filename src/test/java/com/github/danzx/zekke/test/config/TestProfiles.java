@@ -17,10 +17,6 @@ package com.github.danzx.zekke.test.config;
 
 import com.github.danzx.zekke.config.Profiles;
 
-/**
- * @author Daniel Pedraza-Arcega
- *
- */
 public class TestProfiles extends Profiles {
 
     public static final String TESTING = "test";

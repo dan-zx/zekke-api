@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** Mongo listener classes. */
-package com.github.danzx.zekke.persistence.listener.mongo;
+/** Morphia lifecycle listener classes. */
+package com.github.danzx.zekke.persistence.listener.morphia;

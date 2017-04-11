@@ -24,7 +24,7 @@ import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.EntityListeners;
 
-import com.github.danzx.zekke.persistence.listener.mongo.WaypointMongoLifecycleListener;
+import com.github.danzx.zekke.persistence.listener.morphia.WaypointMongoLifecycleListener;
 
 /**
  * Represents a location in a map.

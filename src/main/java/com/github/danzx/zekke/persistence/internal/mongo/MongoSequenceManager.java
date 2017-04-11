@@ -15,7 +15,6 @@
  */
 package com.github.danzx.zekke.persistence.internal.mongo;
 
-
 import static com.github.danzx.zekke.persistence.internal.mongo.MongoSequence.COLLECTION_NAME;
 import static com.github.danzx.zekke.persistence.internal.mongo.MongoSequence.Fields.FUNCTION_RESULT;
 import static com.github.danzx.zekke.persistence.internal.mongo.MongoSequence.Fields.ID;

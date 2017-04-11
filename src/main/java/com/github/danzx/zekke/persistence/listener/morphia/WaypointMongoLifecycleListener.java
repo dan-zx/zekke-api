@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.persistence.listener.mongo;
+package com.github.danzx.zekke.persistence.listener.morphia;
 
 import static com.github.danzx.zekke.util.Collections2.isNullOrEmpty;
 

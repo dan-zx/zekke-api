@@ -25,7 +25,7 @@ import org.junit.Rule;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
-
+import com.github.danzx.zekke.persistence.internal.mongo.CommonFields;
 import com.github.danzx.zekke.test.annotations.IntegrationTest;
 
 import com.mongodb.MongoClient;
@@ -65,7 +65,7 @@ public class BaseSpringMongoTest {
 
     private void initFunction(MongoDatabase database, DatabaseFunction function) {
         database.getCollection("system.js").updateOne(
-                new Document("_id", function.functionName()),
+                new Document(CommonFields.ID, function.functionName()),
                 new Document("$set", function.document()),
                 new UpdateOptions().upsert(true));
     }
