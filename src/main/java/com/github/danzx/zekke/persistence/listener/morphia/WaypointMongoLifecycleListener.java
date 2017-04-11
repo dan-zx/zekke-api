@@ -15,12 +15,10 @@
  */
 package com.github.danzx.zekke.persistence.listener.morphia;
 
-import static com.github.danzx.zekke.util.Collections2.isNullOrEmpty;
-
-import org.mongodb.morphia.annotations.PostLoad;
-
 import com.github.danzx.zekke.domain.Waypoint;
+
 import com.mongodb.DBObject;
+import org.mongodb.morphia.annotations.PostLoad;
 
 /**
  * MongoDB lifecycle listener for the Waypoints collection.
@@ -32,6 +30,6 @@ public class WaypointMongoLifecycleListener extends MongoLifecycleListener<Waypo
     @Override
     @PostLoad
     protected void postLoad(Waypoint entity, DBObject dbObj) {
-        if (!isNullOrEmpty(entity.getPaths())) entity.getPaths().stream().forEach(path -> path.setFromWaypoint(entity.getId()));
+        entity.getPaths().stream().forEach(path -> path.setFromWaypoint(entity.getId()));
     }
 }

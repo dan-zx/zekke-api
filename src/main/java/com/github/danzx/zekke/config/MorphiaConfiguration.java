@@ -15,13 +15,16 @@
  */
 package com.github.danzx.zekke.config;
 
+import com.github.danzx.zekke.persistence.converter.morphia.OptionalConverter;
+
+import com.mongodb.MongoClient;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
+import org.mongodb.morphia.converters.Converters;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.mongodb.MongoClient;
 
 /**
  * Morphia configuration.
@@ -33,8 +36,10 @@ public class MorphiaConfiguration {
 
     @Bean
     public Datastore datastore(MongoClient mongoClient, @Value("${mongodb.db}") String database) {
-        return new Morphia()
-            .mapPackage("com.github.danzx.zekke.domain")
-            .createDatastore(mongoClient, database);
+        Morphia morphia = new Morphia();
+        morphia.mapPackage("com.github.danzx.zekke.domain");
+        Converters currentConverters = morphia.getMapper().getConverters();
+        currentConverters.addConverter(new OptionalConverter(currentConverters));
+        return morphia.createDatastore(mongoClient, database);
     }
 }

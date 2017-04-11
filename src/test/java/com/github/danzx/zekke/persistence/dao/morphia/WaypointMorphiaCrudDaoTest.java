@@ -87,7 +87,7 @@ public class WaypointMorphiaCrudDaoTest extends BaseSpringMongoTest {
         Optional<Waypoint> waypoint = waypointDao.findById(newWalkway.getId());
         assertThat(waypoint.isPresent()).isTrue();
         assertThat(waypoint.get()).isEqualTo(newWalkway);
-        assertThat(waypoint.get().getPaths()).isNull();
+        assertThat(waypoint.get().getPaths()).isNotNull().isEmpty();
     }
 
     @Test

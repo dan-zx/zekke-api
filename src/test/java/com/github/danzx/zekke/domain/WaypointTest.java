@@ -28,6 +28,22 @@ public class WaypointTest {
     private static final Waypoint TEST_WAYPOINT = newTestWaypoint();
 
     @Test
+    public void shouldPathBeNotNullEvenIfSetToNull() {
+        Waypoint waypoint = new Waypoint();
+        assertThat(waypoint.getPaths()).isNotNull();
+        waypoint.setPaths(null);
+        assertThat(waypoint.getPaths()).isNotNull();
+    }
+
+    @Test
+    public void shouldNameOptionalBeNotNullEvenIfSetToNull() {
+        Waypoint waypoint = new Waypoint();
+        assertThat(waypoint.getName()).isNotNull();
+        waypoint.setName(null);
+        assertThat(waypoint.getName()).isNotNull();
+    }
+
+    @Test
     public void shouldEqualsBeTrueWhenSameReference() {
         assertThat(TEST_WAYPOINT.equals(TEST_WAYPOINT)).isTrue();
     }
@@ -54,10 +70,6 @@ public class WaypointTest {
         assertThat(TEST_WAYPOINT.equals(waypoint2)).isFalse();
 
         copy(TEST_WAYPOINT, waypoint2);
-        waypoint2.setName("Other Name");
-        assertThat(TEST_WAYPOINT.equals(waypoint2)).isFalse();
-
-        copy(TEST_WAYPOINT, waypoint2);
         waypoint2.setType(Type.WALKWAY);
         assertThat(TEST_WAYPOINT.equals(waypoint2)).isFalse();
 
@@ -65,6 +77,14 @@ public class WaypointTest {
         waypoint2.setLocation(new Point());
         waypoint2.getLocation().setLatitude(21.4235601);
         waypoint2.getLocation().setLongitude(-101.546821);
+        assertThat(TEST_WAYPOINT.equals(waypoint2)).isFalse();
+
+        copy(TEST_WAYPOINT, waypoint2);
+        waypoint2.setName("Other Name");
+        assertThat(TEST_WAYPOINT.equals(waypoint2)).isFalse();
+        
+        copy(TEST_WAYPOINT, waypoint2);
+        waypoint2.setName(null);
         assertThat(TEST_WAYPOINT.equals(waypoint2)).isFalse();
     }
 

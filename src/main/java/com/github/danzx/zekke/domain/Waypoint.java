@@ -15,43 +15,44 @@
  */
 package com.github.danzx.zekke.domain;
 
-import static com.github.danzx.zekke.util.Strings.quoted;
-
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+
+import com.github.danzx.zekke.persistence.listener.morphia.WaypointMongoLifecycleListener;
+import com.github.danzx.zekke.util.Strings;
 
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.EntityListeners;
-
-import com.github.danzx.zekke.persistence.listener.morphia.WaypointMongoLifecycleListener;
 
 /**
  * Represents a location in a map.
  *
  * @author Daniel Pedraza-Arcega
  */
-@Entity("waypoints")
+@Entity(value = "waypoints", noClassnameStored = true)
 @EntityListeners(WaypointMongoLifecycleListener.class)
 public class Waypoint extends BaseEntity<Long> {
 
     public enum Type {POI, WALKWAY}
     
-    private String name;
+    private Optional<String> name = Optional.empty();
     private Type type;
     
     @Embedded
     private Point location;
     
     @Embedded
-    private Set<Path> paths;
+    private Set<Path> paths = new HashSet<>();
 
-    public String getName() {
+    public Optional<String> getName() {
         return name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = Optional.ofNullable(name);
     }
 
     public Point getLocation() {
@@ -75,7 +76,7 @@ public class Waypoint extends BaseEntity<Long> {
     }
 
     public void setPaths(Set<Path> paths) {
-        this.paths = paths;
+        this.paths = paths == null ? new HashSet<>() : paths;
     }
 
     @Override
@@ -104,7 +105,7 @@ public class Waypoint extends BaseEntity<Long> {
 
     @Override
     public String toString() {
-        return "{ _id:" + getId() + ", name:" + quoted(name) + ", location:" + location + ", type:"
-                + type + ", paths:" + paths + " }";
+        return "{ _id:" + getId() + ", name:" + name.map(Strings::quoted).orElse(null) + 
+                ", location:" + location + ", type:" + type + ", paths:" + paths + " }";
     }
 }
