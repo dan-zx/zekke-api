@@ -11,31 +11,33 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.github.danzx.zekke.persistence.dao.morphia;
+package com.github.danzx.zekke.persistence.morphia.dao;
 
 import static com.github.danzx.zekke.persistence.internal.mongo.CommonFields.ID;
 
+import static java.util.Objects.requireNonNull;
+
+import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
-
-import javax.validation.constraints.NotNull;
 
 import org.mongodb.morphia.Datastore;
 
 import com.github.danzx.zekke.persistence.dao.CrudDao;
+import com.github.danzx.zekke.persistence.morphia.MorphiaEntity;
 
 /**
  * Base Morphia CRUD DAO.
  * 
- * @param <C> the collection type.
+ * @param <E> the collection type.
  * @param <ID> the id type used by the collection.
  * 
  * @author Daniel Pedraza-Arcega
  */
-public abstract class BaseMorphiaCrudDao<C, ID> implements CrudDao<C, ID> {
+public abstract class BaseMorphiaCrudDao<E extends MorphiaEntity<ID>, ID extends Serializable> implements CrudDao<E, ID> {
 
     private final Datastore datastore;
-    private final Class<C> collectionClass;
+    private final Class<E> collectionClass;
 
     /**
      * Constructor.
@@ -43,14 +45,17 @@ public abstract class BaseMorphiaCrudDao<C, ID> implements CrudDao<C, ID> {
      * @param datastore a non null Datastore
      * @param collectionClass a non null class matching the type of this DAO.
      */
-    protected BaseMorphiaCrudDao(@NotNull Datastore datastore, @NotNull Class<C> collectionClass) {
+    protected BaseMorphiaCrudDao(Datastore datastore, Class<E> collectionClass) {
+        requireNonNull(datastore, "Datastore shouldn't be null in order to access collections");
+        requireNonNull(collectionClass, "Collection class shouldn't be null in order to access collections");
         this.datastore = datastore;
         this.collectionClass = collectionClass;
     }
 
     /** {@inheritDoc} */
     @Override
-    public C save(C collectionEntity) {
+    public E save(E collectionEntity) {
+        requireNonNull(collectionEntity, "Entity shouldn't be null in order to be saved");
         datastore.save(collectionEntity);
         return collectionEntity;
     }
@@ -58,18 +63,20 @@ public abstract class BaseMorphiaCrudDao<C, ID> implements CrudDao<C, ID> {
     /** {@inheritDoc} */
     @Override
     public void deleteById(ID id) {
+        requireNonNull(id, "Id shouldn't be null in order delete an entity");
         datastore.delete(collectionClass, id);
     }
 
     /** {@inheritDoc} */
     @Override
-    public Optional<C> findById(ID id) {
+    public Optional<E> findById(ID id) {
+        requireNonNull(id, "Id shouldn't be null in order get an entity");
         return Optional.ofNullable(datastore.createQuery(collectionClass).field(ID).equal(id).get());
     }
 
     /** {@inheritDoc} */
     @Override
-    public List<C> findAll() {
+    public List<E> findAll() {
         return datastore.createQuery(collectionClass).asList();
     }
 
@@ -77,7 +84,7 @@ public abstract class BaseMorphiaCrudDao<C, ID> implements CrudDao<C, ID> {
         return datastore;
     }
 
-    protected Class<C> getCollectionClass() {
+    protected Class<E> getCollectionClass() {
         return collectionClass;
     }
 }

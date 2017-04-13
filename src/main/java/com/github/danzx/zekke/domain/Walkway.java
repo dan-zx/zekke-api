@@ -15,17 +15,9 @@
  */
 package com.github.danzx.zekke.domain;
 
-import java.util.Set;
-
 /**
- * Waypoint POJO interface.
+ * Walkway POJO interface.
  * 
  * @author Daniel Pedraza-Arcega
  */
-public interface Waypoint extends Entity<Long> {
-
-    Coordinates getLocation();
-    void setLocation(Coordinates location);
-    Set<? extends Path> getPaths();
-    void setPaths(Set<? extends Path> paths);
-}
+public interface Walkway extends Waypoint { }

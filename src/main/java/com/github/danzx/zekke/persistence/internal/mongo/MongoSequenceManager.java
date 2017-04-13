@@ -20,7 +20,11 @@ import static com.github.danzx.zekke.persistence.internal.mongo.MongoSequence.Fi
 import static com.github.danzx.zekke.persistence.internal.mongo.MongoSequence.Fields.ID;
 import static com.github.danzx.zekke.persistence.internal.mongo.MongoSequence.Fields.SEQ;
 
+import static com.github.danzx.zekke.util.Strings.requireNonBlank;
+
 import static com.mongodb.client.model.Filters.eq;
+
+import static java.util.Objects.requireNonNull;
 
 import javax.inject.Inject;
 
@@ -48,6 +52,8 @@ public class MongoSequenceManager implements SequenceManager {
     private final MongoCollection<Document> sequencesCollection;
     
     public @Inject MongoSequenceManager(MongoClient mongoClient, @Value("${mongodb.db}") String databaseName) {
+        requireNonNull(mongoClient, "mongoClient shouldn't be null in order to get the app database");
+        requireNonBlank(databaseName, "databaseName shouldn't be null in order to get a Mongo database");
         database = mongoClient.getDatabase(databaseName);
         sequencesCollection = database.getCollection(COLLECTION_NAME);
     }

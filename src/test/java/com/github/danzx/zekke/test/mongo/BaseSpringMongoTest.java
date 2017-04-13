@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
+
 import com.github.danzx.zekke.persistence.internal.mongo.CommonFields;
 import com.github.danzx.zekke.test.annotations.IntegrationTest;
 

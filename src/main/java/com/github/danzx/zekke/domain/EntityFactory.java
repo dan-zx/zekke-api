@@ -15,17 +15,14 @@
  */
 package com.github.danzx.zekke.domain;
 
-import java.util.Set;
-
 /**
- * Waypoint POJO interface.
+ * Factory to create domain object implementations.
  * 
  * @author Daniel Pedraza-Arcega
  */
-public interface Waypoint extends Entity<Long> {
+public interface EntityFactory {
 
-    Coordinates getLocation();
-    void setLocation(Coordinates location);
-    Set<? extends Path> getPaths();
-    void setPaths(Set<? extends Path> paths);
+    Poi newPoi();
+    Walkway newWalkway();
+    Path newPath();
 }

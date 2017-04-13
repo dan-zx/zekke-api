@@ -61,7 +61,6 @@ public class EmbeddedMongo {
 
     @PostConstruct
     public void start() throws UnknownHostException, IOException {
-        
         mongodExe = MONGO_STARTER.prepare(
                 new MongodConfigBuilder()
                     .version(Version.Main.V3_4)

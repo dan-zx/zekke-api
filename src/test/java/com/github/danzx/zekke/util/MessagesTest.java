@@ -47,8 +47,8 @@ public class MessagesTest {
     }
 
     @Test
-    public void shouldThrowIllegalArgumentExceptionWhenLocaleIsNull() {
-        assertThatThrownBy(() -> Messages.getMessage("whatever", (Locale) null)).isInstanceOf(IllegalArgumentException.class);
+    public void shouldThrowNullPointerExceptionWhenLocaleIsNull() {
+        assertThatThrownBy(() -> Messages.getMessage("whatever", (Locale) null)).isInstanceOf(NullPointerException.class);
     }
 
     @Test

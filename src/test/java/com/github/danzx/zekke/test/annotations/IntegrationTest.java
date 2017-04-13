@@ -16,6 +16,7 @@
 package com.github.danzx.zekke.test.annotations;
 
 import static com.github.danzx.zekke.test.config.TestProfiles.TESTING;
+
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 

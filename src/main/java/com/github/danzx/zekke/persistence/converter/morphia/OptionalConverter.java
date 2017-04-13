@@ -29,7 +29,7 @@ import org.mongodb.morphia.mapping.MappedField;
  */
 public class OptionalConverter extends TypeConverter implements SimpleValueConverter {
 
-    private Converters defaultConverters;
+    private final Converters defaultConverters;
 
     public OptionalConverter(Converters defaultConverters) {
         super(Optional.class);
@@ -38,7 +38,6 @@ public class OptionalConverter extends TypeConverter implements SimpleValueConve
 
     @Override
     public Object encode(Object value, MappedField mappedField) {
-        if (value == null) return null;
         Optional<?> optional = (Optional<?>) value;
         return optional.map(defaultConverters::encode).orElse(null);
     }

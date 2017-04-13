@@ -15,10 +15,11 @@
  */
 package com.github.danzx.zekke.persistence.dao;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-import javax.validation.constraints.NotNull;
+import com.github.danzx.zekke.domain.Entity;
 
 /**
  * A Data Access Object capable of persist changes in the datastore and read from it.
@@ -28,7 +29,7 @@ import javax.validation.constraints.NotNull;
  * 
  * @author Daniel Pedraza-Arcega
  */
-public interface CrudDao<E, ID> {
+public interface CrudDao<E extends Entity<ID>, ID extends Serializable> {
 
     /**
      * Finds an entity by its id.
@@ -36,7 +37,7 @@ public interface CrudDao<E, ID> {
      * @param id an id object.
      * @return the optional entity.
      */
-    Optional<E> findById(@NotNull ID id);
+    Optional<E> findById(ID id);
 
     /**
      * Finds all entities.
@@ -51,12 +52,12 @@ public interface CrudDao<E, ID> {
      * @param entity an entity.
      * @return the updated entity.
      */
-    E save(@NotNull E entity);
+    E save(E entity);
 
     /**
      * Deletes an entity by id.
      *  
      * @param id an id object..
      */
-    void deleteById(@NotNull ID id);
+    void deleteById(ID id);
 }

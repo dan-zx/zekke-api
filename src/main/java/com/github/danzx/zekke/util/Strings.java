@@ -39,12 +39,24 @@ public class Strings {
 
     /**
      * @param s the string to check.
-     * @return if the string is blank.
+     * @return if the string is blank or null.
      */
-    public static boolean isBlank(String s) {
-        return s.trim().isEmpty();
+    public static boolean isNullOrBlank(String s) {
+        return s == null || s.trim().isEmpty();
     }
 
+    /**
+     * Checks that the specified string is not blank.
+     *
+     * @param s the string to check.
+     * @param message detail message to be used in the event that an exception is thrown
+     * @throws NullPointerException when the string is null.
+     * @throws IllegalArgumentException when the string is blank.
+     */
+    public static void requireNonBlank(String s, String message) {
+        if (s == null) throw new NullPointerException(message);
+        if (s.trim().isEmpty()) throw new IllegalArgumentException(message);
+    }
     /** 
      * Converts a string in ALL_CAPS into camelCase or CamelCase.
      * 
@@ -53,7 +65,7 @@ public class Strings {
      * @return the same string in camelCase or CamelCase.
      */
     public static String allCapsToCamelCase(String allCapsStr, boolean isUpperCamelCase) {
-        if (isBlank(allCapsStr)) return allCapsStr;
+        if (isNullOrBlank(allCapsStr)) return allCapsStr;
         StringBuilder camelCaseBuilder = new StringBuilder();
         char[] allCapsChars = allCapsStr.toCharArray();
         boolean lower = false;
@@ -75,6 +87,6 @@ public class Strings {
      * @return the given string between double quotes.
      */
     public static String quoted(String s) {
-        return s == null ? null : DOUBLE_QUOTES + s + DOUBLE_QUOTES;
+        return s == null ? s : DOUBLE_QUOTES + s + DOUBLE_QUOTES;
     }
 }

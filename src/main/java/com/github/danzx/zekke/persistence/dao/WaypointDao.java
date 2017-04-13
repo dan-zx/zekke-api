@@ -18,19 +18,18 @@ package com.github.danzx.zekke.persistence.dao;
 import java.util.List;
 import java.util.Optional;
 
-import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
-
-import com.github.danzx.zekke.domain.Point;
+import com.github.danzx.zekke.domain.Coordinates;
+import com.github.danzx.zekke.domain.Poi;
 import com.github.danzx.zekke.domain.Waypoint;
 
 /**
  * Waypoint CRUD DAO.
  * 
+ * @param <W> a waypoint implementation.
+ * 
  * @author Daniel Pedraza-Arcega
  */
-public interface WaypointDao extends CrudDao<Waypoint, Long> {
+public interface WaypointDao<W extends Waypoint> extends CrudDao<W, Long> {
 
     /**
      * Finds the nearest Waypoint to given location.
@@ -40,7 +39,7 @@ public interface WaypointDao extends CrudDao<Waypoint, Long> {
      *        distance from the location (meters).
      * @return an optional Waypoint.
      */
-    Optional<Waypoint> findNearest(@NotNull Point location, double maxDistance);
+    Optional<W> findNearest(Coordinates location, double maxDistance);
 
     /**
      * Finds the POIs by a name similar to given.
@@ -48,7 +47,7 @@ public interface WaypointDao extends CrudDao<Waypoint, Long> {
      * @param name a partial name.
      * @return a list of POIs or an empty list.
      */
-    List<Waypoint> findPoisByNameLike(@NotBlank String name);
+    List<? extends Poi> findPoisByNameLike(String name);
 
     /**
      * Finds the POIs that are within the bounds of a rectangle, you must specify the bottom left
@@ -58,7 +57,7 @@ public interface WaypointDao extends CrudDao<Waypoint, Long> {
      * @param upperRightPoint the upper right coordinates.
      * @return a list of POIs or an empty list.
      */
-    List<Waypoint> findPoisWithinBox(@NotNull Point bottomLeftPoint, @NotNull Point upperRightPoint);
+    List<? extends Poi> findPoisWithinBox(Coordinates bottomLeftPoint, Coordinates upperRightPoint);
 
     /**
      * Finds the POI names that are within the bounds of a rectangle, you must specify the bottom
@@ -69,5 +68,5 @@ public interface WaypointDao extends CrudDao<Waypoint, Long> {
      * @param upperRightPoint the upper right coordinates.
      * @return a list of POI names or an empty list.
      */
-    List<String> findNamesWithinBoxLike(@NotBlank String name, @NotNull Point bottomLeftCoordinates, @NotNull Point upperRightCoordinates);
+    List<String> findNamesWithinBoxLike(String name, Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates);
 }

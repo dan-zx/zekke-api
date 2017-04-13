@@ -13,34 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.domain;
+package com.github.danzx.zekke.persistence.morphia;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.apache.commons.beanutils.BeanUtils;
 
 import org.junit.Test;
 
-import com.github.danzx.zekke.domain.Waypoint.Type;
+import com.github.danzx.zekke.domain.Coordinates;
+import com.github.danzx.zekke.domain.Walkway;
+import com.github.danzx.zekke.persistence.morphia.MorphiaWaypoint.Type;
 
-public class WaypointTest {
+public class MorphiaWaypointTest {
 
-    private static final Waypoint TEST_WAYPOINT = newTestWaypoint();
+    private static final Walkway TEST_WAYPOINT = newTestWaypoint();
 
     @Test
     public void shouldPathBeNotNullEvenIfSetToNull() {
-        Waypoint waypoint = new Waypoint();
+        Walkway waypoint = new MorphiaWaypoint();
         assertThat(waypoint.getPaths()).isNotNull();
         waypoint.setPaths(null);
         assertThat(waypoint.getPaths()).isNotNull();
     }
 
     @Test
-    public void shouldNameOptionalBeNotNullEvenIfSetToNull() {
-        Waypoint waypoint = new Waypoint();
-        assertThat(waypoint.getName()).isNotNull();
+    public void shouldNameBeNullWhenWalkwayEvenIfSetNotNull() {
+        MorphiaWaypoint waypoint = new MorphiaWaypoint();
+        waypoint.setType(Type.WALKWAY);
+        waypoint.setName("Anything");
+        assertThat(waypoint.getName()).isNull();
+    }
+    
+    @Test
+    public void shoulThrowIllegalStateExceptionWhenPoiAndNameIsEmpty() {
+        MorphiaWaypoint waypoint = new MorphiaWaypoint();
+        waypoint.setType(Type.POI);
         waypoint.setName(null);
-        assertThat(waypoint.getName()).isNotNull();
+        assertThatThrownBy(() -> waypoint.getName()).isInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -60,12 +71,12 @@ public class WaypointTest {
 
     @Test
     public void shouldEqualsBeFalseWhenComparingWithDifferentObject() {
-        assertThat(TEST_WAYPOINT.equals(new WaypointTest())).isFalse();
+        assertThat(TEST_WAYPOINT.equals(new Object())).isFalse();
     }
 
     @Test
     public void shouldEqualsBeFalseWhenAtLeastOnePropertyIsDifferent() {
-        Waypoint waypoint2 = newTestWaypoint();
+        MorphiaWaypoint waypoint2 = newTestWaypoint();
         waypoint2.setId(2L);
         assertThat(TEST_WAYPOINT.equals(waypoint2)).isFalse();
 
@@ -74,9 +85,7 @@ public class WaypointTest {
         assertThat(TEST_WAYPOINT.equals(waypoint2)).isFalse();
 
         copy(TEST_WAYPOINT, waypoint2);
-        waypoint2.setLocation(new Point());
-        waypoint2.getLocation().setLatitude(21.4235601);
-        waypoint2.getLocation().setLongitude(-101.546821);
+        waypoint2.setLocation(Coordinates.ofLatLng(21.4235601, -101.546821));
         assertThat(TEST_WAYPOINT.equals(waypoint2)).isFalse();
 
         copy(TEST_WAYPOINT, waypoint2);
@@ -90,22 +99,20 @@ public class WaypointTest {
 
     @Test
     public void shouldHashCodeBeEqualWhenSameObjectReference() {
-        Waypoint waypoint2 = newTestWaypoint();
+        Walkway waypoint2 = newTestWaypoint();
         assertThat(TEST_WAYPOINT.hashCode()).isEqualTo(TEST_WAYPOINT.hashCode()).isEqualTo(waypoint2.hashCode());
     }
 
-    private static Waypoint newTestWaypoint() {
-        Waypoint testWaypoint = new Waypoint();
+    private static MorphiaWaypoint newTestWaypoint() {
+        MorphiaWaypoint testWaypoint = new MorphiaWaypoint();
         testWaypoint.setId(1L);
-        testWaypoint.setLocation(new Point());
-        testWaypoint.getLocation().setLatitude(19.054492);
-        testWaypoint.getLocation().setLongitude(-98.283176);
+        testWaypoint.setLocation(Coordinates.ofLatLng(19.054492, -98.283176));
         testWaypoint.setName("waypoint_1");
         testWaypoint.setType(Type.POI);
         return testWaypoint;
     }
 
-    private void copy(Waypoint src, Waypoint dest) {
+    private void copy(Walkway src, Walkway dest) {
         try {
             BeanUtils.copyProperties(dest, src);
         } catch (Exception e) {

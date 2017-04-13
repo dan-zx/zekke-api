@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 /** Persistence Data Access Objects for MongoDB using Morphia. */
-package com.github.danzx.zekke.persistence.dao.morphia;
+package com.github.danzx.zekke.persistence.morphia.dao;

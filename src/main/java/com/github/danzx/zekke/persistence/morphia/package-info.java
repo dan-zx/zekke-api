@@ -13,19 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.domain;
-
-import java.util.Set;
-
-/**
- * Waypoint POJO interface.
- * 
- * @author Daniel Pedraza-Arcega
- */
-public interface Waypoint extends Entity<Long> {
-
-    Coordinates getLocation();
-    void setLocation(Coordinates location);
-    Set<? extends Path> getPaths();
-    void setPaths(Set<? extends Path> paths);
-}
+/** MongoDB objects using Morphia. */
+package com.github.danzx.zekke.persistence.morphia;

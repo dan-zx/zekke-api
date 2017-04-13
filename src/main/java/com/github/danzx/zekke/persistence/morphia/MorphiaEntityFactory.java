@@ -13,19 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.domain;
+package com.github.danzx.zekke.persistence.morphia;
 
-import java.util.Set;
+import org.springframework.stereotype.Component;
+
+import com.github.danzx.zekke.domain.EntityFactory;
 
 /**
- * Waypoint POJO interface.
+ * Morphia entity factory implementation.
  * 
  * @author Daniel Pedraza-Arcega
  */
-public interface Waypoint extends Entity<Long> {
+@Component
+public class MorphiaEntityFactory implements EntityFactory {
 
-    Coordinates getLocation();
-    void setLocation(Coordinates location);
-    Set<? extends Path> getPaths();
-    void setPaths(Set<? extends Path> paths);
+    @Override
+    public MorphiaWaypoint newPoi() {
+        return MorphiaWaypoint.newPoi();
+    }
+
+    @Override
+    public MorphiaWaypoint newWalkway() {
+        return MorphiaWaypoint.newWalkway();
+    }
+
+    @Override
+    public MorphiaPath newPath() {
+        return new MorphiaPath();
+    }
 }

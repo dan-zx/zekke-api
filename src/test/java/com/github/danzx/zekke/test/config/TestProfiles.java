@@ -21,7 +21,5 @@ public class TestProfiles extends Profiles {
 
     public static final String TESTING = "test";
 
-    private TestProfiles() {
-        throw new AssertionError();
-    }
+    private TestProfiles() { }
 }

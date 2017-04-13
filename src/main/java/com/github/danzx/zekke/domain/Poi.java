@@ -15,17 +15,13 @@
  */
 package com.github.danzx.zekke.domain;
 
-import java.util.Set;
-
 /**
- * Waypoint POJO interface.
+ * POI POJO interface.
  * 
  * @author Daniel Pedraza-Arcega
  */
-public interface Waypoint extends Entity<Long> {
+public interface Poi extends Waypoint {
 
-    Coordinates getLocation();
-    void setLocation(Coordinates location);
-    Set<? extends Path> getPaths();
-    void setPaths(Set<? extends Path> paths);
+    String getName();
+    void setName(String name);
 }

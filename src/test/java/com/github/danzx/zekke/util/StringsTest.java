@@ -20,10 +20,12 @@ import static com.github.danzx.zekke.util.Strings.EMPTY;
 import static com.github.danzx.zekke.util.Strings.NEW_LINE;
 import static com.github.danzx.zekke.util.Strings.TAB;
 import static com.github.danzx.zekke.util.Strings.allCapsToCamelCase;
-import static com.github.danzx.zekke.util.Strings.isBlank;
+import static com.github.danzx.zekke.util.Strings.isNullOrBlank;
 import static com.github.danzx.zekke.util.Strings.quoted;
+import static com.github.danzx.zekke.util.Strings.requireNonBlank;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,13 +40,29 @@ public class StringsTest {
 
     @Test
     public void shouldReturnFalseWithNonBlankStrings() {
-        assertThat(isBlank("\nnon blank ")).isFalse();
+        assertThat(isNullOrBlank("\nnon blank ")).isFalse();
     }
 
     @Test
     @Parameters(source = BlankStringProvider.class)
     public void shouldReturnTrueWithBlankStrings(String blankString) {
-        assertThat(isBlank(blankString)).isTrue();
+        assertThat(isNullOrBlank(blankString)).isTrue();
+    }
+
+    @Test
+    public void shouldReturnTrueWithNull() {
+        assertThat(isNullOrBlank(null)).isTrue();
+    }
+
+    @Test
+    @Parameters(source = BlankStringProvider.class)
+    public void shouldThrowIllegalArgumentExceptionWhenRequireNonBlank(String blankString) {
+        assertThatThrownBy(() -> requireNonBlank(blankString, "message")).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void shouldThrowNullPointerExceptionWhenRequireNonNull() {
+        assertThatThrownBy(() -> requireNonBlank(null, "message")).isInstanceOf(NullPointerException.class);
     }
 
     @Test

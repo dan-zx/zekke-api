@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.persistence.dao.morphia;
+package com.github.danzx.zekke.persistence.morphia.dao;
+
+import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+
 import java.util.Optional;
 
 import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
 
 import org.mongodb.morphia.Datastore;
-
 import org.springframework.stereotype.Repository;
 
-import com.github.danzx.zekke.domain.Point;
-import com.github.danzx.zekke.domain.Waypoint;
+import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.persistence.dao.WaypointDao;
 import com.github.danzx.zekke.persistence.internal.mongo.MongoSequence;
 import com.github.danzx.zekke.persistence.internal.mongo.MongoSequenceManager;
+import com.github.danzx.zekke.persistence.morphia.MorphiaWaypoint;
 
 /**
  * Waypoint Morphia CRUD DAO.
@@ -37,17 +38,19 @@ import com.github.danzx.zekke.persistence.internal.mongo.MongoSequenceManager;
  * @author Daniel Pedraza-Arcega
  */
 @Repository
-public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> implements WaypointDao {
+public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<MorphiaWaypoint, Long> implements WaypointDao<MorphiaWaypoint> {
 
     private final MongoSequenceManager sequenceManager;
 
-    public @Inject WaypointMorphiaCrudDao(Datastore datastore, @NotNull MongoSequenceManager sequenceManager) {
-        super(datastore, Waypoint.class);
+    public @Inject WaypointMorphiaCrudDao(Datastore datastore, MongoSequenceManager sequenceManager) {
+        super(datastore, MorphiaWaypoint.class);
+        requireNonNull(sequenceManager, "sequenceManager shouldn't be null in order set ids to waypoints");
         this.sequenceManager = sequenceManager;
     }
 
     @Override
-    public Waypoint save(Waypoint waypoint) {
+    public MorphiaWaypoint save(MorphiaWaypoint waypoint) {
+        requireNonNull(waypoint, "MorphiaWaypoint shouldn't be null in order to be saved");
         if (waypoint.getId() == null) {
             long id = sequenceManager.getNextSequenceValue(MongoSequence.WAYPOINT_ID);
             waypoint.setId(id);
@@ -56,25 +59,25 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
     }
 
     @Override
-    public Optional<Waypoint> findNearest(Point location, double maxDistance) {
+    public Optional<MorphiaWaypoint> findNearest(Coordinates location, double maxDistance) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public List<Waypoint> findPoisByNameLike(String name) {
+    public List<MorphiaWaypoint> findPoisByNameLike(String name) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public List<Waypoint> findPoisWithinBox(Point bottomLeftPoint, Point upperRightPoint) {
+    public List<MorphiaWaypoint> findPoisWithinBox(Coordinates bottomLeftPoint, Coordinates upperRightPoint) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public List<String> findNamesWithinBoxLike(String name, Point bottomLeftCoordinates, Point upperRightCoordinates) {
+    public List<String> findNamesWithinBoxLike(String name, Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates) {
         // TODO Auto-generated method stub
         return null;
     }

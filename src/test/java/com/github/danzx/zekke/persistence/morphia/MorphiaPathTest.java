@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.domain;
+package com.github.danzx.zekke.persistence.morphia;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,7 +21,9 @@ import org.apache.commons.beanutils.BeanUtils;
 
 import org.junit.Test;
 
-public class PathTest {
+import com.github.danzx.zekke.domain.Path;
+
+public class MorphiaPathTest {
 
     private static final Path TEST_PATH = newTestPath();
 
@@ -42,7 +44,7 @@ public class PathTest {
 
     @Test
     public void shouldEqualsBeFalseWhenComparingWithDifferentObject() {
-        assertThat(TEST_PATH.equals(new PathTest())).isFalse();
+        assertThat(TEST_PATH.equals(new Object())).isFalse();
     }
 
     @Test
@@ -67,7 +69,7 @@ public class PathTest {
     }
 
     private static Path newTestPath() {
-        Path testPath = new Path();
+        Path testPath = new MorphiaPath();
         testPath.setFromWaypoint(1L);
         testPath.setToWaypoint(9L);
         testPath.setDistance(100.4235);

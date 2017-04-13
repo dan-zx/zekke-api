@@ -15,17 +15,17 @@
  */
 package com.github.danzx.zekke.domain;
 
-import java.util.Set;
+import java.io.Serializable;
 
 /**
- * Waypoint POJO interface.
+ * Base entity POJO interface.
+ * 
+ * @param <ID> the Id type.
  * 
  * @author Daniel Pedraza-Arcega
  */
-public interface Waypoint extends Entity<Long> {
+public interface Entity<ID extends Serializable> {
 
-    Coordinates getLocation();
-    void setLocation(Coordinates location);
-    Set<? extends Path> getPaths();
-    void setPaths(Set<? extends Path> paths);
+    ID getId();
+    void setId(ID id);
 }

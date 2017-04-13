@@ -25,5 +25,7 @@ public class Profiles {
     public static final String DEVELOPMENT = "dev";
     public static final String PRODUCTION = "production";
 
-    protected Profiles() { }
+    protected Profiles() { 
+        throw new AssertionError();
+    }
 }

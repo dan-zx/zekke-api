@@ -15,73 +15,17 @@
  */
 package com.github.danzx.zekke.domain;
 
-import java.util.Objects;
-
-import org.mongodb.morphia.annotations.Property;
-
 /**
- * Represents the connection between waypoints.
- *
+ * Path POJO interface.
+ * 
  * @author Daniel Pedraza-Arcega
  */
-public class Path {
+public interface Path {
 
-    private Long fromWaypoint;
-    
-    @Property("to_waypoint")
-    private Long toWaypoint;
-
-    private Double distance;
-
-    public Long getFromWaypoint() {
-        return fromWaypoint;
-    }
-
-    public void setFromWaypoint(Long fromWaypoint) {
-        this.fromWaypoint = fromWaypoint;
-    }
-
-    public Long getToWaypoint() {
-        return toWaypoint;
-    }
-
-    public void setToWaypoint(Long toWaypoint) {
-        this.toWaypoint = toWaypoint;
-    }
-
-    public Double getDistance() {
-        return distance;
-    }
-
-    public void setDistance(Double distance) {
-        this.distance = distance;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        return isPathEqualTo((Path) obj);
-    }
-
-    /**
-     * Use this method to complete your equals method.
-     * @see {@link #equals(Object)}
-     */
-    protected boolean isPathEqualTo(Path other) {
-        return Objects.equals(fromWaypoint, other.fromWaypoint) &&
-               Objects.equals(toWaypoint, other.toWaypoint) &&
-               Objects.equals(distance, other.distance);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(fromWaypoint, toWaypoint, distance);
-    }
-
-    @Override
-    public String toString() {
-        return "{ from_waypoint: " + fromWaypoint + ", to_waypoint:" + toWaypoint + ", distance:" + distance + " }";
-    }
+    long getFromWaypoint();
+    void setFromWaypoint(long fromWaypoint);
+    long getToWaypoint();
+    void setToWaypoint(long toWaypoint);
+    double getDistance();
+    void setDistance(double distance);
 }

@@ -15,9 +15,10 @@
  */
 package com.github.danzx.zekke.util;
 
-import static java.util.Collections.unmodifiableSet;
+import static com.github.danzx.zekke.util.Strings.requireNonBlank;
 
-import static com.github.danzx.zekke.util.Strings.isBlank;
+import static java.util.Collections.unmodifiableSet;
+import static java.util.Objects.requireNonNull;
 
 import java.text.MessageFormat;
 import java.util.HashSet;
@@ -76,8 +77,8 @@ public class Messages {
      * given key formatted with the given format arguments.
      */
     public static String getMessage(String messageKey, Locale locale, Object... messageArguments) {
-        if (isBlank(messageKey)) throw new IllegalArgumentException("may not be empty");
-        if (locale == null) throw new IllegalArgumentException("may not be null");
+        requireNonBlank(messageKey, "messageKey shouldn't be null to retrieve a message");
+        requireNonNull(locale, "locale shouldn't be null to retrieve the correct message");
         if (messageArguments == null) messageArguments = new Object[0];
         String message;
         try {
