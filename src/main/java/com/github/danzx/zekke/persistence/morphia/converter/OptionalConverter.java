@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.persistence.converter.morphia;
+package com.github.danzx.zekke.persistence.morphia.converter;
 
 import java.util.Optional;
 

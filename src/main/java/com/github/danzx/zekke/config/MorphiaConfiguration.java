@@ -23,7 +23,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.github.danzx.zekke.persistence.converter.morphia.OptionalConverter;
+import com.github.danzx.zekke.persistence.morphia.MorphiaPath;
+import com.github.danzx.zekke.persistence.morphia.MorphiaWaypoint;
+import com.github.danzx.zekke.persistence.morphia.converter.OptionalConverter;
 
 import com.mongodb.MongoClient;
 
@@ -37,8 +39,7 @@ public class MorphiaConfiguration {
 
     @Bean
     public Datastore datastore(MongoClient mongoClient, @Value("${mongodb.db}") String database) {
-        Morphia morphia = new Morphia();
-        morphia.mapPackage("com.github.danzx.zekke.persistence.morphia.dao");
+        Morphia morphia = new Morphia().map(MorphiaWaypoint.class, MorphiaPath.class);
         Converters currentConverters = morphia.getMapper().getConverters();
         currentConverters.addConverter(new OptionalConverter(currentConverters));
         return morphia.createDatastore(mongoClient, database);
