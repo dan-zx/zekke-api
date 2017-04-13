@@ -38,13 +38,13 @@ public class AppExceptionTest extends BaseValidationTest {
 
     @Test
     public void shouldHaveNoCauseNorMessage() {
-        assertThat(new AppException.Builder().build()).isNotNull().hasNoCause().hasMessage(null).extracting("messageKey", "messageArgs").containsExactly(Optional.empty(), null);
+        assertThat(new TestAppException.Builder().build()).isNotNull().hasNoCause().hasMessage(null).extracting("messageKey", "messageArgs").containsExactly(Optional.empty(), null);
     }
 
     @Test
     public void shouldHaveMessage() {
         Optional<String> messageKey = Optional.of("test.message");
-        assertThat(new AppException.Builder()
+        assertThat(new TestAppException.Builder()
                 .messageKey(messageKey.get())
                 .build())
                 .isNotNull().hasMessage("Test message").hasNoCause().extracting("messageKey", "messageArgs").containsExactly(messageKey, null);
@@ -54,7 +54,7 @@ public class AppExceptionTest extends BaseValidationTest {
     public void shouldHaveMessageWithArg() {
         Optional<String> messageKey = Optional.of("test.message_with_arg");
         Object[] args = {5};
-        assertThat(new AppException.Builder()
+        assertThat(new TestAppException.Builder()
                 .messageKey(messageKey.get())
                 .messageArgs(args[0])
                 .build())
@@ -64,7 +64,7 @@ public class AppExceptionTest extends BaseValidationTest {
     @Test
     public void shouldHaveHardcodedMessage() {
         String message = "A message";
-        assertThat(new AppException.Builder()
+        assertThat(new TestAppException.Builder()
                 .message(message)
                 .build())
                 .isNotNull().hasMessage(message).hasNoCause().extracting("messageKey", "messageArgs").containsExactly(Optional.empty(), null);
@@ -72,7 +72,7 @@ public class AppExceptionTest extends BaseValidationTest {
 
     @Test
     public void shouldHaveCause() {
-        assertThat(new AppException.Builder()
+        assertThat(new TestAppException.Builder()
                 .cause(new NullPointerException())
                 .build())
                 .isNotNull().hasMessage(null).hasCauseExactlyInstanceOf(NullPointerException.class).extracting("messageKey", "messageArgs").containsExactly(Optional.empty(), null);
@@ -82,7 +82,7 @@ public class AppExceptionTest extends BaseValidationTest {
     public void shouldHaveMessageWithArgsAndCause() {
         Optional<String> messageKey = Optional.of("test.message_with_args");
         Object[] args = {5, "other"};
-        assertThat(new AppException.Builder()
+        assertThat(new TestAppException.Builder()
                 .cause(new NullPointerException())
                 .messageKey(messageKey.get())
                 .messageArgs(args[0], args[1])
@@ -93,45 +93,45 @@ public class AppExceptionTest extends BaseValidationTest {
     @Test
     @Parameters(source = BlankStringProvider.class)
     public void shouldFailValidationWhenMessageKeyIsBlank(String blankMessageKey) throws Exception {
-        AppException.Builder object = new AppException.Builder();
-        Method method = AppException.Builder.class.getMethod("messageKey", String.class );
+        TestAppException.Builder object = new TestAppException.Builder();
+        Method method = TestAppException.Builder.class.getMethod("messageKey", String.class );
         Object[] parameterValues = { blankMessageKey };
-        Set<ConstraintViolation<AppException.Builder>> violations = validator().forExecutables().validateParameters(object, method, parameterValues);
+        Set<ConstraintViolation<TestAppException.Builder>> violations = validator().forExecutables().validateParameters(object, method, parameterValues);
         assertThat(violations).isNotEmpty();
     }
 
     @Test
     @Parameters(source = BlankStringProvider.class)
     public void shouldFailValidationWhenMessageIsBlank(String blankMessage) throws Exception {
-        AppException.Builder object = new AppException.Builder();
-        Method method = AppException.Builder.class.getMethod("message", String.class );
+        TestAppException.Builder object = new TestAppException.Builder();
+        Method method = TestAppException.Builder.class.getMethod("message", String.class );
         Object[] parameterValues = { blankMessage };
-        Set<ConstraintViolation<AppException.Builder>> violations = validator().forExecutables().validateParameters(object, method, parameterValues);
+        Set<ConstraintViolation<TestAppException.Builder>> violations = validator().forExecutables().validateParameters(object, method, parameterValues);
         assertThat(violations).isNotEmpty();
     }
 
     @Test
     public void shouldFailValidationWhenLocaleIsNull() throws Exception {
-        AppException object = new AppException.Builder().build();
+        TestAppException object = new TestAppException.Builder().build();
         Method method = AppException.class.getMethod("getMessage", Locale.class );
         Object[] parameterValues = { null };
         Set<ConstraintViolation<AppException>> violations = validator().forExecutables().validateParameters(object, method, parameterValues);
         assertThat(violations).isNotEmpty();
     }
 
-    private static class AppException extends BaseAppException {
+    private static class TestAppException extends AppException {
 
         private static final long serialVersionUID = 1L;
 
-        private AppException(Builder builder) {
+        private TestAppException(Builder builder) {
             super(builder);
         }
 
-        private static class Builder extends BaseAppExceptionBuilder<AppException> {
+        private static class Builder extends BaseAppExceptionBuilder<TestAppException> {
 
             @Override
-            public AppException build() {
-                return new AppException(this);
+            public TestAppException build() {
+                return new TestAppException(this);
             }
         }
     }

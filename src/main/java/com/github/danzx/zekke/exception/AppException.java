@@ -29,7 +29,7 @@ import com.github.danzx.zekke.util.Messages;
  *
  * @author Daniel Pedraza-Arcega
  */
-public abstract class BaseAppException extends RuntimeException {
+public abstract class AppException extends RuntimeException {
 
     private static final long serialVersionUID = -298618049284453181L;
 
@@ -41,7 +41,7 @@ public abstract class BaseAppException extends RuntimeException {
      *
      * @param builder a builder.
      */
-    protected BaseAppException(BaseAppExceptionBuilder<? extends BaseAppException> builder) {
+    protected AppException(BaseAppExceptionBuilder<? extends AppException> builder) {
         super(builder.getMessage(), builder.throwable);
         this.messageKey = builder.messageKey;
         this.messageArgs = builder.messageArgs;
@@ -61,7 +61,7 @@ public abstract class BaseAppException extends RuntimeException {
      * @param <E> exception type.
      * @author Daniel Pedraza-Arcega
      */
-    public static abstract class BaseAppExceptionBuilder<E extends BaseAppException> {
+    public static abstract class BaseAppExceptionBuilder<E extends AppException> {
 
         private String message;
         private Optional<String> messageKey;
