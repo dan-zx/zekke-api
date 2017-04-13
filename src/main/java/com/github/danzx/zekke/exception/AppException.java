@@ -15,12 +15,12 @@
  */
 package com.github.danzx.zekke.exception;
 
+import static com.github.danzx.zekke.util.Strings.requireNonBlank;
+
+import static java.util.Objects.requireNonNull;
+
 import java.util.Locale;
 import java.util.Optional;
-
-import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
 
 import com.github.danzx.zekke.util.Messages;
 
@@ -51,7 +51,8 @@ public abstract class AppException extends RuntimeException {
      * @param locale a locale.
      * @return the localized version of the this exception's message.
      */
-    public String getMessage(@NotNull Locale locale) {
+    public String getMessage(Locale locale) {
+        requireNonNull(locale, "locale shouldn't be null in order to retrieve the correct message");
         return messageKey.map(messageKey -> Messages.getMessage(messageKey, locale, messageArgs)).orElse(getMessage());
     }
 
@@ -74,14 +75,16 @@ public abstract class AppException extends RuntimeException {
         }
 
         /** @param messageKey the key for the desired message. */
-        public BaseAppExceptionBuilder<E> messageKey(@NotBlank String messageKey) {
+        public BaseAppExceptionBuilder<E> messageKey(String messageKey) {
+            requireNonBlank(messageKey, "messageKey shouldn't be null in order to retrieve a message");
             this.messageKey = Optional.of(messageKey);
             message = null;
             return this;
         }
 
         /** @param message the message of the exception. */
-        public BaseAppExceptionBuilder<E> message(@NotBlank String message) {
+        public BaseAppExceptionBuilder<E> message(String message) {
+            requireNonBlank(message, "message shouldn't be null in order use a message");
             this.message = message;
             messageKey = Optional.empty();
             return this;

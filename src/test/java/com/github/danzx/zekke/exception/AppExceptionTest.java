@@ -16,25 +16,20 @@
 package com.github.danzx.zekke.exception;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.lang.reflect.Method;
-import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
-
-import javax.validation.ConstraintViolation;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.github.danzx.zekke.test.BaseValidationTest;
 import com.github.danzx.zekke.test.paramprovider.BlankStringProvider;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 
 @RunWith(JUnitParamsRunner.class)
-public class AppExceptionTest extends BaseValidationTest {
+public class AppExceptionTest {
 
     @Test
     public void shouldHaveNoCauseNorMessage() {
@@ -92,31 +87,30 @@ public class AppExceptionTest extends BaseValidationTest {
 
     @Test
     @Parameters(source = BlankStringProvider.class)
-    public void shouldFailValidationWhenMessageKeyIsBlank(String blankMessageKey) throws Exception {
-        TestAppException.Builder object = new TestAppException.Builder();
-        Method method = TestAppException.Builder.class.getMethod("messageKey", String.class );
-        Object[] parameterValues = { blankMessageKey };
-        Set<ConstraintViolation<TestAppException.Builder>> violations = validator().forExecutables().validateParameters(object, method, parameterValues);
-        assertThat(violations).isNotEmpty();
+    public void shouldFailValidationWhenMessageKeyIsBlank(String blankMessageKey) {
+        assertThatThrownBy(() -> new TestAppException.Builder().messageKey(blankMessageKey)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void shouldThrowNullPointerExceptionWhenMessageKeyIsNull() {
+        assertThatThrownBy(() -> new TestAppException.Builder().messageKey(null)).isInstanceOf(NullPointerException.class);
     }
 
     @Test
     @Parameters(source = BlankStringProvider.class)
-    public void shouldFailValidationWhenMessageIsBlank(String blankMessage) throws Exception {
-        TestAppException.Builder object = new TestAppException.Builder();
-        Method method = TestAppException.Builder.class.getMethod("message", String.class );
-        Object[] parameterValues = { blankMessage };
-        Set<ConstraintViolation<TestAppException.Builder>> violations = validator().forExecutables().validateParameters(object, method, parameterValues);
-        assertThat(violations).isNotEmpty();
+    public void shouldThrowIllegalArgumentExceptionWhenMessageIsBlank(String blankMessage) {
+        assertThatThrownBy(() -> new TestAppException.Builder().message(blankMessage)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    public void shouldFailValidationWhenLocaleIsNull() throws Exception {
-        TestAppException object = new TestAppException.Builder().build();
-        Method method = AppException.class.getMethod("getMessage", Locale.class );
-        Object[] parameterValues = { null };
-        Set<ConstraintViolation<AppException>> violations = validator().forExecutables().validateParameters(object, method, parameterValues);
-        assertThat(violations).isNotEmpty();
+    public void shouldThrowNullPointerExceptionWhenMessageIsNull() {
+        assertThatThrownBy(() -> new TestAppException.Builder().message(null)).isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    public void shouldThrowNullPointerExceptionWhenLocaleIsNull() {
+        TestAppException ex = new TestAppException.Builder().build();
+        assertThatThrownBy(() -> ex.getMessage(null)).isInstanceOf(NullPointerException.class);
     }
 
     private static class TestAppException extends AppException {

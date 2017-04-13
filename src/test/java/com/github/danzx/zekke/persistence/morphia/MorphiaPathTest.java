@@ -21,11 +21,9 @@ import org.apache.commons.beanutils.BeanUtils;
 
 import org.junit.Test;
 
-import com.github.danzx.zekke.domain.Path;
-
 public class MorphiaPathTest {
 
-    private static final Path TEST_PATH = newTestPath();
+    private static final MorphiaPath TEST_PATH = newTestPath();
 
     @Test
     public void shouldEqualsBeTrueWhenSameReference() {
@@ -49,7 +47,7 @@ public class MorphiaPathTest {
 
     @Test
     public void shouldEqualsBeFalseWhenAtLeastOnePropertyIsDifferent() {
-        Path testPath2 = newTestPath();
+        MorphiaPath testPath2 = newTestPath();
         testPath2.setDistance(354.234);
         assertThat(TEST_PATH.equals(testPath2)).isFalse();
 
@@ -64,19 +62,19 @@ public class MorphiaPathTest {
 
     @Test
     public void shouldHashCodeBeEqualWhenSameObjectReference() {
-        Path testPath2 = newTestPath();
+        MorphiaPath testPath2 = newTestPath();
         assertThat(TEST_PATH.hashCode()).isEqualTo(TEST_PATH.hashCode()).isEqualTo(testPath2.hashCode());
     }
 
-    private static Path newTestPath() {
-        Path testPath = new MorphiaPath();
+    private static MorphiaPath newTestPath() {
+        MorphiaPath testPath = new MorphiaPath();
         testPath.setFromWaypoint(1L);
         testPath.setToWaypoint(9L);
         testPath.setDistance(100.4235);
         return testPath;
     }
 
-    private void copy(Path src, Path dest) {
+    private void copy(MorphiaPath src, MorphiaPath dest) {
         try {
             BeanUtils.copyProperties(dest, src);
         } catch (Exception e) {

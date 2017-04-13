@@ -23,16 +23,15 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Test;
 
 import com.github.danzx.zekke.domain.Coordinates;
-import com.github.danzx.zekke.domain.Walkway;
 import com.github.danzx.zekke.persistence.morphia.MorphiaWaypoint.Type;
 
 public class MorphiaWaypointTest {
 
-    private static final Walkway TEST_WAYPOINT = newTestWaypoint();
+    private static final MorphiaWaypoint TEST_WAYPOINT = newTestWaypoint();
 
     @Test
     public void shouldPathBeNotNullEvenIfSetToNull() {
-        Walkway waypoint = new MorphiaWaypoint();
+        MorphiaWaypoint waypoint = new MorphiaWaypoint();
         assertThat(waypoint.getPaths()).isNotNull();
         waypoint.setPaths(null);
         assertThat(waypoint.getPaths()).isNotNull();
@@ -99,7 +98,7 @@ public class MorphiaWaypointTest {
 
     @Test
     public void shouldHashCodeBeEqualWhenSameObjectReference() {
-        Walkway waypoint2 = newTestWaypoint();
+        MorphiaWaypoint waypoint2 = newTestWaypoint();
         assertThat(TEST_WAYPOINT.hashCode()).isEqualTo(TEST_WAYPOINT.hashCode()).isEqualTo(waypoint2.hashCode());
     }
 
@@ -112,7 +111,7 @@ public class MorphiaWaypointTest {
         return testWaypoint;
     }
 
-    private void copy(Walkway src, Walkway dest) {
+    private void copy(MorphiaWaypoint src, MorphiaWaypoint dest) {
         try {
             BeanUtils.copyProperties(dest, src);
         } catch (Exception e) {
