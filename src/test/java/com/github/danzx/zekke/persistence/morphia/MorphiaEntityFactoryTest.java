@@ -17,9 +17,9 @@ package com.github.danzx.zekke.persistence.morphia;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-
 import com.github.danzx.zekke.persistence.morphia.MorphiaWaypoint.Type;
+
+import org.junit.Test;
 
 public class MorphiaEntityFactoryTest {
 

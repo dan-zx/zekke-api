@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.test.annotations;
-
-import static com.github.danzx.zekke.test.config.TestProfiles.TESTING;
+package com.github.danzx.zekke.test.spring;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import static com.github.danzx.zekke.test.config.TestProfiles.TESTING;
 
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;

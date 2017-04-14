@@ -22,13 +22,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.github.danzx.zekke.test.paramprovider.BlankStringProvider;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(JUnitParamsRunner.class)
 public class MessagesTest {

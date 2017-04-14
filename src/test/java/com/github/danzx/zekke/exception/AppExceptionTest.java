@@ -20,13 +20,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Optional;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.github.danzx.zekke.test.paramprovider.BlankStringProvider;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(JUnitParamsRunner.class)
 public class AppExceptionTest {

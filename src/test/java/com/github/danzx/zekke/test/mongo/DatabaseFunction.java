@@ -20,11 +20,11 @@ import static com.github.danzx.zekke.util.Strings.allCapsToCamelCase;
 
 import java.util.concurrent.ExecutionException;
 
-import org.bson.BsonJavaScript;
-import org.bson.Document;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+
+import org.bson.BsonJavaScript;
+import org.bson.Document;
 
 public enum DatabaseFunction {
 

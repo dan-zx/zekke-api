@@ -18,19 +18,19 @@ package com.github.danzx.zekke.persistence.morphia.dao;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
-
 import java.util.Optional;
 
 import javax.inject.Inject;
-
-import org.mongodb.morphia.Datastore;
-import org.springframework.stereotype.Repository;
 
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.persistence.dao.WaypointDao;
 import com.github.danzx.zekke.persistence.internal.mongo.MongoSequence;
 import com.github.danzx.zekke.persistence.internal.mongo.MongoSequenceManager;
 import com.github.danzx.zekke.persistence.morphia.MorphiaWaypoint;
+
+import org.mongodb.morphia.Datastore;
+
+import org.springframework.stereotype.Repository;
 
 /**
  * Waypoint Morphia CRUD DAO.

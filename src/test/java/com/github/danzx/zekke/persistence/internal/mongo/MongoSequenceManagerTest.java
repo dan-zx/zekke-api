@@ -19,9 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.inject.Inject;
 
-import org.junit.Test;
-
 import com.github.danzx.zekke.test.mongo.BaseSpringMongoTest;
+
+import org.junit.Test;
 
 public class MongoSequenceManagerTest extends BaseSpringMongoTest {
 

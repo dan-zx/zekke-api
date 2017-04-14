@@ -26,13 +26,13 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.github.danzx.zekke.test.BaseValidationTest;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(JUnitParamsRunner.class)
 public class CoordinatesTest extends BaseValidationTest {

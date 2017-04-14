@@ -27,13 +27,13 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import org.junit.Test;
-
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.persistence.morphia.MorphiaPath;
 import com.github.danzx.zekke.persistence.morphia.MorphiaWaypoint;
 import com.github.danzx.zekke.persistence.morphia.MorphiaWaypoint.Type;
 import com.github.danzx.zekke.test.mongo.BaseSpringMongoTest;
+
+import org.junit.Test;
 
 public class WaypointMorphiaCrudDaoTest extends BaseSpringMongoTest {
 

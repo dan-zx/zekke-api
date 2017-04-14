@@ -17,13 +17,13 @@ package com.github.danzx.zekke.test.config;
 
 import static com.github.danzx.zekke.test.config.TestProfiles.TESTING;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-
 import com.github.danzx.zekke.test.mongo.EmbeddedMongo;
 
 import com.mongodb.MongoClient;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 @Profile(TESTING)
 @Configuration

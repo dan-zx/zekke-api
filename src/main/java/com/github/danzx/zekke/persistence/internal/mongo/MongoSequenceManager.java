@@ -15,23 +15,17 @@
  */
 package com.github.danzx.zekke.persistence.internal.mongo;
 
-import static com.github.danzx.zekke.persistence.internal.mongo.MongoSequence.COLLECTION_NAME;
+import static java.util.Objects.requireNonNull;
+
 import static com.github.danzx.zekke.persistence.internal.mongo.MongoSequence.Fields.FUNCTION_RESULT;
 import static com.github.danzx.zekke.persistence.internal.mongo.MongoSequence.Fields.ID;
 import static com.github.danzx.zekke.persistence.internal.mongo.MongoSequence.Fields.SEQ;
-
+import static com.github.danzx.zekke.persistence.internal.mongo.MongoSequence.COLLECTION_NAME;
 import static com.github.danzx.zekke.util.Strings.requireNonBlank;
 
 import static com.mongodb.client.model.Filters.eq;
 
-import static java.util.Objects.requireNonNull;
-
 import javax.inject.Inject;
-
-import org.bson.Document;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Repository;
 
 import com.github.danzx.zekke.persistence.internal.Sequence;
 import com.github.danzx.zekke.persistence.internal.SequenceManager;
@@ -39,6 +33,11 @@ import com.github.danzx.zekke.persistence.internal.SequenceManager;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+
+import org.bson.Document;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Repository;
 
 /**
  * Manages and retrieves sequences values using the sequences collection.

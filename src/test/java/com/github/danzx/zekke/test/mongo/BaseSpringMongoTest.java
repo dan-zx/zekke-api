@@ -15,31 +15,22 @@ package com.github.danzx.zekke.test.mongo;
 
 import javax.inject.Inject;
 
-import org.bson.Document;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.test.context.junit4.rules.SpringClassRule;
-import org.springframework.test.context.junit4.rules.SpringMethodRule;
-
 import com.github.danzx.zekke.persistence.internal.mongo.CommonFields;
-import com.github.danzx.zekke.test.annotations.IntegrationTest;
+import com.github.danzx.zekke.test.spring.BaseSpringTest;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;
 
-@IntegrationTest
-public class BaseSpringMongoTest {
+import org.bson.Document;
 
-    @ClassRule public static final SpringClassRule SPRING_CLASS_RULE = new SpringClassRule();
+import org.junit.After;
+import org.junit.Before;
 
-    @Rule public final SpringMethodRule springMethodRule = new SpringMethodRule();
+import org.springframework.beans.factory.annotation.Value;
+
+public abstract class BaseSpringMongoTest extends BaseSpringTest {
 
     @Inject private MongoClient mongoClient;
     @Value("${mongodb.db}") private String databaseName;

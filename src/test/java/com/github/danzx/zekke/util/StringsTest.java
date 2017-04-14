@@ -27,13 +27,13 @@ import static com.github.danzx.zekke.util.Strings.requireNonBlank;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.github.danzx.zekke.test.paramprovider.BlankStringProvider;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(JUnitParamsRunner.class)
 public class StringsTest {

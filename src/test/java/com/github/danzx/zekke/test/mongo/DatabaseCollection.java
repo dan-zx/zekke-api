@@ -21,14 +21,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 import org.bson.Document;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 public enum DatabaseCollection {
 

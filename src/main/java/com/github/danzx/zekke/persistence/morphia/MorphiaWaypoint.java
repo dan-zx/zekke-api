@@ -20,17 +20,17 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import org.mongodb.morphia.annotations.Embedded;
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.PostLoad;
-import org.mongodb.morphia.geo.GeoJson;
-import org.mongodb.morphia.geo.Point;
-
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Path;
 import com.github.danzx.zekke.domain.Poi;
 import com.github.danzx.zekke.domain.Walkway;
 import com.github.danzx.zekke.util.Strings;
+
+import org.mongodb.morphia.annotations.Embedded;
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.PostLoad;
+import org.mongodb.morphia.geo.GeoJson;
+import org.mongodb.morphia.geo.Point;
 
 /**
  * Morphia Walkway and POI implementation.

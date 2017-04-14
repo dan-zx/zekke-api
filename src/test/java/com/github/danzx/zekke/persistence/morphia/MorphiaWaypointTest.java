@@ -18,12 +18,12 @@ package com.github.danzx.zekke.persistence.morphia;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.github.danzx.zekke.domain.Coordinates;
+import com.github.danzx.zekke.persistence.morphia.MorphiaWaypoint.Type;
+
 import org.apache.commons.beanutils.BeanUtils;
 
 import org.junit.Test;
-
-import com.github.danzx.zekke.domain.Coordinates;
-import com.github.danzx.zekke.persistence.morphia.MorphiaWaypoint.Type;
 
 public class MorphiaWaypointTest {
 

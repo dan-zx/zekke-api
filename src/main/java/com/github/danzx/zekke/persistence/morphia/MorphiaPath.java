@@ -17,10 +17,10 @@ package com.github.danzx.zekke.persistence.morphia;
 
 import java.util.Objects;
 
+import com.github.danzx.zekke.domain.Path;
+
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Property;
-
-import com.github.danzx.zekke.domain.Path;
 
 /**
  * Morphia Path implementation.

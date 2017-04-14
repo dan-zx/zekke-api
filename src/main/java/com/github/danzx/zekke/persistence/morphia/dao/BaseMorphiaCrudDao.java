@@ -13,18 +13,18 @@
  */
 package com.github.danzx.zekke.persistence.morphia.dao;
 
-import static com.github.danzx.zekke.persistence.internal.mongo.CommonFields.ID;
-
 import static java.util.Objects.requireNonNull;
+
+import static com.github.danzx.zekke.persistence.internal.mongo.CommonFields.ID;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-import org.mongodb.morphia.Datastore;
-
 import com.github.danzx.zekke.persistence.dao.CrudDao;
 import com.github.danzx.zekke.persistence.morphia.MorphiaEntity;
+
+import org.mongodb.morphia.Datastore;
 
 /**
  * Base Morphia CRUD DAO.

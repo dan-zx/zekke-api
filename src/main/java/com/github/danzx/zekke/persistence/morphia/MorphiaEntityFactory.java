@@ -15,9 +15,9 @@
  */
 package com.github.danzx.zekke.persistence.morphia;
 
-import org.springframework.stereotype.Component;
-
 import com.github.danzx.zekke.domain.EntityFactory;
+
+import org.springframework.stereotype.Component;
 
 /**
  * Morphia entity factory implementation.

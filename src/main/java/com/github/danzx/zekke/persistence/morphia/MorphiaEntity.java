@@ -18,9 +18,9 @@ package com.github.danzx.zekke.persistence.morphia;
 import java.io.Serializable;
 import java.util.Objects;
 
-import org.mongodb.morphia.annotations.Id;
-
 import com.github.danzx.zekke.domain.Entity;
+
+import org.mongodb.morphia.annotations.Id;
 
 /**
  * Morphia entity implementaion.

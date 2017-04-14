@@ -15,10 +15,10 @@
  */
 package com.github.danzx.zekke.util;
 
-import static com.github.danzx.zekke.util.Strings.requireNonBlank;
-
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
+
+import static com.github.danzx.zekke.util.Strings.requireNonBlank;
 
 import java.text.MessageFormat;
 import java.util.HashSet;
