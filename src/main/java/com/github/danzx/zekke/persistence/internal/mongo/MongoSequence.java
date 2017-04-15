@@ -31,12 +31,6 @@ public enum MongoSequence implements Sequence {
     public static final String COLLECTION_NAME = "sequences";
     private static final String NEXT_VALUE_FUNCTION_PATTERN = "getNextSequenceValue(%s)";
 
-    /** Sequence collection fields */
-    public static class Fields extends CommonFields {
-        public static final String SEQ = "seq";
-        private Fields() {}
-    }
-
     private final String id;
     private final String nextValueFunctionCall;
     

@@ -15,14 +15,13 @@ package com.github.danzx.zekke.persistence.morphia.dao;
 
 import static java.util.Objects.requireNonNull;
 
-import static com.github.danzx.zekke.persistence.internal.mongo.CommonFields.ID;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
 import com.github.danzx.zekke.domain.BaseEntity;
 import com.github.danzx.zekke.persistence.dao.CrudDao;
+import com.github.danzx.zekke.persistence.internal.mongo.Fields;
 
 import org.mongodb.morphia.Datastore;
 
@@ -71,7 +70,7 @@ public abstract class BaseMorphiaCrudDao<E extends BaseEntity<ID>, ID extends Se
     @Override
     public Optional<E> findById(ID id) {
         requireNonNull(id, "Id shouldn't be null in order get an entity");
-        return Optional.ofNullable(datastore.createQuery(collectionClass).field(ID).equal(id).get());
+        return Optional.ofNullable(datastore.createQuery(collectionClass).field(Fields.Common.ID).equal(id).get());
     }
 
     /** {@inheritDoc} */

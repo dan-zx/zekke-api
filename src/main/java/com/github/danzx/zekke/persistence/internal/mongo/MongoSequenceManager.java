@@ -17,9 +17,8 @@ package com.github.danzx.zekke.persistence.internal.mongo;
 
 import static java.util.Objects.requireNonNull;
 
-import static com.github.danzx.zekke.persistence.internal.mongo.MongoSequence.Fields.FUNCTION_RESULT;
-import static com.github.danzx.zekke.persistence.internal.mongo.MongoSequence.Fields.ID;
-import static com.github.danzx.zekke.persistence.internal.mongo.MongoSequence.Fields.SEQ;
+import static com.github.danzx.zekke.persistence.internal.mongo.CommonOperators.EVAL;
+import static com.github.danzx.zekke.persistence.internal.mongo.CommonOperators.SET;
 import static com.github.danzx.zekke.persistence.internal.mongo.MongoSequence.COLLECTION_NAME;
 import static com.github.danzx.zekke.util.Strings.requireNonBlank;
 
@@ -59,19 +58,19 @@ public class MongoSequenceManager implements SequenceManager {
 
     @Override
     public long getCurrentSequenceValue(Sequence sequence) {
-        Document sequenceDocument = sequencesCollection.find(eq(ID, sequence.id())).first();
-        Number sequenceValue = sequenceDocument.get(SEQ, Number.class);
+        Document sequenceDocument = sequencesCollection.find(eq(Fields.Sequence.ID, sequence.id())).first();
+        Number sequenceValue = sequenceDocument.get(Fields.Sequence.SEQ, Number.class);
         return sequenceValue.longValue();
     }
 
     @Override
     public long getNextSequenceValue(Sequence sequence) {
-        Document returnDocument = database.runCommand(new Document("$eval", sequence.nextValueFunctionCall()));
-        return returnDocument.get(FUNCTION_RESULT, Number.class).longValue();
+        Document returnDocument = database.runCommand(new Document(EVAL, sequence.nextValueFunctionCall()));
+        return returnDocument.get(Fields.Function.RESULT, Number.class).longValue();
     }
 
     @Override
     public void setSequenceValue(Sequence sequence, long newValue) {
-        sequencesCollection.updateOne(eq(ID, sequence.id()), new Document("$set", new Document(SEQ, newValue)));
+        sequencesCollection.updateOne(eq(Fields.Sequence.ID, sequence.id()), new Document(SET, new Document(Fields.Sequence.SEQ, newValue)));
     }
 }

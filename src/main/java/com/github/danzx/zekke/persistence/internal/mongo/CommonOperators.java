@@ -16,16 +16,16 @@
 package com.github.danzx.zekke.persistence.internal.mongo;
 
 /**
- * Common fields in collections.
+ * Common MongoDB operators.
  * 
  * @author Daniel Pedraza-Arcega
  */
-public class CommonFields {
+public class CommonOperators {
 
-    public static final String ID = "_id";
-    public static final String FUNCTION_RESULT = "retval";
+    public static final String EVAL = "$eval";
+    public static final String SET = "$set";
 
-    protected CommonFields() {
+    private CommonOperators() {
         throw new AssertionError();
     }
 }

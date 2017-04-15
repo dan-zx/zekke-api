@@ -13,9 +13,12 @@
  */
 package com.github.danzx.zekke.test.mongo;
 
+import static com.github.danzx.zekke.persistence.internal.mongo.CommonOperators.EVAL;
+import static com.github.danzx.zekke.persistence.internal.mongo.CommonOperators.SET;
+
 import javax.inject.Inject;
 
-import com.github.danzx.zekke.persistence.internal.mongo.CommonFields;
+import com.github.danzx.zekke.persistence.internal.mongo.Fields;
 import com.github.danzx.zekke.test.spring.BaseSpringTest;
 
 import com.mongodb.MongoClient;
@@ -29,7 +32,6 @@ import org.junit.After;
 import org.junit.Before;
 
 import org.mongodb.morphia.Datastore;
-
 import org.springframework.beans.factory.annotation.Value;
 
 public abstract class BaseSpringMongoTest extends BaseSpringTest {
@@ -51,7 +53,7 @@ public abstract class BaseSpringMongoTest extends BaseSpringTest {
             initCollection(database, collection);
         }
 
-        database.runCommand(new Document("$eval", "db.loadServerScripts()"));
+        database.runCommand(new Document(EVAL, "db.loadServerScripts()"));
         datastore.ensureIndexes();
     }
 
@@ -62,8 +64,8 @@ public abstract class BaseSpringMongoTest extends BaseSpringTest {
 
     private void initFunction(MongoDatabase database, DatabaseFunction function) {
         database.getCollection("system.js").updateOne(
-                new Document(CommonFields.ID, function.functionName()),
-                new Document("$set", function.document()),
+                new Document(Fields.Common.ID, function.functionName()),
+                new Document(SET, function.document()),
                 new UpdateOptions().upsert(true));
     }
 

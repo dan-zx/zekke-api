@@ -17,8 +17,6 @@ package com.github.danzx.zekke.persistence.morphia.dao;
 
 import static java.util.Objects.requireNonNull;
 
-import static com.github.danzx.zekke.persistence.morphia.dao.WaypointMorphiaCrudDao.Fields.LOCATION;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +25,7 @@ import javax.inject.Inject;
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.persistence.dao.WaypointDao;
-import com.github.danzx.zekke.persistence.internal.mongo.CommonFields;
+import com.github.danzx.zekke.persistence.internal.mongo.Fields;
 import com.github.danzx.zekke.persistence.internal.mongo.MongoSequence;
 import com.github.danzx.zekke.persistence.internal.mongo.MongoSequenceManager;
 
@@ -42,14 +40,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> implements WaypointDao {
-
-    protected static class Fields extends CommonFields {
-        protected static final String NAME = "name";
-        protected static final String TYPE = "type";
-        protected static final String LOCATION = "location";
-        protected static final String PATHS = "paths";
-        protected Fields() {}
-    }
 
     private final MongoSequenceManager sequenceManager;
 
@@ -74,7 +64,7 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
         requireNonNull(location, "location shouldn't be null in find a waypoint");
         return Optional.ofNullable(
                 getDatastore().createQuery(getCollectionClass())
-                    .field(LOCATION)
+                    .field(Fields.Waypoint.LOCATION)
                     .near(location.toGeoJsonPoint(), maxDistance)
                     .get());
     }

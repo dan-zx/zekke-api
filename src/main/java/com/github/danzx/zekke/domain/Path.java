@@ -19,6 +19,7 @@ import java.util.Objects;
 
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Property;
+import org.mongodb.morphia.annotations.Transient;
 
 /** 
  * Represents the connection between waypoints. 
@@ -28,11 +29,10 @@ import org.mongodb.morphia.annotations.Property;
 @Embedded
 public class Path {
 
-    private Long fromWaypoint;
     private Double distance;
     
-    @Property("to_waypoint") 
-    private Long toWaypoint;
+    @Transient private Long fromWaypoint;
+    @Property("to_waypoint") private Long toWaypoint;
 
     public Long getFromWaypoint() {
         return fromWaypoint;
