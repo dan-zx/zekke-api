@@ -19,6 +19,9 @@ import java.util.Objects;
 
 import com.github.danzx.zekke.constraint.FloatRange;
 
+import org.mongodb.morphia.geo.GeoJson;
+import org.mongodb.morphia.geo.Point;
+
 /**
  * Represents a geographic point in the planet.
  * 
@@ -42,6 +45,15 @@ public class Coordinates {
     /** Factory constructor. */
     public static Coordinates ofLatLng(double latitude, double longitude) {
         return new Coordinates(latitude, longitude);
+    }
+
+    public static Coordinates valueOf(Point point) {
+        if (point == null) return null;
+        return new Coordinates(point.getLatitude(), point.getLongitude());
+    }
+
+    public Point toGeoJsonPoint() {
+        return GeoJson.point(latitude, longitude);
     }
 
     public double getLatitude() {

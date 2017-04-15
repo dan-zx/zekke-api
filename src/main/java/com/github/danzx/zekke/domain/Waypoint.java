@@ -24,9 +24,12 @@ import com.github.danzx.zekke.util.Strings;
 
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Field;
+import org.mongodb.morphia.annotations.Index;
+import org.mongodb.morphia.annotations.Indexes;
 import org.mongodb.morphia.annotations.PostLoad;
-import org.mongodb.morphia.geo.GeoJson;
 import org.mongodb.morphia.geo.Point;
+import org.mongodb.morphia.utils.IndexType;
 
 /** 
  * Represents a location in a map. 
@@ -34,6 +37,9 @@ import org.mongodb.morphia.geo.Point;
  * @author Daniel Pedraza-Arcega 
  */
 @Entity(value = "waypoints", noClassnameStored = true)
+@Indexes(
+        @Index(fields = @Field(value = "location", type = IndexType.GEO2DSPHERE))
+)
 public class Waypoint extends BaseEntity<Long> {
 
     public enum Type {POI, WALKWAY}
@@ -62,12 +68,12 @@ public class Waypoint extends BaseEntity<Long> {
     }
 
     public Coordinates getLocation() {
-        return Coordinates.ofLatLng(location.getLatitude(), location.getLongitude());
+        return Coordinates.valueOf(location);
     }
 
     public void setLocation(Coordinates location) {
         Objects.requireNonNull(location, "location cannot be null");
-        this.location = GeoJson.point(location.getLatitude(), location.getLongitude());
+        this.location = location.toGeoJsonPoint();
     }
 
     public Set<Path> getPaths() {

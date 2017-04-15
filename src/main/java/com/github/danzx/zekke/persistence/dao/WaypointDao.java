@@ -38,7 +38,7 @@ public interface WaypointDao extends CrudDao<Waypoint, Long> {
      *        distance from the location (meters).
      * @return an optional Waypoint.
      */
-    Optional<Waypoint> findNearest(Coordinates location, double maxDistance);
+    Optional<Waypoint> findNearest(Coordinates location, int maxDistance);
 
     /**
      * Finds the POIs by a name similar to given.
@@ -52,11 +52,11 @@ public interface WaypointDao extends CrudDao<Waypoint, Long> {
      * Finds the POIs that are within the bounds of a rectangle, you must specify the bottom left
      * and top right corners of the rectangle.
      * 
-     * @param bottomLeftPoint the bottom left coordinates.
-     * @param upperRightPoint the upper right coordinates.
+     * @param bottomLeftCoordinates the bottom left coordinates.
+     * @param upperRightCoordinates the upper right coordinates.
      * @return a list of POIs or an empty list.
      */
-    List<Waypoint> findPoisWithinBox(Coordinates bottomLeftPoint, Coordinates upperRightPoint);
+    List<Waypoint> findPoisWithinBox(Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates);
 
     /**
      * Finds the POI names that are within the bounds of a rectangle, you must specify the bottom

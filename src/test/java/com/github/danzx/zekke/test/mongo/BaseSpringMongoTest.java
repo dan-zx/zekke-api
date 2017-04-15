@@ -28,11 +28,15 @@ import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 
+import org.mongodb.morphia.Datastore;
+
 import org.springframework.beans.factory.annotation.Value;
 
 public abstract class BaseSpringMongoTest extends BaseSpringTest {
 
     @Inject private MongoClient mongoClient;
+    @Inject private Datastore datastore;
+
     @Value("${mongodb.db}") private String databaseName;
 
     private MongoDatabase database;
@@ -48,6 +52,7 @@ public abstract class BaseSpringMongoTest extends BaseSpringTest {
         }
 
         database.runCommand(new Document("$eval", "db.loadServerScripts()"));
+        datastore.ensureIndexes();
     }
 
     @After

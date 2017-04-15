@@ -99,6 +99,21 @@ public class WaypointMorphiaCrudDaoTest extends BaseSpringMongoTest {
         assertThat(waypoint.get().getPaths()).isNotNull().isEmpty();
     }
 
+    @Test
+    public void shouldFindNearestFind() {
+        Waypoint cdmx = DATA.get(CDMX_ID);
+        Optional<Waypoint> waypoint = waypointDao.findNearest(Coordinates.ofLatLng(19.387585, -99.050937), 500);
+        assertThat(waypoint.isPresent()).isTrue();
+        assertThat(waypoint.get()).isEqualTo(cdmx);
+        assertThat(waypoint.get().getPaths()).isNotNull().isNotEmpty().hasSameSizeAs(cdmx.getPaths()).containsOnlyElementsOf(cdmx.getPaths());
+    }
+
+    @Test
+    public void shouldFindNearestFindNothing() {
+        Optional<Waypoint> waypoint = waypointDao.findNearest(Coordinates.ofLatLng(19.387585, -99.050937), 10);
+        assertThat(waypoint.isPresent()).isFalse();
+    }
+
     private static Map<Long, Waypoint> buildStoredData() {
         Map<Long, Waypoint> data = new HashMap<>();
         data.put(1L, newWaypoint(1L, "Ciudad de Mexico", Type.POI, 19.387591, -99.052734, newPath(1L, 7L, 94431.859)));
