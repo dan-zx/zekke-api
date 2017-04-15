@@ -19,8 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.inject.Inject;
 
-import com.github.danzx.zekke.persistence.morphia.MorphiaWaypoint;
+import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.test.spring.BaseSpringTest;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
@@ -44,13 +45,13 @@ public class OptionalConverterTest extends BaseSpringTest {
     @Test
     public void shouldConvertEntityToDbObject() {
         String expectedName = "aName";
-        MorphiaWaypoint waypoint = new MorphiaWaypoint();
+        Waypoint waypoint = new Waypoint();
         waypoint.setName(expectedName);
         
         DBObject dbObject = morphia.toDBObject(waypoint);
         assertThat((String) dbObject.get("name")).isNotNull().isNotBlank().isEqualTo(expectedName);
         
-        dbObject = morphia.toDBObject(new MorphiaWaypoint());
+        dbObject = morphia.toDBObject(new Waypoint());
         assertThat(dbObject.get("name")).isNull();
     }
     
@@ -59,12 +60,13 @@ public class OptionalConverterTest extends BaseSpringTest {
         String expectedName = "aName";
         DBObject dbObject = new BasicDBObject("name", expectedName);
         dbObject.put("type", "POI");
-        MorphiaWaypoint waypoint = morphia.fromDBObject(datastore, MorphiaWaypoint.class, dbObject);
-        assertThat(waypoint.getName()).isNotNull().isNotBlank().isEqualTo(expectedName);
+        Waypoint waypoint = morphia.fromDBObject(datastore, Waypoint.class, dbObject);
+        assertThat(waypoint.getName().isPresent()).isTrue();
+        assertThat(waypoint.getName().get()).isNotBlank().isEqualTo(expectedName);
         
         dbObject = new BasicDBObject("name", null);
         dbObject.put("type", "WALKWAY");
-        waypoint = morphia.fromDBObject(datastore, MorphiaWaypoint.class, dbObject);
-        assertThat(waypoint.getName()).isNull();
+        waypoint = morphia.fromDBObject(datastore, Waypoint.class, dbObject);
+        assertThat(waypoint.getName().isPresent()).isFalse();
     }
 }

@@ -19,7 +19,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-import com.github.danzx.zekke.domain.Entity;
+import com.github.danzx.zekke.domain.BaseEntity;
 
 /**
  * A Data Access Object capable of persist changes in the datastore and read from it.
@@ -29,7 +29,7 @@ import com.github.danzx.zekke.domain.Entity;
  * 
  * @author Daniel Pedraza-Arcega
  */
-public interface CrudDao<E extends Entity<ID>, ID extends Serializable> {
+public interface CrudDao<E extends BaseEntity<ID>, ID extends Serializable> {
 
     /**
      * Finds an entity by its id.

@@ -16,16 +16,40 @@
 package com.github.danzx.zekke.domain;
 
 import java.io.Serializable;
+import java.util.Objects;
+
+import org.mongodb.morphia.annotations.Id;
 
 /**
- * Base entity POJO interface.
+ * Base entity POJO.
  * 
  * @param <ID> the Id type.
  * 
  * @author Daniel Pedraza-Arcega
  */
-public interface Entity<ID extends Serializable> {
+public abstract class BaseEntity<ID extends Serializable> {
 
-    ID getId();
-    void setId(ID id);
+    @Id private ID id;
+
+    public ID getId() {
+        return id;
+    }
+
+    public void setId(ID id) {
+        Objects.requireNonNull(id, "id cannot be null");
+        this.id = id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
+    /**
+     * Use this method to complete your equals method.
+     * @see {@link #equals(Object)}
+     */
+    protected boolean isEntityEqualTo(BaseEntity<?> other) {
+        return Objects.equals(id, other.id);
+    }
 }

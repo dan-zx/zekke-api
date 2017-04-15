@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.persistence.morphia;
+package com.github.danzx.zekke.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.apache.commons.beanutils.BeanUtils;
-
 import org.junit.Test;
 
-public class MorphiaPathTest {
+public class PathTest {
 
-    private static final MorphiaPath TEST_PATH = newTestPath();
+    private static final Path TEST_PATH = newTestPath();
 
     @Test
     public void shouldEqualsBeTrueWhenSameReference() {
@@ -47,7 +46,7 @@ public class MorphiaPathTest {
 
     @Test
     public void shouldEqualsBeFalseWhenAtLeastOnePropertyIsDifferent() {
-        MorphiaPath testPath2 = newTestPath();
+        Path testPath2 = newTestPath();
         testPath2.setDistance(354.234);
         assertThat(TEST_PATH.equals(testPath2)).isFalse();
 
@@ -62,19 +61,19 @@ public class MorphiaPathTest {
 
     @Test
     public void shouldHashCodeBeEqualWhenSameObjectReference() {
-        MorphiaPath testPath2 = newTestPath();
+        Path testPath2 = newTestPath();
         assertThat(TEST_PATH.hashCode()).isEqualTo(TEST_PATH.hashCode()).isEqualTo(testPath2.hashCode());
     }
 
-    private static MorphiaPath newTestPath() {
-        MorphiaPath testPath = new MorphiaPath();
+    private static Path newTestPath() {
+        Path testPath = new Path();
         testPath.setFromWaypoint(1L);
         testPath.setToWaypoint(9L);
         testPath.setDistance(100.4235);
         return testPath;
     }
 
-    private void copy(MorphiaPath src, MorphiaPath dest) {
+    private void copy(Path src, Path dest) {
         try {
             BeanUtils.copyProperties(dest, src);
         } catch (Exception e) {

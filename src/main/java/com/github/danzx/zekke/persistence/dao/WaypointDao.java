@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.github.danzx.zekke.domain.Coordinates;
-import com.github.danzx.zekke.domain.Poi;
 import com.github.danzx.zekke.domain.Waypoint;
 
 /**
@@ -29,7 +28,7 @@ import com.github.danzx.zekke.domain.Waypoint;
  * 
  * @author Daniel Pedraza-Arcega
  */
-public interface WaypointDao<W extends Waypoint> extends CrudDao<W, Long> {
+public interface WaypointDao extends CrudDao<Waypoint, Long> {
 
     /**
      * Finds the nearest Waypoint to given location.
@@ -39,7 +38,7 @@ public interface WaypointDao<W extends Waypoint> extends CrudDao<W, Long> {
      *        distance from the location (meters).
      * @return an optional Waypoint.
      */
-    Optional<W> findNearest(Coordinates location, double maxDistance);
+    Optional<Waypoint> findNearest(Coordinates location, double maxDistance);
 
     /**
      * Finds the POIs by a name similar to given.
@@ -47,7 +46,7 @@ public interface WaypointDao<W extends Waypoint> extends CrudDao<W, Long> {
      * @param name a partial name.
      * @return a list of POIs or an empty list.
      */
-    List<? extends Poi> findPoisByNameLike(String name);
+    List<Waypoint> findPoisByNameLike(String name);
 
     /**
      * Finds the POIs that are within the bounds of a rectangle, you must specify the bottom left
@@ -57,7 +56,7 @@ public interface WaypointDao<W extends Waypoint> extends CrudDao<W, Long> {
      * @param upperRightPoint the upper right coordinates.
      * @return a list of POIs or an empty list.
      */
-    List<? extends Poi> findPoisWithinBox(Coordinates bottomLeftPoint, Coordinates upperRightPoint);
+    List<Waypoint> findPoisWithinBox(Coordinates bottomLeftPoint, Coordinates upperRightPoint);
 
     /**
      * Finds the POI names that are within the bounds of a rectangle, you must specify the bottom

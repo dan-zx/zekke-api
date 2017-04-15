@@ -23,10 +23,10 @@ import java.util.Optional;
 import javax.inject.Inject;
 
 import com.github.danzx.zekke.domain.Coordinates;
+import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.persistence.dao.WaypointDao;
 import com.github.danzx.zekke.persistence.internal.mongo.MongoSequence;
 import com.github.danzx.zekke.persistence.internal.mongo.MongoSequenceManager;
-import com.github.danzx.zekke.persistence.morphia.MorphiaWaypoint;
 
 import org.mongodb.morphia.Datastore;
 
@@ -38,18 +38,18 @@ import org.springframework.stereotype.Repository;
  * @author Daniel Pedraza-Arcega
  */
 @Repository
-public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<MorphiaWaypoint, Long> implements WaypointDao<MorphiaWaypoint> {
+public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> implements WaypointDao {
 
     private final MongoSequenceManager sequenceManager;
 
     public @Inject WaypointMorphiaCrudDao(Datastore datastore, MongoSequenceManager sequenceManager) {
-        super(datastore, MorphiaWaypoint.class);
+        super(datastore, Waypoint.class);
         requireNonNull(sequenceManager, "sequenceManager shouldn't be null in order set ids to waypoints");
         this.sequenceManager = sequenceManager;
     }
 
     @Override
-    public MorphiaWaypoint save(MorphiaWaypoint waypoint) {
+    public Waypoint save(Waypoint waypoint) {
         requireNonNull(waypoint, "MorphiaWaypoint shouldn't be null in order to be saved");
         if (waypoint.getId() == null) {
             long id = sequenceManager.getNextSequenceValue(MongoSequence.WAYPOINT_ID);
@@ -59,19 +59,19 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<MorphiaWaypoint, 
     }
 
     @Override
-    public Optional<MorphiaWaypoint> findNearest(Coordinates location, double maxDistance) {
+    public Optional<Waypoint> findNearest(Coordinates location, double maxDistance) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public List<MorphiaWaypoint> findPoisByNameLike(String name) {
+    public List<Waypoint> findPoisByNameLike(String name) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public List<MorphiaWaypoint> findPoisWithinBox(Coordinates bottomLeftPoint, Coordinates upperRightPoint) {
+    public List<Waypoint> findPoisWithinBox(Coordinates bottomLeftPoint, Coordinates upperRightPoint) {
         // TODO Auto-generated method stub
         return null;
     }

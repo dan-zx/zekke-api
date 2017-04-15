@@ -15,8 +15,8 @@
  */
 package com.github.danzx.zekke.config;
 
-import com.github.danzx.zekke.persistence.morphia.MorphiaPath;
-import com.github.danzx.zekke.persistence.morphia.MorphiaWaypoint;
+import com.github.danzx.zekke.domain.Path;
+import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.persistence.morphia.converter.OptionalConverter;
 
 import com.mongodb.MongoClient;
@@ -44,7 +44,7 @@ public class MorphiaConfiguration {
 
     @Bean
     public Morphia morphia() {
-        Morphia morphia = new Morphia().map(MorphiaWaypoint.class, MorphiaPath.class);
+        Morphia morphia = new Morphia().map(Waypoint.class, Path.class);
         Converters currentConverters = morphia.getMapper().getConverters();
         currentConverters.addConverter(new OptionalConverter(currentConverters));
         return morphia;

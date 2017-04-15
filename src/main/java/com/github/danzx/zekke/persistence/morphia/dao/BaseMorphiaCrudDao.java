@@ -21,8 +21,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
+import com.github.danzx.zekke.domain.BaseEntity;
 import com.github.danzx.zekke.persistence.dao.CrudDao;
-import com.github.danzx.zekke.persistence.morphia.MorphiaEntity;
 
 import org.mongodb.morphia.Datastore;
 
@@ -34,7 +34,7 @@ import org.mongodb.morphia.Datastore;
  * 
  * @author Daniel Pedraza-Arcega
  */
-public abstract class BaseMorphiaCrudDao<E extends MorphiaEntity<ID>, ID extends Serializable> implements CrudDao<E, ID> {
+public abstract class BaseMorphiaCrudDao<E extends BaseEntity<ID>, ID extends Serializable> implements CrudDao<E, ID> {
 
     private final Datastore datastore;
     private final Class<E> collectionClass;

@@ -13,44 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.persistence.morphia;
+package com.github.danzx.zekke.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.github.danzx.zekke.domain.Coordinates;
-import com.github.danzx.zekke.persistence.morphia.MorphiaWaypoint.Type;
+import com.github.danzx.zekke.domain.Waypoint.Type;
 
 import org.apache.commons.beanutils.BeanUtils;
 
 import org.junit.Test;
 
-public class MorphiaWaypointTest {
+public class WaypointTest {
 
-    private static final MorphiaWaypoint TEST_WAYPOINT = newTestWaypoint();
+    private static final Waypoint TEST_WAYPOINT = newTestWaypoint();
 
     @Test
     public void shouldPathBeNotNullEvenIfSetToNull() {
-        MorphiaWaypoint waypoint = new MorphiaWaypoint();
+        Waypoint waypoint = new Waypoint();
         assertThat(waypoint.getPaths()).isNotNull();
         waypoint.setPaths(null);
         assertThat(waypoint.getPaths()).isNotNull();
     }
 
     @Test
-    public void shouldNameBeNullWhenWalkwayEvenIfSetNotNull() {
-        MorphiaWaypoint waypoint = new MorphiaWaypoint();
-        waypoint.setType(Type.WALKWAY);
-        waypoint.setName("Anything");
-        assertThat(waypoint.getName()).isNull();
-    }
-    
-    @Test
-    public void shoulThrowIllegalStateExceptionWhenPoiAndNameIsEmpty() {
-        MorphiaWaypoint waypoint = new MorphiaWaypoint();
-        waypoint.setType(Type.POI);
+    public void shouldNameBeNotNullEvenIfSetToNull() {
+        Waypoint waypoint = new Waypoint();
+        assertThat(waypoint.getName()).isNotNull();
         waypoint.setName(null);
-        assertThatThrownBy(() -> waypoint.getName()).isInstanceOf(IllegalStateException.class);
+        assertThat(waypoint.getName()).isNotNull();
     }
 
     @Test
@@ -75,7 +65,7 @@ public class MorphiaWaypointTest {
 
     @Test
     public void shouldEqualsBeFalseWhenAtLeastOnePropertyIsDifferent() {
-        MorphiaWaypoint waypoint2 = newTestWaypoint();
+        Waypoint waypoint2 = newTestWaypoint();
         waypoint2.setId(2L);
         assertThat(TEST_WAYPOINT.equals(waypoint2)).isFalse();
 
@@ -98,12 +88,12 @@ public class MorphiaWaypointTest {
 
     @Test
     public void shouldHashCodeBeEqualWhenSameObjectReference() {
-        MorphiaWaypoint waypoint2 = newTestWaypoint();
+        Waypoint waypoint2 = newTestWaypoint();
         assertThat(TEST_WAYPOINT.hashCode()).isEqualTo(TEST_WAYPOINT.hashCode()).isEqualTo(waypoint2.hashCode());
     }
 
-    private static MorphiaWaypoint newTestWaypoint() {
-        MorphiaWaypoint testWaypoint = new MorphiaWaypoint();
+    private static Waypoint newTestWaypoint() {
+        Waypoint testWaypoint = new Waypoint();
         testWaypoint.setId(1L);
         testWaypoint.setLocation(Coordinates.ofLatLng(19.054492, -98.283176));
         testWaypoint.setName("waypoint_1");
@@ -111,7 +101,7 @@ public class MorphiaWaypointTest {
         return testWaypoint;
     }
 
-    private void copy(MorphiaWaypoint src, MorphiaWaypoint dest) {
+    private void copy(Waypoint src, Waypoint dest) {
         try {
             BeanUtils.copyProperties(dest, src);
         } catch (Exception e) {
