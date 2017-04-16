@@ -24,12 +24,14 @@ import javax.inject.Inject;
 
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
+import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.persistence.dao.WaypointDao;
 import com.github.danzx.zekke.persistence.internal.mongo.Fields;
 import com.github.danzx.zekke.persistence.internal.mongo.MongoSequence;
 import com.github.danzx.zekke.persistence.internal.mongo.MongoSequenceManager;
 
 import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.query.Query;
 
 import org.springframework.stereotype.Repository;
 
@@ -63,7 +65,7 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
     public Optional<Waypoint> findNearest(Coordinates location, int maxDistance) {
         requireNonNull(location, "location shouldn't be null in find a waypoint");
         return Optional.ofNullable(
-                getDatastore().createQuery(getCollectionClass())
+                createQuery()
                     .field(Fields.Waypoint.LOCATION)
                     .near(location.toGeoJsonPoint(), maxDistance)
                     .get());
@@ -71,8 +73,12 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
 
     @Override
     public List<Waypoint> findPoisByNameLike(String name) {
-        // TODO Auto-generated method stub
-        return null;
+        Query<Waypoint> query = createQuery();
+        query.and(
+            query.criteria(Fields.Waypoint.TYPE).equal(Type.POI),
+            query.criteria(Fields.Waypoint.NAME).containsIgnoreCase(name)
+        );
+        return query.asList();
     }
 
     @Override

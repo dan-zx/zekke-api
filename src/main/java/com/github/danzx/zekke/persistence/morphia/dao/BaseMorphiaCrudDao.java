@@ -24,6 +24,7 @@ import com.github.danzx.zekke.persistence.dao.CrudDao;
 import com.github.danzx.zekke.persistence.internal.mongo.Fields;
 
 import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.query.Query;
 
 /**
  * Base Morphia CRUD DAO.
@@ -70,13 +71,18 @@ public abstract class BaseMorphiaCrudDao<E extends BaseEntity<ID>, ID extends Se
     @Override
     public Optional<E> findById(ID id) {
         requireNonNull(id, "Id shouldn't be null in order get an entity");
-        return Optional.ofNullable(datastore.createQuery(collectionClass).field(Fields.Common.ID).equal(id).get());
+        return Optional.ofNullable(createQuery().field(Fields.Common.ID).equal(id).get());
     }
 
     /** {@inheritDoc} */
     @Override
     public List<E> findAll() {
-        return datastore.createQuery(collectionClass).asList();
+        return createQuery().asList();
+    }
+
+    /** @return a new query. */
+    protected Query<E> createQuery() {
+        return datastore.createQuery(collectionClass);
     }
 
     protected Datastore getDatastore() {

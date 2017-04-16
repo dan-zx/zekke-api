@@ -16,11 +16,14 @@
 package com.github.danzx.zekke.persistence.morphia.dao;
 
 import static java.util.Arrays.asList;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -31,11 +34,14 @@ import com.github.danzx.zekke.domain.Path;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.test.mongo.BaseSpringMongoTest;
+
 import org.junit.Test;
 
 public class WaypointMorphiaCrudDaoTest extends BaseSpringMongoTest {
 
     private static final long CDMX_ID = 1L;
+    private static final long QRO_ID = 2L;
+    private static final long GDL_ID = 4L;
     private static final long NOT_EXITING_WAYPOINT = Long.MAX_VALUE;
     private static final Map<Long, Waypoint> DATA = buildStoredData();
 
@@ -112,6 +118,19 @@ public class WaypointMorphiaCrudDaoTest extends BaseSpringMongoTest {
     public void shouldFindNearestFindNothing() {
         Optional<Waypoint> waypoint = waypointDao.findNearest(Coordinates.ofLatLng(19.387585, -99.050937), 10);
         assertThat(waypoint.isPresent()).isFalse();
+    }
+
+    @Test
+    public void shouldFindPoisByNameLike() {
+        List<Waypoint> expectedPois = Arrays.asList(DATA.get(QRO_ID), DATA.get(GDL_ID));
+        List<Waypoint> actualPois = waypointDao.findPoisByNameLike("ar");
+        assertThat(actualPois).isNotNull().isNotEmpty().hasSameSizeAs(expectedPois).containsOnlyElementsOf(expectedPois);
+    }
+
+    @Test
+    public void shouldNotFindPoisByNameLike() {
+        List<Waypoint> actualPois = waypointDao.findPoisByNameLike("xx");
+        assertThat(actualPois).isNotNull().isEmpty();
     }
 
     private static Map<Long, Waypoint> buildStoredData() {
