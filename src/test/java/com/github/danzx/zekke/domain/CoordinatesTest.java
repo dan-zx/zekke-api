@@ -34,6 +34,9 @@ import junitparams.Parameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.mongodb.morphia.geo.GeoJson;
+import org.mongodb.morphia.geo.Point;
+
 @RunWith(JUnitParamsRunner.class)
 public class CoordinatesTest extends BaseValidationTest {
 
@@ -59,6 +62,22 @@ public class CoordinatesTest extends BaseValidationTest {
     public void shouldEqualsBeTrueWhenObjectsAreNotTheSameReference() {
         Coordinates testPoint = Coordinates.ofLatLng(VALID_COORDINATES.getLatitude(), VALID_COORDINATES.getLongitude());
         assertThat(VALID_COORDINATES.equals(testPoint)).isTrue();
+    }
+
+    @Test
+    public void shouldConvertToGeoJsonPoint() {
+        assertThat(VALID_COORDINATES.toGeoJsonPoint()).isNotNull().extracting(Point::getLatitude, Point::getLongitude).containsExactly(VALID_COORDINATES.getLatitude(), VALID_COORDINATES.getLongitude());
+    }
+
+    @Test
+    public void shouldConvertGeoJsonPointToCoordinates() {
+        Point point = GeoJson.point(VALID_COORDINATES.getLatitude(), VALID_COORDINATES.getLongitude());
+        assertThat(Coordinates.valueOf(point)).isNotNull().isEqualTo(VALID_COORDINATES);
+    }
+
+    @Test
+    public void shouldReturnNullWhenPointToConvertIsNull() {
+        assertThat(Coordinates.valueOf(null)).isNull();
     }
 
     @Test
