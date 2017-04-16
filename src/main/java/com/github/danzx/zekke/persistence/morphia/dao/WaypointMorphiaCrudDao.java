@@ -105,18 +105,18 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
         requireNonNull(upperRightCoordinates, "upperRightCoordinates shouldn't be null in order to find POI names");
         Query<Waypoint> query = createQuery();
         query.and(
-            query.criteria(Fields.Waypoint.TYPE).equal(Type.POI),
-            query.criteria(Fields.Waypoint.NAME).containsIgnoreCase(name),
-            query.criteria(Fields.Waypoint.LOCATION).within(
+                query.criteria(Fields.Waypoint.TYPE).equal(Type.POI),
+                query.criteria(Fields.Waypoint.NAME).containsIgnoreCase(name),
+                query.criteria(Fields.Waypoint.LOCATION).within(
                     Shape.box(toShapePoint(bottomLeftCoordinates), toShapePoint(upperRightCoordinates)))
-        );
-         return query
-                 .project(Fields.Waypoint.NAME, true)
-                 .asList()
-                 .stream()
-                     .map(Waypoint::getName)
-                     .map(Optional::get) // Should be safe because all POIs should have name
-                     .collect(toList());
+                );
+        return query
+                .project(Fields.Waypoint.NAME, true)
+                .asList()
+                .stream()
+                    .map(Waypoint::getName)
+                    .map(Optional::get) // Should be safe because all POIs should have name
+                    .collect(toList());
     }
 
     private Shape.Point toShapePoint(Coordinates coordinates) {
