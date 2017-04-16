@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'jacoco'
-    id 'org.springframework.boot' version '1.5.1.RELEASE'
+    id 'org.springframework.boot' version '1.5.2.RELEASE'
 }
 
 group 'com.github.danzx.zekke'
@@ -15,6 +15,7 @@ repositories {
 }
 
 ext {
+    assertjVersion     = '3.6.2'
     beanUtilsVersion   = '1.9.3'
     embedMongoVersion  = '2.0.0'
     guavaVersion       = '21.0'
@@ -38,6 +39,7 @@ dependencies {
 
      // TEST
     testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile "org.assertj:assertj-core:${assertjVersion}"
     testCompile "pl.pragmatists:JUnitParams:${junitParamsVersion}"
     testCompile "commons-beanutils:commons-beanutils:${beanUtilsVersion}"
     testCompile "com.google.guava:guava:${guavaVersion}"
