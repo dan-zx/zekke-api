@@ -50,9 +50,8 @@ public interface CrudDao<E extends BaseEntity<ID>, ID extends Serializable> {
      * Saves the given entity.
      *  
      * @param entity an entity.
-     * @return the updated entity.
      */
-    E save(E entity);
+    void save(E entity);
 
     /**
      * Deletes an entity by id.

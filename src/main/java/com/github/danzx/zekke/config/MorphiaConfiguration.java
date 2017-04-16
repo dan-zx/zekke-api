@@ -39,9 +39,7 @@ public class MorphiaConfiguration {
 
     @Bean
     public Datastore datastore(MongoClient mongoClient, @Value("${mongodb.db}") String database) {
-        Datastore datastore = morphia().createDatastore(mongoClient, database);
-        datastore.ensureIndexes();
-        return datastore;
+        return morphia().createDatastore(mongoClient, database);
     }
 
     @Bean

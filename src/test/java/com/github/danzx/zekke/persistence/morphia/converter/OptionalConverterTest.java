@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import javax.inject.Inject;
 
 import com.github.danzx.zekke.domain.Waypoint;
-import com.github.danzx.zekke.test.spring.BaseSpringTest;
+import com.github.danzx.zekke.test.spring.BaseSpringIntegrationTest;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 
-public class OptionalConverterTest extends BaseSpringTest {
+public class OptionalConverterTest extends BaseSpringIntegrationTest {
 
     @Inject private Morphia morphia;
     @Inject private Datastore datastore;

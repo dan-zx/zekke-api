@@ -19,7 +19,8 @@ import com.github.danzx.zekke.config.Profiles;
 
 public class TestProfiles extends Profiles {
 
-    public static final String TESTING = "test";
+    public static final String INTEGRATION = "integration";
+    public static final String MOCK = "mock";
 
     private TestProfiles() { }
 }

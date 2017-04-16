@@ -13,22 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.test.config;
+package com.github.danzx.zekke.service;
 
-import com.github.danzx.zekke.test.mongo.EmbeddedMongo;
-import com.github.danzx.zekke.test.spring.ForIntegration;
+/**
+ * Persistent service.
+ * 
+ * @param <E> the element to persist.
+ * 
+ * @author Daniel Pedraza-Arcega
+ */
+public interface PersistentService<E> {
 
-import com.mongodb.MongoClient;
+    /**
+     * Persists the given element into the underlying datastore.
+     *  
+     * @param element an element to persist.
+     */
+    void persist(E element);
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-@ForIntegration
-public class TestMongoDbConfig {
-
-    @Bean
-    public MongoClient mongoClient(EmbeddedMongo embeddedMongo) {
-        return embeddedMongo.getMongo();
-    }
+    /**
+     * Deletes the given element from the underlying datastore.
+     *  
+     * @param element the element to delete.
+     */
+    void delete(E element);
 }

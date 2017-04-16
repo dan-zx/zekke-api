@@ -21,6 +21,8 @@ import java.net.UnknownHostException;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import com.github.danzx.zekke.test.spring.ForIntegration;
+
 import com.mongodb.MongoClient;
 
 import de.flapdoodle.embed.mongo.Command;
@@ -41,6 +43,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
+@ForIntegration
 public class EmbeddedMongo {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmbeddedMongo.class);

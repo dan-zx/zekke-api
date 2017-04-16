@@ -13,22 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.test.config;
-
-import com.github.danzx.zekke.test.mongo.EmbeddedMongo;
-import com.github.danzx.zekke.test.spring.ForIntegration;
-
-import com.mongodb.MongoClient;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-@ForIntegration
-public class TestMongoDbConfig {
-
-    @Bean
-    public MongoClient mongoClient(EmbeddedMongo embeddedMongo) {
-        return embeddedMongo.getMongo();
-    }
-}
+/** Service interfaces and common objects. */
+package com.github.danzx.zekke.service;

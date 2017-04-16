@@ -19,7 +19,7 @@ import static com.github.danzx.zekke.persistence.internal.mongo.CommonOperators.
 import javax.inject.Inject;
 
 import com.github.danzx.zekke.persistence.internal.mongo.Fields;
-import com.github.danzx.zekke.test.spring.BaseSpringTest;
+import com.github.danzx.zekke.test.spring.BaseSpringIntegrationTest;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -32,9 +32,10 @@ import org.junit.After;
 import org.junit.Before;
 
 import org.mongodb.morphia.Datastore;
+
 import org.springframework.beans.factory.annotation.Value;
 
-public abstract class BaseSpringMongoTest extends BaseSpringTest {
+public abstract class BaseSpringMongoTest extends BaseSpringIntegrationTest {
 
     @Inject private MongoClient mongoClient;
     @Inject private Datastore datastore;

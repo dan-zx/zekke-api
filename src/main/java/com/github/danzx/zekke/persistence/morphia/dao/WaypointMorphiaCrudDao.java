@@ -54,13 +54,13 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
     }
 
     @Override
-    public Waypoint save(Waypoint waypoint) {
+    public void save(Waypoint waypoint) {
         requireNonNull(waypoint, "waypoint shouldn't be null in order to be saved");
         if (waypoint.getId() == null) {
             long id = sequenceManager.getNextSequenceValue(MongoSequence.WAYPOINT_ID);
             waypoint.setId(id);
         }
-        return super.save(waypoint);
+        super.save(waypoint);
     }
 
     @Override
