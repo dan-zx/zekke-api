@@ -16,8 +16,7 @@
 package com.github.danzx.zekke.persistence.morphia.dao;
 
 import static java.util.Objects.requireNonNull;
-
-import static com.github.danzx.zekke.util.Strings.requireNonBlank;
+import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 import java.util.Optional;
@@ -77,7 +76,7 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
 
     @Override
     public List<Waypoint> findPoisByNameLike(String name) {
-        requireNonBlank(name, "name shouldn't be null in find a POI");
+        requireNonNull(name, "name shouldn't be null in find a POI");
         Query<Waypoint> query = createQuery();
         query.and(
             query.criteria(Fields.Waypoint.TYPE).equal(Type.POI),
@@ -101,8 +100,23 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
 
     @Override
     public List<String> findNamesWithinBoxLike(String name, Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates) {
-        // TODO Auto-generated method stub
-        return null;
+        requireNonNull(name, "name shouldn't be null in find POI names");
+        requireNonNull(bottomLeftCoordinates, "bottomLeftCoordinates shouldn't be null in order to find POI names");
+        requireNonNull(upperRightCoordinates, "upperRightCoordinates shouldn't be null in order to find POI names");
+        Query<Waypoint> query = createQuery();
+        query.and(
+            query.criteria(Fields.Waypoint.TYPE).equal(Type.POI),
+            query.criteria(Fields.Waypoint.NAME).containsIgnoreCase(name),
+            query.criteria(Fields.Waypoint.LOCATION).within(
+                    Shape.box(toShapePoint(bottomLeftCoordinates), toShapePoint(upperRightCoordinates)))
+        );
+         return query
+                 .project(Fields.Waypoint.NAME, true)
+                 .asList()
+                 .stream()
+                     .map(Waypoint::getName)
+                     .map(Optional::get) // Should be safe because all POIs should have name
+                     .collect(toList());
     }
 
     private Shape.Point toShapePoint(Coordinates coordinates) {

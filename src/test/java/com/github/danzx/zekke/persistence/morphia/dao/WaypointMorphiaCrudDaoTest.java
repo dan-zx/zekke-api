@@ -16,6 +16,7 @@
 package com.github.danzx.zekke.persistence.morphia.dao;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -136,7 +137,7 @@ public class WaypointMorphiaCrudDaoTest extends BaseSpringMongoTest {
 
     @Test
     public void shouldFindPoisWithinBox() {
-        List<Waypoint> expectedPois = Arrays.asList(DATA.get(GDL_ID), DATA.get(LEON_ID));
+        List<Waypoint> expectedPois = asList(DATA.get(GDL_ID), DATA.get(LEON_ID));
         List<Waypoint> actualPois = waypointDao.findPoisWithinBox(Coordinates.ofLatLng(20.465294, -103.491211), Coordinates.ofLatLng(21.204578, -101.491699));
         assertThat(actualPois).isNotNull().isNotEmpty().hasSameSizeAs(expectedPois).containsOnlyElementsOf(expectedPois);
     }
@@ -145,6 +146,19 @@ public class WaypointMorphiaCrudDaoTest extends BaseSpringMongoTest {
     public void shouldNotFindPoisWithinBox() {
         List<Waypoint> actualPois = waypointDao.findPoisWithinBox(Coordinates.ofLatLng(20.794313, -99.052734), Coordinates.ofLatLng(21.347903, -98.591309));
         assertThat(actualPois).isNotNull().isEmpty();
+    }
+
+    @Test
+    public void shouldFindNamesWithinBoxLike() {
+        List<String> expectedPoiNames = singletonList(DATA.get(GDL_ID).getName().get());
+        List<String> actualPoiNames = waypointDao.findNamesWithinBoxLike("ar", Coordinates.ofLatLng(20.465294, -103.491211), Coordinates.ofLatLng(21.204578, -101.491699));
+        assertThat(actualPoiNames).isNotNull().isNotEmpty().hasSameSizeAs(expectedPoiNames).containsOnlyElementsOf(expectedPoiNames);
+    }
+
+    @Test
+    public void shouldNotFindNamesWithinBoxLike() {
+        List<String> actualPoiNames = waypointDao.findNamesWithinBoxLike("xx", Coordinates.ofLatLng(20.465294, -103.491211), Coordinates.ofLatLng(21.204578, -101.491699));
+        assertThat(actualPoiNames).isNotNull().isEmpty();
     }
 
     private static Map<Long, Waypoint> buildStoredData() {
