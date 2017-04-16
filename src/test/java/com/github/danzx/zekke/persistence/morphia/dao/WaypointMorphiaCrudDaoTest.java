@@ -42,6 +42,7 @@ public class WaypointMorphiaCrudDaoTest extends BaseSpringMongoTest {
     private static final long CDMX_ID = 1L;
     private static final long QRO_ID = 2L;
     private static final long GDL_ID = 4L;
+    private static final long LEON_ID = 5L;
     private static final long NOT_EXITING_WAYPOINT = Long.MAX_VALUE;
     private static final Map<Long, Waypoint> DATA = buildStoredData();
 
@@ -133,13 +134,26 @@ public class WaypointMorphiaCrudDaoTest extends BaseSpringMongoTest {
         assertThat(actualPois).isNotNull().isEmpty();
     }
 
+    @Test
+    public void shouldFindPoisWithinBox() {
+        List<Waypoint> expectedPois = Arrays.asList(DATA.get(GDL_ID), DATA.get(LEON_ID));
+        List<Waypoint> actualPois = waypointDao.findPoisWithinBox(Coordinates.ofLatLng(20.465294, -103.491211), Coordinates.ofLatLng(21.204578, -101.491699));
+        assertThat(actualPois).isNotNull().isNotEmpty().hasSameSizeAs(expectedPois).containsOnlyElementsOf(expectedPois);
+    }
+
+    @Test
+    public void shouldNotFindPoisWithinBox() {
+        List<Waypoint> actualPois = waypointDao.findPoisWithinBox(Coordinates.ofLatLng(20.794313, -99.052734), Coordinates.ofLatLng(21.347903, -98.591309));
+        assertThat(actualPois).isNotNull().isEmpty();
+    }
+
     private static Map<Long, Waypoint> buildStoredData() {
         Map<Long, Waypoint> data = new HashMap<>();
-        data.put(1L, newWaypoint(1L, "Ciudad de Mexico", Type.POI, 19.387591, -99.052734, newPath(1L, 7L, 94431.859)));
-        data.put(2L, newWaypoint(2L, "Queretaro", Type.POI, 20.579760, -100.371094, newPath(2L, 6L, 98951.731), newPath(2L, 7L, 95695.093)));
+        data.put(1L, newWaypoint(CDMX_ID, "Ciudad de Mexico", Type.POI, 19.387591, -99.052734, newPath(1L, 7L, 94431.859)));
+        data.put(2L, newWaypoint(QRO_ID, "Queretaro", Type.POI, 20.579760, -100.371094, newPath(2L, 6L, 98951.731), newPath(2L, 7L, 95695.093)));
         data.put(3L, newWaypoint(3L, null, Type.WALKWAY, 19.672009, -101.151123, newPath(3L, 6L, 110561.394), newPath(3L, 7L, 144887.222), newPath(3L, 4L, 249563.935)));
-        data.put(4L, newWaypoint(4L, "Guadalajara", Type.POI, 20.651740, -103.337402, newPath(4L, 5L, 181890.199), newPath(4L, 3L, 249563.935)));
-        data.put(5L, newWaypoint(5L, "Leon", Type.POI, 21.123896, -101.667480, newPath(5L, 4L, 181890.199), newPath(5L, 6L, 64956.585)));
+        data.put(4L, newWaypoint(GDL_ID, "Guadalajara", Type.POI, 20.651740, -103.337402, newPath(4L, 5L, 181890.199), newPath(4L, 3L, 249563.935)));
+        data.put(5L, newWaypoint(LEON_ID, "Leon", Type.POI, 21.123896, -101.667480, newPath(5L, 4L, 181890.199), newPath(5L, 6L, 64956.585)));
         data.put(6L, newWaypoint(6L, null, Type.WALKWAY, 20.651740, -101.359863, newPath(6L, 5L, 64956.585), newPath(6L, 2L, 98951.731), newPath(6L, 3L, 110561.394)));
         data.put(7L, newWaypoint(7L, null, Type.WALKWAY, 19.920099, -99.788818, newPath(7L, 2L, 95695.093), newPath(7L, 1L, 94431.859), newPath(7L, 3L, 144887.222)));
         return data;
