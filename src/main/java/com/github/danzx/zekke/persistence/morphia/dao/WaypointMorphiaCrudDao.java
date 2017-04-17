@@ -54,13 +54,36 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
     }
 
     @Override
-    public void save(Waypoint waypoint) {
+    public void saveOrUpdate(Waypoint waypoint) {
         requireNonNull(waypoint, "waypoint shouldn't be null in order to be saved");
         if (waypoint.getId() == null) {
             long id = sequenceManager.getNextSequenceValue(MongoSequence.WAYPOINT_ID);
             waypoint.setId(id);
         }
-        super.save(waypoint);
+        super.saveOrUpdate(waypoint);
+    }
+
+    @Override
+    public Optional<Waypoint> findPoiById(long id) {
+        Query<Waypoint> query = createQuery();
+        query.and(
+            query.criteria(Fields.Common.ID).equal(id),
+            query.criteria(Fields.Waypoint.TYPE).equal(Type.POI)
+        );
+        return Optional.ofNullable(query.get());
+    }
+
+    @Override
+    public Optional<String> findNearestPoiName(Coordinates location, int maxDistance) {
+        requireNonNull(location, "location shouldn't be null in find a waypoint name");
+        return Optional.ofNullable(
+                createQuery()
+                    .field(Fields.Waypoint.LOCATION)
+                     // A NullPointerException is thrown here but it seems to be working anyways WTF?
+                    .near(location.toGeoJsonPoint(), maxDistance)
+                    .project(Fields.Waypoint.NAME, true)
+                    .get()
+                ).flatMap(Waypoint::getName);
     }
 
     @Override
@@ -99,7 +122,7 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
     }
 
     @Override
-    public List<String> findNamesWithinBoxLike(String name, Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates) {
+    public List<String> findPoiNamesWithinBoxLike(String name, Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates) {
         requireNonNull(name, "name shouldn't be null in find POI names");
         requireNonNull(bottomLeftCoordinates, "bottomLeftCoordinates shouldn't be null in order to find POI names");
         requireNonNull(upperRightCoordinates, "upperRightCoordinates shouldn't be null in order to find POI names");

@@ -54,7 +54,7 @@ public abstract class BaseMorphiaCrudDao<E extends BaseEntity<ID>, ID extends Se
 
     /** {@inheritDoc} */
     @Override
-    public void save(E collectionEntity) {
+    public void saveOrUpdate(E collectionEntity) {
         requireNonNull(collectionEntity, "Entity shouldn't be null in order to be saved");
         datastore.save(collectionEntity);
     }

@@ -47,11 +47,11 @@ public interface CrudDao<E extends BaseEntity<ID>, ID extends Serializable> {
     List<E> findAll();
 
     /**
-     * Saves the given entity.
+     * Saves or updates the given entity.
      *  
      * @param entity an entity.
      */
-    void save(E entity);
+    void saveOrUpdate(E entity);
 
     /**
      * Deletes an entity by id.

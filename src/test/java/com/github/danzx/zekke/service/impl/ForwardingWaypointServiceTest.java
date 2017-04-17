@@ -41,7 +41,7 @@ public class ForwardingWaypointServiceTest {
     public void shouldForwardPersistCall() {
         Waypoint w = new Waypoint();
         service.persist(w);
-        verify(dao).save(w);
+        verify(dao).saveOrUpdate(w);
     }
 
     @Test
@@ -59,11 +59,32 @@ public class ForwardingWaypointServiceTest {
     }
 
     @Test
+    public void shouldForwardFindAllCall() {
+        service.findAll();
+        verify(dao).findAll();
+    }
+
+    @Test
+    public void shouldForwardFindPoiByIdCall() {
+        long id = 7;
+        service.findPoiById(id);
+        verify(dao).findPoiById(id);
+    }
+
+    @Test
     public void shouldForwardFindNearestCall() {
         Coordinates location = Coordinates.ofLatLng(21.34746, -23.5468);
         int maxDistance = 5;
         service.findNearest(location, maxDistance);
         verify(dao).findNearest(location, maxDistance);
+    }
+
+    @Test
+    public void shouldForwardFindNearestPoiNameCall() {
+        Coordinates location = Coordinates.ofLatLng(21.34746, -23.5468);
+        int maxDistance = 5;
+        service.findNearestPoiName(location, maxDistance);
+        verify(dao).findNearestPoiName(location, maxDistance);
     }
 
     @Test
@@ -86,7 +107,7 @@ public class ForwardingWaypointServiceTest {
         String name = "xx";
         Coordinates bottomLeftCoordinates = Coordinates.ofLatLng(21.34746, -23.5468);
         Coordinates upperRightCoordinates = Coordinates.ofLatLng(57.34746, -79.5468);
-        service.findNamesWithinBoxLike(name, bottomLeftCoordinates, upperRightCoordinates);
-        verify(dao).findNamesWithinBoxLike(name, bottomLeftCoordinates, upperRightCoordinates);
+        service.findPoiNamesWithinBoxLike(name, bottomLeftCoordinates, upperRightCoordinates);
+        verify(dao).findPoiNamesWithinBoxLike(name, bottomLeftCoordinates, upperRightCoordinates);
     }
 }

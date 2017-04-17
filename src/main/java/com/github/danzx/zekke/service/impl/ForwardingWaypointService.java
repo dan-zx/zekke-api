@@ -46,7 +46,7 @@ public class ForwardingWaypointService implements WaypointService {
 
     @Override
     public void persist(Waypoint waypoint) {
-        dao.save(waypoint);
+        dao.saveOrUpdate(waypoint);
     }
 
     @Override
@@ -56,8 +56,23 @@ public class ForwardingWaypointService implements WaypointService {
     }
 
     @Override
+    public List<Waypoint> findAll() {
+        return dao.findAll();
+    }
+
+    @Override
+    public Optional<Waypoint> findPoiById(long id) {
+        return dao.findPoiById(id);
+    }
+
+    @Override
     public Optional<Waypoint> findNearest(Coordinates location, int maxDistance) {
         return dao.findNearest(location, maxDistance);
+    }
+
+    @Override
+    public Optional<String> findNearestPoiName(Coordinates location, int maxDistance) {
+        return dao.findNearestPoiName(location, maxDistance);
     }
 
     @Override
@@ -71,7 +86,7 @@ public class ForwardingWaypointService implements WaypointService {
     }
 
     @Override
-    public List<String> findNamesWithinBoxLike(String name, Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates) {
-        return dao.findNamesWithinBoxLike(name, bottomLeftCoordinates, upperRightCoordinates);
+    public List<String> findPoiNamesWithinBoxLike(String name, Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates) {
+        return dao.findPoiNamesWithinBoxLike(name, bottomLeftCoordinates, upperRightCoordinates);
     }
 }

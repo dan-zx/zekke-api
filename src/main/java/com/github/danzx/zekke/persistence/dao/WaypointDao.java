@@ -31,6 +31,14 @@ import com.github.danzx.zekke.domain.Waypoint;
 public interface WaypointDao extends CrudDao<Waypoint, Long> {
 
     /**
+     * Finds a POI by the given id.
+     * 
+     * @param id an id.
+     * @return an optional Waypoint.
+     */
+    Optional<Waypoint> findPoiById(long id);
+
+    /**
      * Finds the nearest Waypoint to given location.
      * 
      * @param location a location.
@@ -39,6 +47,16 @@ public interface WaypointDao extends CrudDao<Waypoint, Long> {
      * @return an optional Waypoint.
      */
     Optional<Waypoint> findNearest(Coordinates location, int maxDistance);
+
+    /**
+     * Finds the nearest POI name to given location.
+     * 
+     * @param location a location.
+     * @param maxDistance limits the results to those Waypoints that are at most the specified
+     *        distance from the location (meters).
+     * @return an optional name.
+     */
+    Optional<String> findNearestPoiName(Coordinates location, int maxDistance);
 
     /**
      * Finds the POIs by a name similar to given.
@@ -67,5 +85,5 @@ public interface WaypointDao extends CrudDao<Waypoint, Long> {
      * @param upperRightPoint the upper right coordinates.
      * @return a list of POI names or an empty list.
      */
-    List<String> findNamesWithinBoxLike(String name, Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates);
+    List<String> findPoiNamesWithinBoxLike(String name, Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates);
 }
