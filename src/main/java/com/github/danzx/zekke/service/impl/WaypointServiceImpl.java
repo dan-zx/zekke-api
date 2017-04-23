@@ -22,12 +22,13 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import com.github.danzx.zekke.domain.Coordinates;
+import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.persistence.dao.WaypointDao;
 import com.github.danzx.zekke.service.ServiceException;
 import com.github.danzx.zekke.service.WaypointService;
+
 import org.springframework.stereotype.Service;
 
 /**
@@ -76,7 +77,7 @@ public class WaypointServiceImpl implements WaypointService {
     public List<Waypoint> findWaypoints(WaypointsQuery query) {
         requireNonNull(query);
         return query.getBoundingBox()
-            .map(bbox -> dao.findWithinBox(bbox[0], bbox[1], query.getWaypointType(), query.getNameQuery(), false))
+            .map(bbox -> dao.findWithinBox(bbox, query.getWaypointType(), query.getNameQuery(), false))
             .orElse(dao.findOptionallyByTypeAndNameQuery(query.getWaypointType(), query.getNameQuery()));
     }
 
@@ -87,7 +88,7 @@ public class WaypointServiceImpl implements WaypointService {
     }
 
     @Override
-    public List<Waypoint> findPoisForNameCompletion(Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates, Optional<String> nameQuery) {
-        return dao.findWithinBox(requireNonNull(bottomLeftCoordinates), requireNonNull(upperRightCoordinates), Optional.of(Type.POI), nameQuery, true);
+    public List<Waypoint> findPoisForNameCompletion(BoundingBox bbox, Optional<String> nameQuery) {
+        return dao.findWithinBox(requireNonNull(bbox), Optional.of(Type.POI), nameQuery, true);
     }
 }

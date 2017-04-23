@@ -21,6 +21,7 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Optional;
 
+import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
@@ -121,11 +122,14 @@ public class WaypointServiceImplTest extends BaseMockitoTest {
 
     @Test 
     public void shouldForwardToFindWithinBoxWhenFindWaypointsHasBbox() {
+        Coordinates c1 = Coordinates.ofLatLng(12.24, 53.545);
+        Coordinates c2 = Coordinates.ofLatLng(21.45, 37.5);
+        BoundingBox bbox = new BoundingBox(c1, c2);
         WaypointsQuery query = new WaypointsQuery.Builder()
-                .withinBoundingBox(Coordinates.ofLatLng(12.24, 53.545), Coordinates.ofLatLng(21.45, 37.5))
+                .withinBoundingBox(bbox)
                 .build();
         service.findWaypoints(query);
-        verify(dao).findWithinBox(query.getBoundingBox().get()[0], query.getBoundingBox().get()[1], query.getWaypointType(), query.getNameQuery(), false);
+        verify(dao).findWithinBox(bbox, query.getWaypointType(), query.getNameQuery(), false);
     }
 
     @Test 
@@ -146,7 +150,8 @@ public class WaypointServiceImplTest extends BaseMockitoTest {
     public void shouldForwardToFindWithinBoxWhenFindPoisForNameCompletion() {
         Coordinates c1 = Coordinates.ofLatLng(12.24, 53.545);
         Coordinates c2 = Coordinates.ofLatLng(21.45, 37.5);
-        service.findPoisForNameCompletion(c1, c2, Optional.empty());
-        verify(dao).findWithinBox(c1, c2, Optional.of(Type.POI), Optional.empty(), true);
+        BoundingBox bbox = new BoundingBox(c1, c2);
+        service.findPoisForNameCompletion(bbox, Optional.empty());
+        verify(dao).findWithinBox(bbox, Optional.of(Type.POI), Optional.empty(), true);
     }
 }

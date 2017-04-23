@@ -18,6 +18,7 @@ package com.github.danzx.zekke.persistence.dao;
 import java.util.List;
 import java.util.Optional;
 
+import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
@@ -63,13 +64,12 @@ public interface WaypointDao extends CrudDao<Waypoint, Long> {
      * left and top right corners of the rectangle. Optionally, this list can be filtered by
      * {@link Type} and name containing a string.
      * 
-     * @param bottomLeftCoordinates the bottom left coordinates.
-     * @param upperRightCoordinates the upper right coordinates.
+     * @param bbox the bounding box.
      * @param waypointType the desired waypoint type.
      * @param nameQuery a partial POI name. If specified the paramater waypointType will be ignored
      *        and use POI instead
      * @param onlyIdAndName if only retrieve the id and the name of the waypoints.
      * @return a list of waypoints or an empty list.
      */
-    List<Waypoint> findWithinBox(Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates, Optional<Type> waypointType, Optional<String> nameQuery, boolean onlyIdAndName);
+    List<Waypoint> findWithinBox(BoundingBox bbox, Optional<Type> waypointType, Optional<String> nameQuery, boolean onlyIdAndName);
 }

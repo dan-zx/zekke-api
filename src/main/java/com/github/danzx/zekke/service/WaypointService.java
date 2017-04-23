@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.github.danzx.zekke.base.Buildable;
+import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
@@ -68,10 +69,11 @@ public interface WaypointService extends PersistentService<Waypoint> {
     /**
      * Finds all POIs with only its id and name initialized matching the given query.
      * 
-     * @param query a query.
+     * @param bbox the a rectangle bound.
+     * @param nameQuery a name query.
      * @return a list of waypoints or an empty list.
      */
-    List<Waypoint> findPoisForNameCompletion(Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates, Optional<String> nameQuery);
+    List<Waypoint> findPoisForNameCompletion(BoundingBox bbox, Optional<String> nameQuery);
 
     class WaypointsQuery {
         private final Builder builder;
@@ -80,7 +82,7 @@ public interface WaypointService extends PersistentService<Waypoint> {
             this.builder = builder;
         }
 
-        public Optional<Coordinates[]> getBoundingBox() {
+        public Optional<BoundingBox> getBoundingBox() {
             return builder.boundingBox;
         }
 
@@ -93,7 +95,7 @@ public interface WaypointService extends PersistentService<Waypoint> {
         }
 
         public static class Builder implements Buildable<WaypointsQuery> {
-            private Optional<Coordinates[]> boundingBox;
+            private Optional<BoundingBox> boundingBox;
             private Optional<String> nameQuery;
             private Optional<Type> waypointType;
 
@@ -103,10 +105,8 @@ public interface WaypointService extends PersistentService<Waypoint> {
                 waypointType = Optional.empty();
             }
 
-            public Builder withinBoundingBox(Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates) {
-                if (bottomLeftCoordinates != null && upperRightCoordinates != null) {
-                    boundingBox = Optional.of(new Coordinates[] {bottomLeftCoordinates, upperRightCoordinates});
-                }
+            public Builder withinBoundingBox(BoundingBox bbox) {
+                boundingBox = Optional.ofNullable(bbox);
                 return this;
             }
 

@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
+import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
@@ -85,12 +86,13 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
     }
 
     @Override
-    public List<Waypoint> findWithinBox(Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates, Optional<Type> waypointType, Optional<String> nameQuery, boolean onlyIdAndName) {
+    public List<Waypoint> findWithinBox(BoundingBox bbox, Optional<Type> waypointType, Optional<String> nameQuery, boolean onlyIdAndName) {
+        requireNonNull(bbox);
         Query<Waypoint> query = createQuery();
         query.criteria(Fields.Waypoint.LOCATION)
             .within(Shape.box(
-                    toShapePoint(requireNonNull(bottomLeftCoordinates)), 
-                    toShapePoint(requireNonNull(upperRightCoordinates))
+                    toShapePoint(bbox.getBottomLeftCoordinates()), 
+                    toShapePoint(bbox.getUpperRightCoordinates())
                 )
         );
         if (nameQuery.isPresent()) {
