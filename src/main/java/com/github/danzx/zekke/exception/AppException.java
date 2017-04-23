@@ -22,6 +22,7 @@ import static com.github.danzx.zekke.util.Strings.requireNonBlank;
 import java.util.Locale;
 import java.util.Optional;
 
+import com.github.danzx.zekke.base.Buildable;
 import com.github.danzx.zekke.util.Messages;
 
 /**
@@ -62,7 +63,7 @@ public abstract class AppException extends RuntimeException {
      * @param <E> exception type.
      * @author Daniel Pedraza-Arcega
      */
-    public static abstract class BaseAppExceptionBuilder<E extends AppException> {
+    public static abstract class BaseAppExceptionBuilder<E extends AppException> implements Buildable<E> {
 
         private String message;
         private Optional<String> messageKey;
