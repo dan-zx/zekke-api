@@ -41,13 +41,12 @@ public class WaypointServiceImpl implements WaypointService {
     private final WaypointDao dao;
 
     public @Inject WaypointServiceImpl(WaypointDao dao) {
-        requireNonNull(dao, "DAO shouldn't be null in order to access and persist Waypoints");
-        this.dao = dao;
+        this.dao = requireNonNull(dao);
     }
 
     @Override
     public void persist(Waypoint waypoint) {
-        requireNonNull(waypoint, "waypoint shouldn't be null in order to be persisted");
+        requireNonNull(waypoint);
         requireNonNull(waypoint.getType(), "Waypoint must have a type");
         requireNonNull(waypoint.getLocation(), "Waypoint must have a location");
         if (waypoint.getType() == Type.POI && !waypoint.getName().isPresent()) {
@@ -65,8 +64,7 @@ public class WaypointServiceImpl implements WaypointService {
 
     @Override
     public void delete(Waypoint waypoint) {
-        requireNonNull(waypoint, "waypoint shouldn't be null in order to be deleted");
-        dao.deleteById(waypoint.getId());
+        dao.deleteById(requireNonNull(waypoint).getId());
     }
 
     @Override
@@ -76,7 +74,7 @@ public class WaypointServiceImpl implements WaypointService {
 
     @Override
     public List<Waypoint> findWaypoints(WaypointsQuery query) {
-        requireNonNull(query, "Query shouldn't be null in order to find waypoints");
+        requireNonNull(query);
         return query.getBoundingBox()
             .map(bbox -> dao.findWithinBox(bbox[0], bbox[1], query.getWaypointType(), query.getNameQuery(), false))
             .orElse(dao.findOptionallyByTypeAndNameQuery(query.getWaypointType(), query.getNameQuery()));
@@ -84,12 +82,12 @@ public class WaypointServiceImpl implements WaypointService {
 
     @Override
     public List<Waypoint> findNearWaypoints(NearWaypointsQuery query) {
-        requireNonNull(query, "Query shouldn't be null in order to find waypoints");
+        requireNonNull(query);
         return dao.findNear(query.getLocation(), query.getMaxDistance(), query.getLimit(), query.getWaypointType());
     }
 
     @Override
     public List<Waypoint> findPoisForNameCompletion(Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates, Optional<String> nameQuery) {
-        return dao.findWithinBox(bottomLeftCoordinates, upperRightCoordinates, Optional.of(Type.POI), nameQuery, true);
+        return dao.findWithinBox(requireNonNull(bottomLeftCoordinates), requireNonNull(upperRightCoordinates), Optional.of(Type.POI), nameQuery, true);
     }
 }

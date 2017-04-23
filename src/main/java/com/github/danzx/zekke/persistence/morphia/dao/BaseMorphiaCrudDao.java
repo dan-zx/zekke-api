@@ -46,31 +46,26 @@ public abstract class BaseMorphiaCrudDao<E extends BaseEntity<ID>, ID extends Se
      * @param collectionClass a non null class matching the type of this DAO.
      */
     protected BaseMorphiaCrudDao(Datastore datastore, Class<E> collectionClass) {
-        requireNonNull(datastore, "Datastore shouldn't be null in order to access collections");
-        requireNonNull(collectionClass, "Collection class shouldn't be null in order to access collections");
-        this.datastore = datastore;
-        this.collectionClass = collectionClass;
+        this.datastore = requireNonNull(datastore);
+        this.collectionClass = requireNonNull(collectionClass);
     }
 
     /** {@inheritDoc} */
     @Override
     public void saveOrUpdate(E collectionEntity) {
-        requireNonNull(collectionEntity, "Entity shouldn't be null in order to be saved");
-        datastore.save(collectionEntity);
+        datastore.save(requireNonNull(collectionEntity));
     }
 
     /** {@inheritDoc} */
     @Override
     public void deleteById(ID id) {
-        requireNonNull(id, "Id shouldn't be null in order delete an entity");
-        datastore.delete(collectionClass, id);
+        datastore.delete(collectionClass, requireNonNull(id));
     }
 
     /** {@inheritDoc} */
     @Override
     public Optional<E> findById(ID id) {
-        requireNonNull(id, "Id shouldn't be null in order get an entity");
-        return Optional.ofNullable(createQuery().field(Fields.Common.ID).equal(id).get());
+        return Optional.ofNullable(createQuery().field(Fields.Common.ID).equal(requireNonNull(id)).get());
     }
 
     /** {@inheritDoc} */

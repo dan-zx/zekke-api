@@ -17,6 +17,7 @@ package com.github.danzx.zekke.util;
 
 import static java.lang.Character.toLowerCase;
 import static java.lang.Character.toUpperCase;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Various string utilities.
@@ -49,13 +50,27 @@ public class Strings {
      * Checks that the specified string is not blank.
      *
      * @param s the string to check.
-     * @param message detail message to be used in the event that an exception is thrown
+     * @return the given string if not null or blank.
      * @throws NullPointerException when the string is null.
      * @throws IllegalArgumentException when the string is blank.
      */
-    public static void requireNonBlank(String s, String message) {
-        if (s == null) throw new NullPointerException(message);
-        if (s.trim().isEmpty()) throw new IllegalArgumentException(message);
+    public static String requireNonBlank(String s) {
+        if (requireNonNull(s).trim().isEmpty()) throw new IllegalArgumentException();
+        return s;
+    }
+
+    /**
+     * Checks that the specified string is not blank.
+     *
+     * @param s the string to check.
+     * @param message detail message to be used in the event that an exception is thrown.
+     * @return the given string if not null or blank.
+     * @throws NullPointerException when the string is null.
+     * @throws IllegalArgumentException when the string is blank.
+     */
+    public static String requireNonBlank(String s, String message) {
+        if (requireNonNull(s, message).trim().isEmpty()) throw new IllegalArgumentException(message);
+        return s;
     }
 
     /** 

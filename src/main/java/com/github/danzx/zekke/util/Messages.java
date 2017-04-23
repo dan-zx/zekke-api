@@ -77,12 +77,11 @@ public class Messages {
      * given key formatted with the given format arguments.
      */
     public static String getMessage(String messageKey, Locale locale, Object... messageArguments) {
-        requireNonBlank(messageKey, "messageKey shouldn't be null in order to retrieve a message");
-        requireNonNull(locale, "locale shouldn't be null in order to retrieve the correct message");
+        requireNonBlank(messageKey);
         if (messageArguments == null) messageArguments = new Object[0];
         String message;
         try {
-            message = getMessagesBundle(locale).getString(messageKey);
+            message = getMessagesBundle(requireNonNull(locale)).getString(messageKey);
         } catch (MissingResourceException ex) {
             LOGGER.warn("Can't find message for key: [{}]", messageKey, ex);
             return String.format(MISSING_RESOURCE_KEY_FORMAT, messageKey);

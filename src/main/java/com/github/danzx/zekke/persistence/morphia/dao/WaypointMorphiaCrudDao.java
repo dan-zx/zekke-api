@@ -50,13 +50,12 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
 
     public @Inject WaypointMorphiaCrudDao(Datastore datastore, MongoSequenceManager sequenceManager) {
         super(datastore, Waypoint.class);
-        requireNonNull(sequenceManager, "sequenceManager shouldn't be null in order set ids to waypoints");
-        this.sequenceManager = sequenceManager;
+        this.sequenceManager = requireNonNull(sequenceManager);
     }
 
     @Override
     public void saveOrUpdate(Waypoint waypoint) {
-        requireNonNull(waypoint, "waypoint shouldn't be null in order to be saved");
+        requireNonNull(waypoint);
         if (waypoint.getId() == null) {
             long id = sequenceManager.getNextSequenceValue(MongoSequence.WAYPOINT_ID);
             waypoint.setId(id);
@@ -75,11 +74,10 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
     @Override
     @SuppressWarnings("deprecation")
     public List<Waypoint> findNear(Coordinates location, Optional<Integer> maxDistance, Optional<Integer> limit, Optional<Type> waypointType) {
-        requireNonNull(location, "location shouldn't be null in find a waypoint");
         Query<Waypoint> query = createQuery()
                 .field(Fields.Waypoint.LOCATION)
                 // A NullPointerException is thrown here but it seems to be working anyways WTF?
-                .near(location.toGeoJsonPoint(), maxDistance.orElse(DEFAULT_MAX_DISTANCE))
+                .near(requireNonNull(location).toGeoJsonPoint(), maxDistance.orElse(DEFAULT_MAX_DISTANCE))
                 // Deprecated but I don't now what other options can be used.
                 .limit(limit.orElse(NO_LIMIT));
         waypointType.ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));
@@ -88,11 +86,12 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
 
     @Override
     public List<Waypoint> findWithinBox(Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates, Optional<Type> waypointType, Optional<String> nameQuery, boolean onlyIdAndName) {
-        requireNonNull(bottomLeftCoordinates, "bottomLeftCoordinates shouldn't be null in order to find Waypoints");
-        requireNonNull(upperRightCoordinates, "upperRightCoordinates shouldn't be null in order to find Waypoints");
         Query<Waypoint> query = createQuery();
         query.criteria(Fields.Waypoint.LOCATION)
-            .within(Shape.box(toShapePoint(bottomLeftCoordinates), toShapePoint(upperRightCoordinates))
+            .within(Shape.box(
+                    toShapePoint(requireNonNull(bottomLeftCoordinates)), 
+                    toShapePoint(requireNonNull(upperRightCoordinates))
+                )
         );
         if (nameQuery.isPresent()) {
             query.and(

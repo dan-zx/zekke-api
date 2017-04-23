@@ -56,6 +56,17 @@ public class StringsTest {
 
     @Test
     @Parameters(source = BlankStringProvider.class)
+    public void shouldThrowIllegalArgumentExceptionWhenRequireNonBlankWithoutMessage(String blankString) {
+        assertThatThrownBy(() -> requireNonBlank(blankString)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void shouldThrowNullPointerExceptionWhenRequireNonNullWithoutMessage() {
+        assertThatThrownBy(() -> requireNonBlank(null)).isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    @Parameters(source = BlankStringProvider.class)
     public void shouldThrowIllegalArgumentExceptionWhenRequireNonBlank(String blankString) {
         assertThatThrownBy(() -> requireNonBlank(blankString, "message")).isInstanceOf(IllegalArgumentException.class);
     }

@@ -15,6 +15,8 @@
  */
 package com.github.danzx.zekke.domain;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
@@ -63,8 +65,7 @@ public class Waypoint extends BaseEntity<Long> {
     }
 
     public void setType(Type type) {
-        Objects.requireNonNull(type, "type cannot be null");
-        this.type = type;
+        this.type = requireNonNull(type);
     }
 
     public Coordinates getLocation() {
@@ -72,8 +73,7 @@ public class Waypoint extends BaseEntity<Long> {
     }
 
     public void setLocation(Coordinates location) {
-        Objects.requireNonNull(location, "location cannot be null");
-        this.location = location.toGeoJsonPoint();
+        this.location = requireNonNull(location).toGeoJsonPoint();
     }
 
     public Set<Path> getPaths() {

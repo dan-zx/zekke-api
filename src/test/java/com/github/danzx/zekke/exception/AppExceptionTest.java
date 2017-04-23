@@ -107,12 +107,6 @@ public class AppExceptionTest {
         assertThatThrownBy(() -> new TestAppException.Builder().message(null)).isInstanceOf(NullPointerException.class);
     }
 
-    @Test
-    public void shouldThrowNullPointerExceptionWhenLocaleIsNull() {
-        TestAppException ex = new TestAppException.Builder().build();
-        assertThatThrownBy(() -> ex.getMessage(null)).isInstanceOf(NullPointerException.class);
-    }
-
     private static class TestAppException extends AppException {
 
         private static final long serialVersionUID = 1L;
