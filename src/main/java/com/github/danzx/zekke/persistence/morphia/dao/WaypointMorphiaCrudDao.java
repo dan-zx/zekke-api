@@ -16,7 +16,6 @@
 package com.github.danzx.zekke.persistence.morphia.dao;
 
 import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +44,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> implements WaypointDao {
 
+    private static final int NO_LIMIT = 0;
+
     private final MongoSequenceManager sequenceManager;
 
     public @Inject WaypointMorphiaCrudDao(Datastore datastore, MongoSequenceManager sequenceManager) {
@@ -64,82 +65,43 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
     }
 
     @Override
-    public Optional<Waypoint> findPoiById(long id) {
+    public List<Waypoint> findOptionallyByTypeAndNameQuery(Optional<Type> waypointType, Optional<String> nameQuery) {
         Query<Waypoint> query = createQuery();
-        query.and(
-            query.criteria(Fields.Common.ID).equal(id),
-            query.criteria(Fields.Waypoint.TYPE).equal(Type.POI)
-        );
-        return Optional.ofNullable(query.get());
+        waypointType.ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));
+        nameQuery.ifPresent(name -> query.criteria(Fields.Waypoint.NAME).containsIgnoreCase(name));
+        return query.asList();
     }
 
     @Override
-    public Optional<String> findNearestPoiName(Coordinates location, int maxDistance) {
-        requireNonNull(location, "location shouldn't be null in find a waypoint name");
-        return Optional.ofNullable(
-                createQuery()
-                    .field(Fields.Waypoint.LOCATION)
-                     // A NullPointerException is thrown here but it seems to be working anyways WTF?
-                    .near(location.toGeoJsonPoint(), maxDistance)
-                    .project(Fields.Waypoint.NAME, true)
-                    .get()
-                ).flatMap(Waypoint::getName);
-    }
-
-    @Override
-    public Optional<Waypoint> findNearest(Coordinates location, int maxDistance) {
+    @SuppressWarnings("deprecation")
+    public List<Waypoint> findNear(Coordinates location, Optional<Integer> maxDistance, Optional<Integer> limit, Optional<Type> waypointType) {
         requireNonNull(location, "location shouldn't be null in find a waypoint");
-        return Optional.ofNullable(
-                createQuery()
-                    .field(Fields.Waypoint.LOCATION)
-                     // A NullPointerException is thrown here but it seems to be working anyways WTF?
-                    .near(location.toGeoJsonPoint(), maxDistance)
-                    .get());
-    }
-
-    @Override
-    public List<Waypoint> findPoisByNameLike(String name) {
-        requireNonNull(name, "name shouldn't be null in find a POI");
-        Query<Waypoint> query = createQuery();
-        query.and(
-            query.criteria(Fields.Waypoint.TYPE).equal(Type.POI),
-            query.criteria(Fields.Waypoint.NAME).containsIgnoreCase(name)
-        );
+        Query<Waypoint> query = createQuery()
+                .field(Fields.Waypoint.LOCATION)
+                // A NullPointerException is thrown here but it seems to be working anyways WTF?
+                .near(location.toGeoJsonPoint(), maxDistance.orElse(DEFAULT_MAX_DISTANCE))
+                // Deprecated but I don't now what other options can be used.
+                .limit(limit.orElse(NO_LIMIT));
+        waypointType.ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));
         return query.asList();
     }
 
     @Override
-    public List<Waypoint> findPoisWithinBox(Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates) {
-        requireNonNull(bottomLeftCoordinates, "bottomLeftCoordinates shouldn't be null in order to find POIs");
-        requireNonNull(upperRightCoordinates, "upperRightCoordinates shouldn't be null in order to find POIs");
+    public List<Waypoint> findWithinBox(Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates, Optional<Type> waypointType, Optional<String> nameQuery, boolean onlyIdAndName) {
+        requireNonNull(bottomLeftCoordinates, "bottomLeftCoordinates shouldn't be null in order to find Waypoints");
+        requireNonNull(upperRightCoordinates, "upperRightCoordinates shouldn't be null in order to find Waypoints");
         Query<Waypoint> query = createQuery();
-        query.and(
-            query.criteria(Fields.Waypoint.TYPE).equal(Type.POI),
-            query.criteria(Fields.Waypoint.LOCATION).within(
-                    Shape.box(toShapePoint(bottomLeftCoordinates), toShapePoint(upperRightCoordinates)))
+        query.criteria(Fields.Waypoint.LOCATION)
+            .within(Shape.box(toShapePoint(bottomLeftCoordinates), toShapePoint(upperRightCoordinates))
         );
+        if (nameQuery.isPresent()) {
+            query.and(
+                query.criteria(Fields.Waypoint.NAME).containsIgnoreCase(nameQuery.get()),
+                query.criteria(Fields.Waypoint.TYPE).equal(Type.POI)
+            );
+        } else waypointType.ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));
+        if (onlyIdAndName) query.project(Fields.Waypoint.NAME, true);
         return query.asList();
-    }
-
-    @Override
-    public List<String> findPoiNamesWithinBoxLike(String name, Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates) {
-        requireNonNull(name, "name shouldn't be null in find POI names");
-        requireNonNull(bottomLeftCoordinates, "bottomLeftCoordinates shouldn't be null in order to find POI names");
-        requireNonNull(upperRightCoordinates, "upperRightCoordinates shouldn't be null in order to find POI names");
-        Query<Waypoint> query = createQuery();
-        query.and(
-                query.criteria(Fields.Waypoint.TYPE).equal(Type.POI),
-                query.criteria(Fields.Waypoint.NAME).containsIgnoreCase(name),
-                query.criteria(Fields.Waypoint.LOCATION).within(
-                    Shape.box(toShapePoint(bottomLeftCoordinates), toShapePoint(upperRightCoordinates)))
-                );
-        return query
-                .project(Fields.Waypoint.NAME, true)
-                .asList()
-                .stream()
-                    .map(Waypoint::getName)
-                    .map(Optional::get) // Should be safe because all POIs should have name
-                    .collect(toList());
     }
 
     private Shape.Point toShapePoint(Coordinates coordinates) {

@@ -15,10 +15,6 @@
  */
 package com.github.danzx.zekke.service;
 
-import java.util.List;
-import java.util.Optional;
-
-import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
 
 /**
@@ -28,68 +24,4 @@ import com.github.danzx.zekke.domain.Waypoint;
  */
 public interface WaypointService extends PersistentService<Waypoint> {
 
-    /**
-     * Finds all waypoints.
-     * 
-     * @return a list of waypoints or an empty list.
-     */
-    List<Waypoint> findAll();
-
-    /**
-     * Finds a POI by the given id.
-     * 
-     * @param id an id.
-     * @return an optional Waypoint.
-     */
-    Optional<Waypoint> findPoiById(long id);
-
-    
-    /**
-     * Finds the nearest Waypoint to given location.
-     * 
-     * @param location a location.
-     * @param maxDistance limits the results to those Waypoints that are at most the specified
-     *        distance from the location (meters).
-     * @return an optional Waypoint.
-     */
-    Optional<Waypoint> findNearest(Coordinates location, int maxDistance);
-
-    /**
-     * Finds the nearest POI name to given location.
-     * 
-     * @param location a location.
-     * @param maxDistance limits the results to those Waypoints that are at most the specified
-     *        distance from the location (meters).
-     * @return an optional name.
-     */
-    Optional<String> findNearestPoiName(Coordinates location, int maxDistance);
-
-    /**
-     * Finds the POIs by a name similar to given.
-     * 
-     * @param name a partial name.
-     * @return a list of POIs or an empty list.
-     */
-    List<Waypoint> findPoisByNameLike(String name);
-
-    /**
-     * Finds the POIs that are within the bounds of a rectangle, you must specify the bottom left
-     * and top right corners of the rectangle.
-     * 
-     * @param bottomLeftCoordinates the bottom left coordinates.
-     * @param upperRightCoordinates the upper right coordinates.
-     * @return a list of POIs or an empty list.
-     */
-    List<Waypoint> findPoisWithinBox(Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates);
-
-    /**
-     * Finds the POI names that are within the bounds of a rectangle, you must specify the bottom
-     * left and top right corners of the rectangle.
-     * 
-     * @param name a partial name.
-     * @param bottomLeftPoint the bottom left coordinates.
-     * @param upperRightPoint the upper right coordinates.
-     * @return a list of POI names or an empty list.
-     */
-    List<String> findPoiNamesWithinBoxLike(String name, Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates);
 }

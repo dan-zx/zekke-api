@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
+import com.github.danzx.zekke.domain.Waypoint.Type;
 
 /**
  * Waypoint CRUD DAO.
@@ -30,60 +31,45 @@ import com.github.danzx.zekke.domain.Waypoint;
  */
 public interface WaypointDao extends CrudDao<Waypoint, Long> {
 
-    /**
-     * Finds a POI by the given id.
-     * 
-     * @param id an id.
-     * @return an optional Waypoint.
-     */
-    Optional<Waypoint> findPoiById(long id);
+    /** 500 meters. */
+    int DEFAULT_MAX_DISTANCE = 500;
 
     /**
-     * Finds the nearest Waypoint to given location.
+     * Filters waypoints by type and/or name containing a string.
      * 
-     * @param location a location.
-     * @param maxDistance limits the results to those Waypoints that are at most the specified
-     *        distance from the location (meters).
-     * @return an optional Waypoint.
+     * @param waypointType the desired waypoint type.
+     * @param nameQuery a partial POI name. If specified the paramater waypointType will be ignored
+     *        and use POI instead
+     * @return a list of waypoints or an empty list.
      */
-    Optional<Waypoint> findNearest(Coordinates location, int maxDistance);
+    List<Waypoint> findOptionallyByTypeAndNameQuery(Optional<Type> waypointType, Optional<String> nameQuery);
 
     /**
-     * Finds the nearest POI name to given location.
+     * Finds the nearest waypoints to given location.
      * 
      * @param location a location.
      * @param maxDistance limits the results to those Waypoints that are at most the specified
-     *        distance from the location (meters).
-     * @return an optional name.
+     *        distance from the location (meters). if not present {@value #DEFAULT_MAX_DISTANCE}
+     *        will be used.
+     * @param limit limits the results to the given number, if not present it will return all
+     *        results.
+     * @param waypointType the desired waypoint type.
+     * @return a list of waypoints or an empty list.
      */
-    Optional<String> findNearestPoiName(Coordinates location, int maxDistance);
+    List<Waypoint> findNear(Coordinates location, Optional<Integer> maxDistance, Optional<Integer> limit, Optional<Type> waypointType);
 
     /**
-     * Finds the POIs by a name similar to given.
-     * 
-     * @param name a partial name.
-     * @return a list of POIs or an empty list.
-     */
-    List<Waypoint> findPoisByNameLike(String name);
-
-    /**
-     * Finds the POIs that are within the bounds of a rectangle, you must specify the bottom left
-     * and top right corners of the rectangle.
+     * Finds the waypoints that are within the bounds of a rectangle, you must specify the bottom
+     * left and top right corners of the rectangle. Optionally, this list can be filtered by
+     * {@link Type} and name containing a string.
      * 
      * @param bottomLeftCoordinates the bottom left coordinates.
      * @param upperRightCoordinates the upper right coordinates.
-     * @return a list of POIs or an empty list.
+     * @param waypointType the desired waypoint type.
+     * @param nameQuery a partial POI name. If specified the paramater waypointType will be ignored
+     *        and use POI instead
+     * @param onlyIdAndName if only retrieve the id and the name of the waypoints.
+     * @return a list of waypoints or an empty list.
      */
-    List<Waypoint> findPoisWithinBox(Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates);
-
-    /**
-     * Finds the POI names that are within the bounds of a rectangle, you must specify the bottom
-     * left and top right corners of the rectangle.
-     * 
-     * @param name a partial name.
-     * @param bottomLeftPoint the bottom left coordinates.
-     * @param upperRightPoint the upper right coordinates.
-     * @return a list of POI names or an empty list.
-     */
-    List<String> findPoiNamesWithinBoxLike(String name, Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates);
+    List<Waypoint> findWithinBox(Coordinates bottomLeftCoordinates, Coordinates upperRightCoordinates, Optional<Type> waypointType, Optional<String> nameQuery, boolean onlyIdAndName);
 }

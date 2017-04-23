@@ -57,6 +57,7 @@ public class Strings {
         if (s == null) throw new NullPointerException(message);
         if (s.trim().isEmpty()) throw new IllegalArgumentException(message);
     }
+
     /** 
      * Converts a string in ALL_CAPS into camelCase or CamelCase.
      * 
