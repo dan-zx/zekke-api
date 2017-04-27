@@ -53,19 +53,22 @@ public abstract class BaseMorphiaCrudDao<E extends BaseEntity<ID>, ID extends Se
     /** {@inheritDoc} */
     @Override
     public void saveOrUpdate(E collectionEntity) {
-        datastore.save(requireNonNull(collectionEntity));
+        requireNonNull(collectionEntity);
+        datastore.save(collectionEntity);
     }
 
     /** {@inheritDoc} */
     @Override
     public void deleteById(ID id) {
-        datastore.delete(collectionClass, requireNonNull(id));
+        requireNonNull(id);
+        datastore.delete(collectionClass, id);
     }
 
     /** {@inheritDoc} */
     @Override
     public Optional<E> findById(ID id) {
-        return Optional.ofNullable(createQuery().field(Fields.Common.ID).equal(requireNonNull(id)).get());
+        requireNonNull(id);
+        return Optional.ofNullable(createQuery().field(Fields.Common.ID).equal(id).get());
     }
 
     /** {@inheritDoc} */

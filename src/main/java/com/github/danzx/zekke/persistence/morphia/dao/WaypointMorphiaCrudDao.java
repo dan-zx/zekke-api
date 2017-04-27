@@ -75,10 +75,11 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
     @Override
     @SuppressWarnings("deprecation")
     public List<Waypoint> findNear(Coordinates location, Optional<Integer> maxDistance, Optional<Integer> limit, Optional<Type> waypointType) {
+        requireNonNull(location);
         Query<Waypoint> query = createQuery()
                 .field(Fields.Waypoint.LOCATION)
                 // A NullPointerException is thrown here but it seems to be working anyways WTF?
-                .near(requireNonNull(location).toGeoJsonPoint(), maxDistance.orElse(DEFAULT_MAX_DISTANCE))
+                .near(location.toGeoJsonPoint(), maxDistance.orElse(DEFAULT_MAX_DISTANCE))
                 // Deprecated but I don't now what other options can be used.
                 .limit(limit.orElse(NO_LIMIT));
         waypointType.ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));

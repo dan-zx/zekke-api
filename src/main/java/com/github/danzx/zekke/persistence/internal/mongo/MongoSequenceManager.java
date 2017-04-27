@@ -50,7 +50,9 @@ public class MongoSequenceManager implements SequenceManager {
     private final MongoCollection<Document> sequencesCollection;
     
     public @Inject MongoSequenceManager(MongoClient mongoClient, @Value("${mongodb.db}") String databaseName) {
-        database =  requireNonNull(mongoClient).getDatabase(requireNonBlank(databaseName));
+        requireNonNull(mongoClient);
+        requireNonBlank(databaseName);
+        database =  mongoClient.getDatabase(databaseName);
         sequencesCollection = database.getCollection(COLLECTION_NAME);
     }
 

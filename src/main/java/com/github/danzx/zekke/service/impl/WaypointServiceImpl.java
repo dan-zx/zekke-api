@@ -65,7 +65,8 @@ public class WaypointServiceImpl implements WaypointService {
 
     @Override
     public void delete(Waypoint waypoint) {
-        dao.deleteById(requireNonNull(waypoint).getId());
+        requireNonNull(waypoint);
+        dao.deleteById(waypoint.getId());
     }
 
     @Override
@@ -89,6 +90,7 @@ public class WaypointServiceImpl implements WaypointService {
 
     @Override
     public List<Waypoint> findPoisForNameCompletion(BoundingBox bbox, Optional<String> nameQuery) {
-        return dao.findWithinBox(requireNonNull(bbox), Optional.of(Type.POI), nameQuery, true);
+        requireNonNull(bbox);
+        return dao.findWithinBox(bbox, Optional.of(Type.POI), nameQuery, true);
     }
 }

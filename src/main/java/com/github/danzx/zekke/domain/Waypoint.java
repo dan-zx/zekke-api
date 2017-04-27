@@ -73,7 +73,8 @@ public class Waypoint extends BaseEntity<Long> {
     }
 
     public void setLocation(Coordinates location) {
-        this.location = requireNonNull(location).toGeoJsonPoint();
+        requireNonNull(location);
+        this.location = location.toGeoJsonPoint();
     }
 
     public Set<Path> getPaths() {

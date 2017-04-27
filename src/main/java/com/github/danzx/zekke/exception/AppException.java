@@ -53,8 +53,9 @@ public abstract class AppException extends RuntimeException {
      * @return the localized version of the this exception's message.
      */
     public String getMessage(Locale locale) {
+        requireNonNull(locale);
         return messageKey
-                .map(messageKey -> Messages.getMessage(messageKey, requireNonNull(locale), messageArgs))
+                .map(messageKey -> Messages.getMessage(messageKey, locale, messageArgs))
                 .orElse(getMessage());
     }
 
@@ -78,7 +79,8 @@ public abstract class AppException extends RuntimeException {
 
         /** @param messageKey the key for the desired message. */
         public BaseAppExceptionBuilder<E> messageKey(String messageKey) {
-            this.messageKey = Optional.of(requireNonBlank(messageKey));
+            requireNonBlank(messageKey);
+            this.messageKey = Optional.of(messageKey);
             message = null;
             return this;
         }

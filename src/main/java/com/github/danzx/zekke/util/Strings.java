@@ -55,7 +55,8 @@ public class Strings {
      * @throws IllegalArgumentException when the string is blank.
      */
     public static String requireNonBlank(String s) {
-        if (requireNonNull(s).trim().isEmpty()) throw new IllegalArgumentException();
+        requireNonNull(s);
+        if (s.trim().isEmpty()) throw new IllegalArgumentException();
         return s;
     }
 
@@ -69,7 +70,8 @@ public class Strings {
      * @throws IllegalArgumentException when the string is blank.
      */
     public static String requireNonBlank(String s, String message) {
-        if (requireNonNull(s, message).trim().isEmpty()) throw new IllegalArgumentException(message);
+        requireNonNull(s, message);
+        if (s.trim().isEmpty()) throw new IllegalArgumentException(message);
         return s;
     }
 

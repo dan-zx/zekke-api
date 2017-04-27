@@ -78,10 +78,11 @@ public class Messages {
      */
     public static String getMessage(String messageKey, Locale locale, Object... messageArguments) {
         requireNonBlank(messageKey);
+        requireNonNull(locale);
         if (messageArguments == null) messageArguments = new Object[0];
         String message;
         try {
-            message = getMessagesBundle(requireNonNull(locale)).getString(messageKey);
+            message = getMessagesBundle(locale).getString(messageKey);
         } catch (MissingResourceException ex) {
             LOGGER.warn("Can't find message for key: [{}]", messageKey, ex);
             return String.format(MISSING_RESOURCE_KEY_FORMAT, messageKey);
