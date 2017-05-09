@@ -16,9 +16,11 @@
 package com.github.danzx.zekke.test.mockito;
 
 import org.junit.Rule;
-import org.junit.rules.TestRule;
+
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 public class BaseMockitoTest {
 
-    @Rule public TestRule mockitoInitializerRule = new MockitoInitializerRule(this);
+    @Rule public MockitoRule mockitoInitializerRule = MockitoJUnit.rule();
 }

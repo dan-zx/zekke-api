@@ -24,7 +24,7 @@ public class BlankStringProvider {
                 {Strings.EMPTY},
                 {Strings.BLANK_SPACE},
                 {Strings.NEW_LINE},
-                {Strings.TAB},
+                {Strings.TAB}
         };
     }
 }
