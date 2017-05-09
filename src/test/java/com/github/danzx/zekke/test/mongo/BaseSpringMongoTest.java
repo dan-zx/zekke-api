@@ -18,6 +18,7 @@ import static com.github.danzx.zekke.persistence.internal.mongo.CommonOperators.
 
 import javax.inject.Inject;
 
+import com.github.danzx.zekke.config.MongoDbSettings;
 import com.github.danzx.zekke.persistence.internal.mongo.Fields;
 import com.github.danzx.zekke.test.spring.BaseSpringIntegrationTest;
 
@@ -33,20 +34,17 @@ import org.junit.Before;
 
 import org.mongodb.morphia.Datastore;
 
-import org.springframework.beans.factory.annotation.Value;
-
 public abstract class BaseSpringMongoTest extends BaseSpringIntegrationTest {
 
     @Inject private MongoClient mongoClient;
     @Inject private Datastore datastore;
-
-    @Value("${mongodb.db}") private String databaseName;
+    @Inject private MongoDbSettings mongoSettings;
 
     private MongoDatabase database;
 
     @Before
     public void before() throws Exception {
-        database = mongoClient.getDatabase(databaseName);
+        database = mongoClient.getDatabase(mongoSettings.getDatabase());
         for (DatabaseFunction function : DatabaseFunction.values()) {
             initFunction(database, function);
         }

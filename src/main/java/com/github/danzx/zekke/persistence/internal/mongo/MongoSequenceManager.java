@@ -20,12 +20,12 @@ import static java.util.Objects.requireNonNull;
 import static com.github.danzx.zekke.persistence.internal.mongo.CommonOperators.EVAL;
 import static com.github.danzx.zekke.persistence.internal.mongo.CommonOperators.SET;
 import static com.github.danzx.zekke.persistence.internal.mongo.MongoSequence.COLLECTION_NAME;
-import static com.github.danzx.zekke.util.Strings.requireNonBlank;
 
 import static com.mongodb.client.model.Filters.eq;
 
 import javax.inject.Inject;
 
+import com.github.danzx.zekke.config.MongoDbSettings;
 import com.github.danzx.zekke.persistence.internal.Sequence;
 import com.github.danzx.zekke.persistence.internal.SequenceManager;
 
@@ -35,7 +35,6 @@ import com.mongodb.client.MongoDatabase;
 
 import org.bson.Document;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -49,10 +48,10 @@ public class MongoSequenceManager implements SequenceManager {
     private final MongoDatabase database;
     private final MongoCollection<Document> sequencesCollection;
     
-    public @Inject MongoSequenceManager(MongoClient mongoClient, @Value("${mongodb.db}") String databaseName) {
+    public @Inject MongoSequenceManager(MongoClient mongoClient, MongoDbSettings mongoSettings) {
         requireNonNull(mongoClient);
-        requireNonBlank(databaseName);
-        database =  mongoClient.getDatabase(databaseName);
+        requireNonNull(mongoSettings);
+        database =  mongoClient.getDatabase(mongoSettings.getDatabase());
         sequencesCollection = database.getCollection(COLLECTION_NAME);
     }
 

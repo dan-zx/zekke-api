@@ -15,15 +15,11 @@
  */
 package com.github.danzx.zekke.config;
 
-import com.github.danzx.zekke.domain.Path;
-import com.github.danzx.zekke.domain.Waypoint;
-
 import com.mongodb.MongoClient;
 
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,12 +32,12 @@ import org.springframework.context.annotation.Configuration;
 public class MorphiaConfiguration {
 
     @Bean
-    public Datastore datastore(MongoClient mongoClient, @Value("${mongodb.db}") String database) {
-        return morphia().createDatastore(mongoClient, database);
+    public Datastore datastore(MongoClient mongoClient, MongoDbSettings mongoSettings) {
+        return morphia().createDatastore(mongoClient, mongoSettings.getDatabase());
     }
 
     @Bean
     public Morphia morphia() {
-        return new Morphia().map(Waypoint.class, Path.class);
+        return new Morphia().mapPackage("com.github.danzx.zekke.domain");
     }
 }

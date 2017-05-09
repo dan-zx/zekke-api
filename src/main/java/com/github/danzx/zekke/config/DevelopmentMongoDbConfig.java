@@ -19,13 +19,8 @@ import static java.util.Collections.singletonList;
 
 import static com.github.danzx.zekke.config.Profiles.DEVELOPMENT;
 
-import static com.mongodb.MongoCredential.createCredential;
-
 import com.mongodb.MongoClient;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -40,13 +35,9 @@ import org.springframework.context.annotation.Profile;
 public class DevelopmentMongoDbConfig {
 
     @Bean
-    public MongoClient mongoClient(@Value("${mongodb.host}") String host,
-                                   @Value("${mongodb.port}") Integer port,
-                                   @Value("${mongodb.db}") String database, 
-                                   @Value("${mongodb.db.user}") String userName, 
-                                   @Value("${mongodb.db.password}") String password) {
-        ServerAddress address = new ServerAddress(host, port);
-        MongoCredential credential = createCredential(userName, database, password.toCharArray());
-        return new MongoClient(address, singletonList(credential));
+    public MongoClient mongoClient(MongoDbSettings mongoSettings) {
+        return mongoSettings.getCredential().isPresent() ? 
+                new MongoClient(mongoSettings.getAddress(), singletonList(mongoSettings.getCredential().get())) : 
+                new MongoClient(mongoSettings.getAddress());
     }
 }

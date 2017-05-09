@@ -20,7 +20,9 @@ import java.net.UnknownHostException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 
+import com.github.danzx.zekke.config.MongoDbSettings;
 import com.github.danzx.zekke.test.spring.ForIntegration;
 
 import com.mongodb.MongoClient;
@@ -39,7 +41,6 @@ import de.flapdoodle.embed.process.runtime.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -56,10 +57,9 @@ public class EmbeddedMongo {
     private MongodProcess mongod;
     private MongoClient mongo;
 
-    public EmbeddedMongo(@Value("${mongodb.host}") String bindIp,
-                         @Value("${mongodb.port}") int port) {
-        this.bindIp = bindIp;
-        this.port = port;
+    public @Inject EmbeddedMongo(MongoDbSettings mongoSettings) {
+        bindIp = mongoSettings.getAddress().getHost();
+        port = mongoSettings.getAddress().getPort();
     }
 
     @PostConstruct
