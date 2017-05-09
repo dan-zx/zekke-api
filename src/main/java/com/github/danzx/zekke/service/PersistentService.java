@@ -35,6 +35,7 @@ public interface PersistentService<E> {
      * Deletes the given element from the underlying datastore.
      *  
      * @param element the element to delete.
+     * @return true if the object with given was deleted; otherwise false.
      */
-    void delete(E element);
+    boolean delete(E element);
 }

@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.github.danzx.zekke.persistence.morphia.dao;
+package com.github.danzx.zekke.persistence.dao.morphia;
 
 import static java.util.Objects.requireNonNull;
 
@@ -59,9 +59,10 @@ public abstract class BaseMorphiaCrudDao<E extends BaseEntity<ID>, ID extends Se
 
     /** {@inheritDoc} */
     @Override
-    public void deleteById(ID id) {
+    public boolean deleteById(ID id) {
         requireNonNull(id);
-        datastore.delete(collectionClass, id);
+        int documentsAffected = datastore.delete(collectionClass, id).getN();
+        return documentsAffected > 0;
     }
 
     /** {@inheritDoc} */

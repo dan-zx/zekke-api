@@ -46,18 +46,18 @@ public class Waypoint extends BaseEntity<Long> {
 
     public enum Type {POI, WALKWAY}
 
-    private Optional<String> name = Optional.empty();
+    private String name;
     private Type type;
 
     @Embedded private Point location;
     @Embedded private Set<Path> paths = new HashSet<>();
 
     public Optional<String> getName() {
-        return name;
+        return Optional.ofNullable(name);
     }
 
     public void setName(String name) {
-        this.name = Optional.ofNullable(name);
+        this.name = name;
     }
 
     public Type getType() {
@@ -116,7 +116,7 @@ public class Waypoint extends BaseEntity<Long> {
 
     @Override
     public String toString() {
-        return "{ _id:" + getId() + ", name:" + name.map(Strings::quoted).orElse(null) + 
+        return "{ _id:" + getId() + ", name:" + getName().map(Strings::quoted).orElse(null) + 
                 ", location:" + location + ", type:" + type + ", paths:" + paths + " }";
     }
 }

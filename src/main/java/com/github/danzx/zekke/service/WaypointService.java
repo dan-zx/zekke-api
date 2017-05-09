@@ -15,6 +15,8 @@
  */
 package com.github.danzx.zekke.service;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -73,7 +75,7 @@ public interface WaypointService extends PersistentService<Waypoint> {
      * @param nameQuery a name query.
      * @return a list of waypoints or an empty list.
      */
-    List<Waypoint> findPoisForNameCompletion(BoundingBox bbox, Optional<String> nameQuery);
+    List<Waypoint> findPoisForNameCompletion(BoundingBox bbox, String nameQuery);
 
     class WaypointsQuery {
         private final Builder builder;
@@ -83,40 +85,34 @@ public interface WaypointService extends PersistentService<Waypoint> {
         }
 
         public Optional<BoundingBox> getBoundingBox() {
-            return builder.boundingBox;
+            return Optional.ofNullable(builder.boundingBox);
         }
 
-        public Optional<String> getNameQuery() {
+        public String getNameQuery() {
             return builder.nameQuery;
         }
 
-        public Optional<Type> getWaypointType() {
+        public Type getWaypointType() {
             return builder.waypointType;
         }
 
         public static class Builder implements Buildable<WaypointsQuery> {
-            private Optional<BoundingBox> boundingBox;
-            private Optional<String> nameQuery;
-            private Optional<Type> waypointType;
-
-            public Builder() {
-                boundingBox = Optional.empty();
-                nameQuery = Optional.empty();
-                waypointType = Optional.empty();
-            }
+            private BoundingBox boundingBox;
+            private String nameQuery;
+            private Type waypointType;
 
             public Builder withinBoundingBox(BoundingBox bbox) {
-                boundingBox = Optional.ofNullable(bbox);
+                boundingBox = bbox;
                 return this;
             }
 
-            public Builder andNameContaining(String name) {
-                nameQuery = Optional.ofNullable(name).map(String::trim);
+            public Builder withNameContaining(String name) {
+                nameQuery = Optional.ofNullable(name).map(String::trim).orElse(null);
                 return this;
             }
 
-            public Builder andType(Type waypointType) {
-                this.waypointType = Optional.ofNullable(waypointType);
+            public Builder ofType(Type waypointType) {
+                this.waypointType = waypointType;
                 return this;
             }
 
@@ -138,40 +134,44 @@ public interface WaypointService extends PersistentService<Waypoint> {
             return builder.location;
         }
 
-        public Optional<Integer> getMaxDistance() {
+        public Integer getMaxDistance() {
             return builder.maxDistance;
         }
 
-        public Optional<Integer> getLimit() {
+        public Integer getLimit() {
             return builder.limit;
         }
 
-        public Optional<Type> getWaypointType() {
+        public Type getWaypointType() {
             return builder.waypointType;
         }
 
         public static class Builder implements Buildable<NearWaypointsQuery> {
             private final Coordinates location;
-            private Optional<Integer> maxDistance;
-            private Optional<Integer> limit;
-            private Optional<Type> waypointType;
+            private Integer maxDistance;
+            private Integer limit;
+            private Type waypointType;
 
-            public Builder(Coordinates location) {
-                this.location = location;
+            public static Builder nearLocation(Coordinates location) {
+                return new Builder(location);
             }
 
-            public Builder maximumSearchDistance(int maxDistance) {
-                this.maxDistance = Optional.of(maxDistance);
+            private Builder(Coordinates location) {
+                this.location = requireNonNull(location);
+            }
+
+            public Builder maximumSearchDistance(Integer maxDistance) {
+                this.maxDistance = maxDistance;
                 return this;
             }
 
-            public Builder limitResulsTo(int limit) {
-                if (limit > 0) this.limit = Optional.of(limit);
+            public Builder limitResulsTo(Integer limit) {
+                if (limit != null && limit > 0) this.limit = limit;
                 return this;
             }
 
             public Builder byType(Type waypointType) {
-                this.waypointType = Optional.ofNullable(waypointType);
+                this.waypointType = waypointType;
                 return this;
             }
 

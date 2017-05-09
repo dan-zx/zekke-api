@@ -56,7 +56,8 @@ public interface CrudDao<E extends BaseEntity<ID>, ID extends Serializable> {
     /**
      * Deletes an entity by id.
      *  
-     * @param id an id object..
+     * @param id an id object.
+     * @return true if the object with given was deleted; otherwise false.
      */
-    void deleteById(ID id);
+    boolean deleteById(ID id);
 }

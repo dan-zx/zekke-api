@@ -16,7 +16,6 @@
 package com.github.danzx.zekke.persistence.dao;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Coordinates;
@@ -43,7 +42,7 @@ public interface WaypointDao extends CrudDao<Waypoint, Long> {
      *        and use POI instead
      * @return a list of waypoints or an empty list.
      */
-    List<Waypoint> findOptionallyByTypeAndNameQuery(Optional<Type> waypointType, Optional<String> nameQuery);
+    List<Waypoint> findOptionallyByTypeAndNameQuery(Type waypointType, String nameQuery);
 
     /**
      * Finds the nearest waypoints to given location.
@@ -57,7 +56,7 @@ public interface WaypointDao extends CrudDao<Waypoint, Long> {
      * @param waypointType the desired waypoint type.
      * @return a list of waypoints or an empty list.
      */
-    List<Waypoint> findNear(Coordinates location, Optional<Integer> maxDistance, Optional<Integer> limit, Optional<Type> waypointType);
+    List<Waypoint> findNear(Coordinates location, Integer maxDistance, Integer limit, Type waypointType);
 
     /**
      * Finds the waypoints that are within the bounds of a rectangle, you must specify the bottom
@@ -71,5 +70,5 @@ public interface WaypointDao extends CrudDao<Waypoint, Long> {
      * @param onlyIdAndName if only retrieve the id and the name of the waypoints.
      * @return a list of waypoints or an empty list.
      */
-    List<Waypoint> findWithinBox(BoundingBox bbox, Optional<Type> waypointType, Optional<String> nameQuery, boolean onlyIdAndName);
+    List<Waypoint> findWithinBox(BoundingBox bbox, Type waypointType, String nameQuery, boolean onlyIdAndName);
 }

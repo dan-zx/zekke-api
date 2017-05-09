@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.persistence.morphia.dao;
+package com.github.danzx.zekke.persistence.dao.morphia;
 
 import static java.util.Objects.requireNonNull;
 
@@ -65,30 +65,37 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
     }
 
     @Override
-    public List<Waypoint> findOptionallyByTypeAndNameQuery(Optional<Type> waypointType, Optional<String> nameQuery) {
+    public List<Waypoint> findOptionallyByTypeAndNameQuery(Type waypointType, String nameQuery) {
+        Optional<Type> optionalWaypointType = Optional.ofNullable(waypointType);
+        Optional<String> optionalNameQuery = Optional.ofNullable(nameQuery);
         Query<Waypoint> query = createQuery();
-        waypointType.ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));
-        nameQuery.ifPresent(name -> query.criteria(Fields.Waypoint.NAME).containsIgnoreCase(name));
+        optionalWaypointType.ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));
+        optionalNameQuery.ifPresent(name -> query.criteria(Fields.Waypoint.NAME).containsIgnoreCase(name));
         return query.asList();
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public List<Waypoint> findNear(Coordinates location, Optional<Integer> maxDistance, Optional<Integer> limit, Optional<Type> waypointType) {
+    public List<Waypoint> findNear(Coordinates location, Integer maxDistance, Integer limit, Type waypointType) {
         requireNonNull(location);
+        Optional<Integer> optionalMaxDistance = Optional.ofNullable(maxDistance);
+        Optional<Integer> optionalLimit = Optional.ofNullable(limit);
+        Optional<Type> optionalWaypointType = Optional.ofNullable(waypointType);
         Query<Waypoint> query = createQuery()
                 .field(Fields.Waypoint.LOCATION)
                 // A NullPointerException is thrown here but it seems to be working anyways WTF?
-                .near(location.toGeoJsonPoint(), maxDistance.orElse(DEFAULT_MAX_DISTANCE))
+                .near(location.toGeoJsonPoint(), optionalMaxDistance.orElse(DEFAULT_MAX_DISTANCE))
                 // Deprecated but I don't now what other options can be used.
-                .limit(limit.orElse(NO_LIMIT));
-        waypointType.ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));
+                .limit(optionalLimit.orElse(NO_LIMIT));
+        optionalWaypointType.ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));
         return query.asList();
     }
 
     @Override
-    public List<Waypoint> findWithinBox(BoundingBox bbox, Optional<Type> waypointType, Optional<String> nameQuery, boolean onlyIdAndName) {
+    public List<Waypoint> findWithinBox(BoundingBox bbox, Type waypointType, String nameQuery, boolean onlyIdAndName) {
         requireNonNull(bbox);
+        Optional<Type> optionalWaypointType = Optional.ofNullable(waypointType);
+        Optional<String> optionalNameQuery = Optional.ofNullable(nameQuery);
         Query<Waypoint> query = createQuery();
         query.criteria(Fields.Waypoint.LOCATION)
             .within(Shape.box(
@@ -96,12 +103,12 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
                     toShapePoint(bbox.getUpperRightCoordinates())
                 )
         );
-        if (nameQuery.isPresent()) {
+        if (optionalNameQuery.isPresent()) {
             query.and(
-                query.criteria(Fields.Waypoint.NAME).containsIgnoreCase(nameQuery.get()),
+                query.criteria(Fields.Waypoint.NAME).containsIgnoreCase(optionalNameQuery.get()),
                 query.criteria(Fields.Waypoint.TYPE).equal(Type.POI)
             );
-        } else waypointType.ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));
+        } else optionalWaypointType.ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));
         if (onlyIdAndName) query.project(Fields.Waypoint.NAME, true);
         return query.asList();
     }

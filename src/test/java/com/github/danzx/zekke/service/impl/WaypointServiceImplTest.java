@@ -19,8 +19,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import static org.mockito.Mockito.verify;
 
-import java.util.Optional;
-
 import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
@@ -141,7 +139,7 @@ public class WaypointServiceImplTest extends BaseMockitoTest {
 
     @Test 
     public void shouldForwardToFindNearWhenFindNearWaypoints() {
-        NearWaypointsQuery query = new NearWaypointsQuery.Builder(Coordinates.ofLatLng(12.24, 53.545)).build();
+        NearWaypointsQuery query = NearWaypointsQuery.Builder.nearLocation(Coordinates.ofLatLng(12.24, 53.545)).build();
         service.findNearWaypoints(query);
         verify(dao).findNear(query.getLocation(), query.getMaxDistance(), query.getLimit(), query.getWaypointType());
     }
@@ -151,7 +149,7 @@ public class WaypointServiceImplTest extends BaseMockitoTest {
         Coordinates c1 = Coordinates.ofLatLng(12.24, 53.545);
         Coordinates c2 = Coordinates.ofLatLng(21.45, 37.5);
         BoundingBox bbox = new BoundingBox(c1, c2);
-        service.findPoisForNameCompletion(bbox, Optional.empty());
-        verify(dao).findWithinBox(bbox, Optional.of(Type.POI), Optional.empty(), true);
+        service.findPoisForNameCompletion(bbox, null);
+        verify(dao).findWithinBox(bbox, Type.POI, null, true);
     }
 }
