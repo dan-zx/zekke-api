@@ -37,7 +37,9 @@ public class Coordinates {
     @FloatRange(min = MIN_LATITUDE,  max = MAX_LATITUDE)  private final double latitude;
     @FloatRange(min = MIN_LONGITUDE, max = MAX_LONGITUDE) private final double longitude;
 
-    private Coordinates(double latitude, double longitude) {
+    /** @deprecated in favor of {@link #ofLatLng(double, double)} */
+    @Deprecated
+    public Coordinates(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }

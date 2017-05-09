@@ -15,8 +15,6 @@
  */
 package com.github.danzx.zekke.exception;
 
-import static java.util.Objects.requireNonNull;
-
 import static com.github.danzx.zekke.util.Strings.requireNonBlank;
 
 import java.util.Locale;
@@ -53,9 +51,8 @@ public abstract class AppException extends RuntimeException {
      * @return the localized version of the this exception's message.
      */
     public String getMessage(Locale locale) {
-        requireNonNull(locale);
         return messageKey
-                .map(messageKey -> Messages.getMessage(messageKey, locale, messageArgs))
+                .map(messageKey -> Messages.getMessage(messageKey, locale == null ? Locale.ROOT : locale, messageArgs))
                 .orElse(getMessage());
     }
 
