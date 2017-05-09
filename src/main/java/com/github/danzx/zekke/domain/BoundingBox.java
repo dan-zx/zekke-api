@@ -17,6 +17,8 @@ package com.github.danzx.zekke.domain;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Objects;
+
 /**
  * Contains a bottom left coordinates and upper right coordinates of a rectangle.
  * 
@@ -44,6 +46,24 @@ public class BoundingBox {
 
     public Coordinates getUpperRightCoordinates() {
         return upperRightCoordinates;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(bottomLeftCoordinates, upperRightCoordinates);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        return isBoundingBoxEqualTo((BoundingBox)obj);
+    }
+    
+    protected boolean isBoundingBoxEqualTo(BoundingBox bbox) {
+        return Objects.equals(bottomLeftCoordinates, bbox.bottomLeftCoordinates) &&
+               Objects.equals(upperRightCoordinates, bbox.upperRightCoordinates);
     }
 
     @Override
