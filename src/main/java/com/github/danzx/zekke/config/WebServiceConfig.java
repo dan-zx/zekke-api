@@ -21,7 +21,9 @@ import javax.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.glassfish.jersey.server.ResourceConfig;
+
 import org.springframework.stereotype.Component;
 
 /**

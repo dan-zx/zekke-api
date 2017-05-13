@@ -15,8 +15,9 @@
  */
 package com.github.danzx.zekke.ws.rest.v1;
 
-import static com.github.danzx.zekke.ws.rest.ApiVersions.V_1;
 import static java.util.Objects.requireNonNull;
+
+import static com.github.danzx.zekke.ws.rest.ApiVersions.V_1;
 
 import java.util.List;
 
@@ -46,6 +47,7 @@ import com.github.danzx.zekke.ws.rest.common.Poi;
 import com.github.danzx.zekke.ws.rest.common.TypedWaypoint;
 import com.github.danzx.zekke.ws.rest.common.Walkway;
 import com.github.danzx.zekke.ws.rest.transformer.Transformer;
+
 import org.springframework.stereotype.Component;
 
 /**

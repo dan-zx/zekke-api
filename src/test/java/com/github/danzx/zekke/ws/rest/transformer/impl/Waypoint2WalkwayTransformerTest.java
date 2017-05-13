@@ -17,6 +17,7 @@ package com.github.danzx.zekke.ws.rest.transformer.impl;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;
@@ -28,6 +29,7 @@ import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.ws.rest.common.Walkway;
 import com.github.danzx.zekke.ws.rest.transformer.TransformationException;
+
 import org.junit.Test;
 
 public class Waypoint2WalkwayTransformerTest {

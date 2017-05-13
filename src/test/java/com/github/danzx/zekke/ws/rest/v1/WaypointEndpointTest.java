@@ -16,7 +16,9 @@
 package com.github.danzx.zekke.ws.rest.v1;
 
 import static java.util.Collections.emptyList;
+
 import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -43,8 +45,10 @@ import com.github.danzx.zekke.ws.rest.common.Walkway;
 import com.github.danzx.zekke.ws.rest.transformer.impl.Waypoint2PoiTransformer;
 import com.github.danzx.zekke.ws.rest.transformer.impl.Waypoint2TypedWaypointTransformer;
 import com.github.danzx.zekke.ws.rest.transformer.impl.Waypoint2WalkwayTransformer;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
