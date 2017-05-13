@@ -32,6 +32,7 @@ import com.github.danzx.zekke.persistence.internal.mongo.MongoSequence;
 import com.github.danzx.zekke.persistence.internal.mongo.MongoSequenceManager;
 
 import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.geo.GeoJson;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.Shape;
 
@@ -84,7 +85,7 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
         Query<Waypoint> query = createQuery()
                 .field(Fields.Waypoint.LOCATION)
                 // A NullPointerException is thrown here but it seems to be working anyways WTF?
-                .near(location.toGeoJsonPoint(), optionalMaxDistance.orElse(DEFAULT_MAX_DISTANCE))
+                .near(GeoJson.point(location.getLatitude(), location.getLongitude()), optionalMaxDistance.orElse(DEFAULT_MAX_DISTANCE))
                 // Deprecated but I don't now what other options can be used.
                 .limit(optionalLimit.orElse(NO_LIMIT));
         optionalWaypointType.ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));

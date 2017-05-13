@@ -50,13 +50,13 @@ public class Coordinates {
     }
 
     /** Converts a GeoJson point to a Coordinates object. */
-    public static Coordinates valueOf(Point point) {
+    static Coordinates valueOf(Point point) {
         if (point == null) return null;
         return new Coordinates(point.getLatitude(), point.getLongitude());
     }
 
     /** Converts this object to a GeoJson point. */
-    public Point toGeoJsonPoint() {
+    Point toGeoJsonPoint() {
         return GeoJson.point(latitude, longitude);
     }
 
