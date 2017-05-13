@@ -18,11 +18,21 @@ package com.github.danzx.zekke.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.apache.commons.beanutils.BeanUtils;
+
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class PathTest {
 
     private static final Path TEST_PATH = newTestPath();
+
+    @BeforeClass
+    public static void setUpClass() {
+        assertThat(TEST_PATH).isNotNull();
+        assertThat(TEST_PATH.getDistance()).isNotNull();
+        assertThat(TEST_PATH.getFromWaypoint()).isNotNull();
+        assertThat(TEST_PATH.getToWaypoint()).isNotNull();
+    }
 
     @Test
     public void shouldEqualsBeTrueWhenSameReference() {
