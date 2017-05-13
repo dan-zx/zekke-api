@@ -19,6 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
 
+import javax.validation.Valid;
+
 /**
  * Contains a bottom left coordinates and upper right coordinates of a rectangle.
  * 
@@ -26,8 +28,8 @@ import java.util.Objects;
  */
 public class BoundingBox {
 
-    private final Coordinates bottomLeftCoordinates;
-    private final Coordinates upperRightCoordinates;
+    @Valid private final Coordinates bottomLeftCoordinates;
+    @Valid private final Coordinates upperRightCoordinates;
 
     /**
      * Constructor.

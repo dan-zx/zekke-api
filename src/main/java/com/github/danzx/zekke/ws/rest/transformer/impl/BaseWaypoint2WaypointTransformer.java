@@ -65,7 +65,7 @@ class BaseWaypoint2WaypointTransformer<T extends BaseWaypoint> implements Transf
         return optionalSource
                 .map(baseWaypoint -> {
                         Waypoint waypoint = new Waypoint();
-                        waypoint.setId(source.getId());
+                        if (source.getId() != null) waypoint.setId(source.getId());
                         waypoint.setLocation(source.getLocation());
                         return waypoint;
                     })

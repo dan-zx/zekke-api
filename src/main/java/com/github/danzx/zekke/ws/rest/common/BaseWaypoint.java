@@ -15,6 +15,8 @@
  */
 package com.github.danzx.zekke.ws.rest.common;
 
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -28,7 +30,8 @@ import com.github.danzx.zekke.domain.Coordinates;
 public abstract class BaseWaypoint {
 
     private Long id;
-    private Coordinates location;
+
+    @NotNull private Coordinates location;
 
     public Long getId() {
         return id;

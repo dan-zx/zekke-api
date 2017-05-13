@@ -21,6 +21,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -81,7 +82,7 @@ public class WaypointEndpoint {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<TypedWaypoint> getTypedWaypoints(@QueryParam("bbox") BoundingBox bbox) {
+    public List<TypedWaypoint> getTypedWaypoints(@Valid @QueryParam("bbox") BoundingBox bbox) {
         List<Waypoint> waypoints = queryWaypoints(null, bbox, null);
         return waypointToTypedWaypointTransformer.convertList(waypoints);
     }
@@ -99,7 +100,7 @@ public class WaypointEndpoint {
     @Path("/pois")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Poi> getPois(
-            @QueryParam("bbox") BoundingBox bbox,
+            @Valid @QueryParam("bbox") BoundingBox bbox,
             @QueryParam("query") String queryStr) {
         List<Waypoint> waypoints = queryWaypoints(Type.POI, bbox, queryStr);
         return waypointToPoiTransformer.convertList(waypoints);
@@ -116,7 +117,7 @@ public class WaypointEndpoint {
     @GET
     @Path("/walkways")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Walkway> getWalkways(@QueryParam("bbox") BoundingBox bbox) {
+    public List<Walkway> getWalkways(@Valid @QueryParam("bbox") BoundingBox bbox) {
         List<Waypoint> waypoints = queryWaypoints(Type.WALKWAY, bbox, null);
         return waypointToWalkwayTransformer.convertList(waypoints);
     }
@@ -130,7 +131,7 @@ public class WaypointEndpoint {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public TypedWaypoint newWaypoint(TypedWaypoint typedWaypoint) {
+    public TypedWaypoint newWaypoint(@NotNull @Valid TypedWaypoint typedWaypoint) {
         Waypoint waypoint = waypointToTypedWaypointTransformer.revert(typedWaypoint);
         waypointService.persist(waypoint);
         typedWaypoint.setId(waypoint.getId());
@@ -150,7 +151,7 @@ public class WaypointEndpoint {
     @Path("/pois/suggestnames")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Poi> getPoiSuggestions(
-            @QueryParam("bbox") BoundingBox bbox, 
+            @Valid @QueryParam("bbox") BoundingBox bbox, 
             @QueryParam("query") String queryStr) {
         List<Waypoint> pois = waypointService.findPoisForNameCompletion(bbox, queryStr);
         return waypointToPoiTransformer.convertList(pois);
@@ -169,7 +170,7 @@ public class WaypointEndpoint {
     @Path("/near")
     @Produces(MediaType.APPLICATION_JSON)
     public List<TypedWaypoint> getNearTypedWaypoints(
-            @QueryParam("location") @NotNull Coordinates location,
+            @NotNull @Valid @QueryParam("location") Coordinates location,
             @QueryParam("distance") Integer distance,
             @QueryParam("limit") Integer limit
             ) {
@@ -190,7 +191,7 @@ public class WaypointEndpoint {
     @Path("/pois/near")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Poi> getNearPois(
-            @QueryParam("location") @NotNull Coordinates location,
+            @NotNull @Valid @QueryParam("location") Coordinates location,
             @QueryParam("distance") Integer distance,
             @QueryParam("limit") Integer limit
             ) {
@@ -211,7 +212,7 @@ public class WaypointEndpoint {
     @Path("/walways/near")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Walkway> getNearWalways(
-            @QueryParam("location") @NotNull Coordinates location,
+            @NotNull @Valid @QueryParam("location") Coordinates location,
             @QueryParam("distance") Integer distance,
             @QueryParam("limit") Integer limit
             ) {
@@ -228,7 +229,7 @@ public class WaypointEndpoint {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getWaypoint(@PathParam("id") @NotNull Long id) {
+    public Response getWaypoint(@NotNull @PathParam("id") Long id) {
         return waypointService.findWaypointById(id)
                 .map(waypoint -> waypointToTypedWaypointTransformer.convert(waypoint))
                 .map(typedWaypoint -> Response.ok(typedWaypoint).build())
@@ -243,7 +244,7 @@ public class WaypointEndpoint {
      */
     @DELETE
     @Path("/{id}")
-    public Response deleteWaypoint(@PathParam("id") @NotNull Long id) {
+    public Response deleteWaypoint(@NotNull @PathParam("id") Long id) {
         Waypoint waypoint = new Waypoint();
         waypoint.setId(id);
         return waypointService.delete(waypoint) ? 

@@ -15,6 +15,8 @@
  */
 package com.github.danzx.zekke.ws.rest.common;
 
+import javax.validation.constraints.NotNull;
+
 import com.github.danzx.zekke.domain.Waypoint.Type;
 
 /**
@@ -24,7 +26,8 @@ import com.github.danzx.zekke.domain.Waypoint.Type;
  */
 public class TypedWaypoint extends BaseWaypoint {
 
-    private Type type;
+    @NotNull private Type type;
+
     private String name;
 
     public Type getType() {
