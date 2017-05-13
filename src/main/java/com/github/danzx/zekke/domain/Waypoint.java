@@ -17,7 +17,6 @@ package com.github.danzx.zekke.domain;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
@@ -45,27 +44,7 @@ import org.mongodb.morphia.utils.IndexType;
 )
 public class Waypoint extends BaseEntity<Long> {
 
-    public enum Type {
-        POI, WALKWAY;
-
-        private final String pluralName;
-
-        Type() {
-            pluralName = name() + "S";
-        }
-
-        public String pluralName() {
-            return pluralName;
-        }
-
-        public static Type fromPluralName(String value, boolean ignoreCase) {
-            requireNonNull(value);
-            return Arrays.stream(Type.values())
-                    .filter(type -> ignoreCase ? type.pluralName.equalsIgnoreCase(value) : type.pluralName.equals(value))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("No WaypointType was found with the value " + value));
-        }
-    }
+    public enum Type { POI, WALKWAY }
 
     private String name;
     private Type type;
