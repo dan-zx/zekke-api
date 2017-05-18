@@ -13,15 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.test.spring;
-
-import static com.github.danzx.zekke.test.config.TestProfiles.INTEGRATION;
-
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-
-@SpringBootTest
-@ActiveProfiles(INTEGRATION)
-@TestPropertySource(locations="classpath:test.properties")
-public abstract class BaseSpringIntegrationTest extends BaseSpringTest { }
+/** Domain object validators. */
+package com.github.danzx.zekke.domain.validator;

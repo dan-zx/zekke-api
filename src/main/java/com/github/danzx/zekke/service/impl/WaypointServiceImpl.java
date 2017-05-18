@@ -25,8 +25,9 @@ import javax.inject.Inject;
 import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
+import com.github.danzx.zekke.domain.validator.PoiValidator;
+import com.github.danzx.zekke.domain.validator.WalkwayValidator;
 import com.github.danzx.zekke.persistence.dao.WaypointDao;
-import com.github.danzx.zekke.service.ServiceException;
 import com.github.danzx.zekke.service.WaypointService;
 
 import org.springframework.stereotype.Service;
@@ -48,17 +49,16 @@ public class WaypointServiceImpl implements WaypointService {
     @Override
     public void persist(Waypoint waypoint) {
         requireNonNull(waypoint);
-        requireNonNull(waypoint.getType(), "Waypoint must have a type");
-        requireNonNull(waypoint.getLocation(), "Waypoint must have a location");
-        if (waypoint.getType() == Type.POI && !waypoint.getName().isPresent()) {
-            throw new ServiceException.Builder()
-                .messageKey("poi.name.null.error")
-                .build();
-        }
-        if (waypoint.getType() == Type.WALKWAY && waypoint.getName().isPresent()) {
-            throw new ServiceException.Builder()
-                .messageKey("walkway.name.not_null.error")
-                .build();
+        requireNonNull(waypoint.getType());
+        requireNonNull(waypoint.getLocation());
+        switch (waypoint.getType()) {
+            case POI:
+                new PoiValidator(waypoint).validate();
+                break;
+            case WALKWAY:
+                new WalkwayValidator(waypoint).validate();
+                break;
+            default: break;
         }
         dao.saveOrUpdate(waypoint);
     }

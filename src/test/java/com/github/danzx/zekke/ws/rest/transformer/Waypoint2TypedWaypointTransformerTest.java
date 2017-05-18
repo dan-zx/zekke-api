@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.ws.rest.transformer.impl;
+package com.github.danzx.zekke.ws.rest.transformer;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -23,70 +23,83 @@ import static org.assertj.core.groups.Tuple.tuple;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import com.github.danzx.zekke.config.TransformerConfig;
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
+import com.github.danzx.zekke.test.spring.BaseSpringTest;
 import com.github.danzx.zekke.ws.rest.common.TypedWaypoint;
 
+import org.junit.Before;
 import org.junit.Test;
 
-public class Waypoint2TypedWaypointTransformerTest {
+import org.springframework.test.context.ContextConfiguration;
 
-    private Waypoint2TypedWaypointTransformer TRANSFORMER = new Waypoint2TypedWaypointTransformer();
+@ContextConfiguration(classes = TransformerConfig.class)
+public class Waypoint2TypedWaypointTransformerTest extends BaseSpringTest {
+
+    private @Inject Transformer<Waypoint, TypedWaypoint> transformer;
+
+    @Before
+    public void setUp() {
+        assertThat(transformer).isNotNull();
+    }
 
     @Test
     public void shouldConvertSingle() {
         Waypoint waypoint = newWaypoint(1L, "Name", Type.POI, 12.43, 43.5);
-        TypedWaypoint actual = TRANSFORMER.convert(waypoint);
+        TypedWaypoint actual = transformer.convert(waypoint);
         assertThat(actual).isNotNull().extracting(TypedWaypoint::getId, TypedWaypoint::getName, TypedWaypoint::getLocation, TypedWaypoint::getType).containsOnly(waypoint.getId(), waypoint.getName().get(), waypoint.getLocation(), waypoint.getType());
     }
 
     @Test
     public void shouldRevertSingle() {
         Waypoint expectedWaypoint = newWaypoint(1L, "Name", Type.POI, 12.43, 43.5);
-        Waypoint actual = TRANSFORMER.revert(TRANSFORMER.convert(expectedWaypoint));
+        Waypoint actual = transformer.revert(transformer.convert(expectedWaypoint));
         assertThat(actual).isNotNull().isEqualTo(expectedWaypoint);
     }
 
     @Test
     public void shouldRevertSingle2() {
         Waypoint expectedWaypoint = newWaypoint(1L, null, Type.WALKWAY, 12.43, 43.5);
-        Waypoint actual = TRANSFORMER.revert(TRANSFORMER.convert(expectedWaypoint));
+        Waypoint actual = transformer.revert(transformer.convert(expectedWaypoint));
         assertThat(actual).isNotNull().isEqualTo(expectedWaypoint);
     }
 
     @Test
     public void shouldConvertNull() {
-        assertThat(TRANSFORMER.convert(null)).isNull();
+        assertThat(transformer.convert(null)).isNull();
     }
 
     @Test
     public void shouldRevertNull() {
-        assertThat(TRANSFORMER.revert(null)).isNull();
+        assertThat(transformer.revert(null)).isNull();
     }
 
     @Test
     public void shouldConvertList() {
         Waypoint waypoint = newWaypoint(1L, "Name", Type.POI, 12.43, 43.5);
-        List<TypedWaypoint> actual = TRANSFORMER.convertList(singletonList(waypoint));
+        List<TypedWaypoint> actual = transformer.convertList(singletonList(waypoint));
         assertThat(actual).isNotNull().extracting(TypedWaypoint::getId, TypedWaypoint::getName, TypedWaypoint::getLocation, TypedWaypoint::getType).containsOnly(tuple(waypoint.getId(), waypoint.getName().get(), waypoint.getLocation(), waypoint.getType()));
     }
 
     @Test
     public void shouldConvertEmptyList() {
-        assertThat(TRANSFORMER.convertList(emptyList())).isNotNull().isEmpty();
+        assertThat(transformer.convertList(emptyList())).isNotNull().isEmpty();
     }
 
     @Test
     public void shouldRevertList() {
         List<Waypoint> expectedWaypoints = singletonList(newWaypoint(1L, "Name", Type.POI, 12.43, 43.5));
-        List<Waypoint> actualWaypoints = TRANSFORMER.revertList(TRANSFORMER.convertList(expectedWaypoints));
+        List<Waypoint> actualWaypoints = transformer.revertList(transformer.convertList(expectedWaypoints));
         assertThat(actualWaypoints).isNotNull().isNotEmpty().hasSameSizeAs(expectedWaypoints).isEqualTo(expectedWaypoints);
     }
 
     @Test
     public void shouldRevertEmptyList() {
-        assertThat(TRANSFORMER.revertList(emptyList())).isNotNull().isEmpty();
+        assertThat(transformer.revertList(emptyList())).isNotNull().isEmpty();
     }
 
     private Waypoint newWaypoint(long id, String name, Type type, double lat, double lng) {

@@ -16,7 +16,6 @@
 package com.github.danzx.zekke.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import static org.mockito.Mockito.verify;
 
 import com.github.danzx.zekke.domain.BoundingBox;
@@ -24,7 +23,6 @@ import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.persistence.dao.WaypointDao;
-import com.github.danzx.zekke.service.ServiceException;
 import com.github.danzx.zekke.service.WaypointService.NearWaypointsQuery;
 import com.github.danzx.zekke.service.WaypointService.WaypointsQuery;
 import com.github.danzx.zekke.test.mockito.BaseMockitoTest;
@@ -62,20 +60,20 @@ public class WaypointServiceImplTest extends BaseMockitoTest {
     }
 
     @Test
-    public void shouldThrowServiceExceptionWhenPersistPoiWithoutName() {
+    public void shouldThrowIllegalArgumentExceptionWhenPersistPoiWithoutName() {
         Waypoint poi = new Waypoint();
         poi.setType(Type.POI);
         poi.setLocation(Coordinates.ofLatLng(12.24, 53.545));
-        assertThatThrownBy(() -> service.persist(poi)).isInstanceOf(ServiceException.class);
+        assertThatThrownBy(() -> service.persist(poi)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    public void shouldThrowServiceExceptionWhenPersistWalkwayWithName() {
+    public void shouldThrowIllegalArgumentExceptionWhenPersistWalkwayWithName() {
         Waypoint walkway = new Waypoint();
         walkway.setType(Type.WALKWAY);
         walkway.setName("a name");
         walkway.setLocation(Coordinates.ofLatLng(12.24, 53.545));
-        assertThatThrownBy(() -> service.persist(walkway)).isInstanceOf(ServiceException.class);
+        assertThatThrownBy(() -> service.persist(walkway)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test 

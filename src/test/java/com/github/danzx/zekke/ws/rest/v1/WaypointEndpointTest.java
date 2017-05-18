@@ -29,10 +29,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.github.danzx.zekke.config.TransformerConfig;
 import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
@@ -42,28 +44,40 @@ import com.github.danzx.zekke.test.BaseValidationTest;
 import com.github.danzx.zekke.ws.rest.common.Poi;
 import com.github.danzx.zekke.ws.rest.common.TypedWaypoint;
 import com.github.danzx.zekke.ws.rest.common.Walkway;
-import com.github.danzx.zekke.ws.rest.transformer.impl.Waypoint2PoiTransformer;
-import com.github.danzx.zekke.ws.rest.transformer.impl.Waypoint2TypedWaypointTransformer;
-import com.github.danzx.zekke.ws.rest.transformer.impl.Waypoint2WalkwayTransformer;
+import com.github.danzx.zekke.ws.rest.transformer.Transformer;
 
 import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.rules.SpringClassRule;
+import org.springframework.test.context.junit4.rules.SpringMethodRule;
+
+@ContextConfiguration(classes = TransformerConfig.class)
 public class WaypointEndpointTest extends BaseValidationTest {
+
+    @ClassRule public static final SpringClassRule SPRING_CLASS_RULE = new SpringClassRule();
+    @Rule public final SpringMethodRule springMethodRule = new SpringMethodRule();
+
+    private @Inject Transformer<Waypoint, Poi> waypointToPoiTransformer;
+    private @Inject Transformer<Waypoint, TypedWaypoint> waypointToWalkwayTransformer;
+    private @Inject Transformer<Waypoint, Walkway> waypointToTypedWaypointTransformer;
 
     private WaypointService mockWaypointService;
     private WaypointEndpoint endpoint;
 
     @Before
     public void setUp() {
+        assertThat(waypointToPoiTransformer).isNotNull();
+        assertThat(waypointToWalkwayTransformer).isNotNull();
+        assertThat(waypointToTypedWaypointTransformer).isNotNull();
         mockWaypointService = mock(WaypointService.class);
-        endpoint = new WaypointEndpoint(mockWaypointService, 
-                new Waypoint2PoiTransformer(), 
-                new Waypoint2WalkwayTransformer(),
-                new Waypoint2TypedWaypointTransformer());
+        endpoint = new WaypointEndpoint(mockWaypointService, waypointToPoiTransformer, waypointToTypedWaypointTransformer, waypointToWalkwayTransformer);
     }
 
     @Test
@@ -141,7 +155,7 @@ public class WaypointEndpointTest extends BaseValidationTest {
 
     @Test
     public void shouldNewWaypointFailValidationWhenPayloadIsNull() throws Exception {
-        Method method = WaypointEndpoint.class.getMethod("newWaypoint", TypedWaypoint.class );
+        Method method = WaypointEndpoint.class.getMethod("newWaypoint", TypedWaypoint.class);
         Object[] parameterValues = { null };
         Set<ConstraintViolation<WaypointEndpoint>> violations = validator().forExecutables().validateParameters(
                 endpoint,
@@ -153,7 +167,7 @@ public class WaypointEndpointTest extends BaseValidationTest {
 
     @Test
     public void shouldNewWaypointFailValidationWhenPayloadFieldsFailValidation() throws Exception {
-        Method method = WaypointEndpoint.class.getMethod("newWaypoint", TypedWaypoint.class );
+        Method method = WaypointEndpoint.class.getMethod("newWaypoint", TypedWaypoint.class);
         Object[] parameterValues = { new TypedWaypoint() };
         Set<ConstraintViolation<WaypointEndpoint>> violations = validator().forExecutables().validateParameters(
                 endpoint,
@@ -161,6 +175,23 @@ public class WaypointEndpointTest extends BaseValidationTest {
                 parameterValues
         );
         assertThat(violations).isNotNull().isNotEmpty().hasSize(2);
+    }
+
+    @Test
+    public void shouldNewWaypointFailValidationWhenIdIsNotNull() throws Exception {
+        Method method = WaypointEndpoint.class.getMethod("newWaypoint", TypedWaypoint.class);
+        TypedWaypoint payload = new TypedWaypoint();
+        payload.setId(1L);
+        payload.setName("A Name");
+        payload.setType(Type.POI);
+        payload.setLocation(Coordinates.ofLatLng(12.43, 43.5));
+        Object[] parameterValues = { payload };
+        Set<ConstraintViolation<WaypointEndpoint>> violations = validator().forExecutables().validateParameters(
+                endpoint,
+                method,
+                parameterValues
+        );
+        assertThat(violations).isNotNull().isNotEmpty().hasSize(1);
     }
 
     @Test

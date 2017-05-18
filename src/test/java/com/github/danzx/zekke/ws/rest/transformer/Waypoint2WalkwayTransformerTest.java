@@ -13,87 +13,86 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.ws.rest.transformer.impl;
+package com.github.danzx.zekke.ws.rest.transformer;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import com.github.danzx.zekke.config.TransformerConfig;
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
+import com.github.danzx.zekke.test.spring.BaseSpringTest;
 import com.github.danzx.zekke.ws.rest.common.Walkway;
-import com.github.danzx.zekke.ws.rest.transformer.TransformationException;
 
+import org.junit.Before;
 import org.junit.Test;
 
-public class Waypoint2WalkwayTransformerTest {
+import org.springframework.test.context.ContextConfiguration;
 
-    private Waypoint2WalkwayTransformer TRANSFORMER = new Waypoint2WalkwayTransformer();
+@ContextConfiguration(classes = TransformerConfig.class)
+public class Waypoint2WalkwayTransformerTest extends BaseSpringTest {
+
+    private @Inject Transformer<Waypoint, Walkway> transformer;
+
+    @Before
+    public void setUp() {
+        assertThat(transformer).isNotNull();
+    }
 
     @Test
     public void shouldConvertSingle() {
         Waypoint waypoint = newWaypoint(1L, null, Type.WALKWAY, 12.43, 43.5);
-        Walkway actualWalkway = TRANSFORMER.convert(waypoint);
+        Walkway actualWalkway = transformer.convert(waypoint);
         assertThat(actualWalkway).isNotNull().extracting(Walkway::getId, Walkway::getLocation).containsOnly(waypoint.getId(), waypoint.getLocation());
     }
 
     @Test
     public void shouldRevertSingle() {
         Waypoint expectedWaypoint = newWaypoint(1L, null, Type.WALKWAY, 12.43, 43.5);
-        Waypoint actualWaypoint = TRANSFORMER.revert(TRANSFORMER.convert(expectedWaypoint));
+        Waypoint actualWaypoint = transformer.revert(transformer.convert(expectedWaypoint));
         assertThat(actualWaypoint).isNotNull().isEqualTo(expectedWaypoint);
     }
 
     @Test
     public void shouldConvertNull() {
-        assertThat(TRANSFORMER.convert(null)).isNull();
+        assertThat(transformer.convert(null)).isNull();
     }
 
     @Test
     public void shouldRevertNull() {
-        assertThat(TRANSFORMER.revert(null)).isNull();
+        assertThat(transformer.revert(null)).isNull();
     }
 
     @Test
     public void shouldConvertList() {
         Waypoint waypoint = newWaypoint(1L, null, Type.WALKWAY, 12.43, 43.5);
-        List<Walkway> actualWalkways = TRANSFORMER.convertList(singletonList(waypoint));
+        List<Walkway> actualWalkways = transformer.convertList(singletonList(waypoint));
         assertThat(actualWalkways).isNotNull().isNotEmpty().extracting(Walkway::getId, Walkway::getLocation).containsOnly(tuple(waypoint.getId(), waypoint.getLocation()));
     }
 
     @Test
     public void shouldConvertEmptyList() {
-        assertThat(TRANSFORMER.convertList(emptyList())).isNotNull().isEmpty();
-    }
-
-    @Test
-    public void shouldConvertSingleThrowTransformationExceptionWhenWaypointIsNotPoi() {
-        Waypoint waypoint = newWaypoint(1L, "Name", Type.POI, 12.43, 43.5);
-        assertThatThrownBy(() -> TRANSFORMER.convert(waypoint)).isInstanceOf(TransformationException.class);
+        assertThat(transformer.convertList(emptyList())).isNotNull().isEmpty();
     }
 
     @Test
     public void shouldRevertList() {
         List<Waypoint> expectedWaypoints = singletonList(newWaypoint(1L, null, Type.WALKWAY, 12.43, 43.5));
-        List<Waypoint> actualWaypoints = TRANSFORMER.revertList(TRANSFORMER.convertList(expectedWaypoints));
+        List<Waypoint> actualWaypoints = transformer.revertList(transformer.convertList(expectedWaypoints));
         assertThat(actualWaypoints).isNotNull().isNotEmpty().hasSameSizeAs(expectedWaypoints).isEqualTo(expectedWaypoints);
     }
 
     @Test
     public void shouldRevertEmptyList() {
-        assertThat(TRANSFORMER.revertList(emptyList())).isNotNull().isEmpty();
-    }
-
-    @Test
-    public void shouldConvertListThrowTransformationExceptionWhenWaypointIsNotPoi() {
-        Waypoint waypoint = newWaypoint(1L, "Name", Type.POI, 12.43, 43.5);
-        assertThatThrownBy(() -> TRANSFORMER.convertList(singletonList(waypoint))).isInstanceOf(TransformationException.class);
+        assertThat(transformer.revertList(emptyList())).isNotNull().isEmpty();
     }
 
     private Waypoint newWaypoint(long id, String name, Type type, double lat, double lng) {

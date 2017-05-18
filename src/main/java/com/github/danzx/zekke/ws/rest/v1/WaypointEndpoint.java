@@ -36,6 +36,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.github.danzx.zekke.constraint.CheckId;
 import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
@@ -133,7 +134,7 @@ public class WaypointEndpoint {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public TypedWaypoint newWaypoint(@NotNull @Valid TypedWaypoint typedWaypoint) {
+    public TypedWaypoint newWaypoint(@NotNull @CheckId(shouldBeNull = true) @Valid TypedWaypoint typedWaypoint) {
         Waypoint waypoint = waypointToTypedWaypointTransformer.revert(typedWaypoint);
         waypointService.persist(waypoint);
         typedWaypoint.setId(waypoint.getId());
@@ -141,7 +142,7 @@ public class WaypointEndpoint {
     }
 
     /**
-     * POI name completition.
+     * POI name completion.
      * 
      * @param bbox If present, finds all the waypoints within a rectangle specified by a latitude
      *        and longitude pair being the first the bottom left coordinates and the second the

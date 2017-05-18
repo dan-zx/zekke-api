@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-/** Transformer implementations. */
-package com.github.danzx.zekke.ws.rest.transformer.impl;
+/** Transformers that use orika mapper */
+package com.github.danzx.zekke.ws.rest.transformer.orika;
