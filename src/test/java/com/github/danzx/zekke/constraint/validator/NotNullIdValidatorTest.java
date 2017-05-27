@@ -18,36 +18,39 @@ package com.github.danzx.zekke.constraint.validator;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import javax.validation.ConstraintValidatorContext;
+
+import com.github.danzx.zekke.test.mockito.BaseMockitoTest;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
 
 @RunWith(JUnitParamsRunner.class)
-public class IdValidatorTest {
+public class NotNullIdValidatorTest extends BaseMockitoTest {
+
+    private static final NotNullIdValidator TEST_VALIDATOR = new NotNullIdValidator();
+
+    private @Mock(answer = Answers.RETURNS_MOCKS) ConstraintValidatorContext mockContext;
 
     @Test
     @Parameters(method = "testObjsAndResult")
-    public void shouldValidatedObjectWithId(boolean shouldBeNull, Object obj, boolean expectedResult) {
-        IdValidator validator = new IdValidator();
-        validator.init(shouldBeNull);
-        assertThat(validator.isValid(obj, null)).isEqualTo(expectedResult);
+    public void shouldValidatedObjectWithId(Object obj, boolean expectedResult) {
+        assertThat(TEST_VALIDATOR.isValid(obj, mockContext)).isEqualTo(expectedResult);
     }
 
     @Test
     public void shouldThrowIllegalArgumentExceptionWhenObjectHasNoIdGetter() {
-        IdValidator validator = new IdValidator();
-        validator.init(true);
-        assertThatThrownBy(() -> validator.isValid(new Object(), null)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> TEST_VALIDATOR.isValid(new Object(), mockContext)).isInstanceOf(IllegalArgumentException.class);
     }
 
     protected Object[] testObjsAndResult() {
         return new Object[][] {
-            {true, new TestObj(null), true},
-            {true, new TestObj(1L), false},
-            {false, new TestObj(null), false},
-            {false, new TestObj(1L), true}
+            {new TestObj(null), false},
+            {new TestObj(1L), true}
         };
     }
 

@@ -16,9 +16,7 @@
 package com.github.danzx.zekke.ws.rest.v1;
 
 import static java.util.Collections.emptyList;
-
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -40,29 +38,19 @@ import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.service.WaypointService;
-import com.github.danzx.zekke.test.BaseValidationTest;
+import com.github.danzx.zekke.test.spring.BaseSpringValidationTest;
 import com.github.danzx.zekke.ws.rest.common.Poi;
 import com.github.danzx.zekke.ws.rest.common.TypedWaypoint;
 import com.github.danzx.zekke.ws.rest.common.Walkway;
 import com.github.danzx.zekke.ws.rest.transformer.Transformer;
-
 import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
-
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.rules.SpringClassRule;
-import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
 @ContextConfiguration(classes = TransformerConfig.class)
-public class WaypointEndpointTest extends BaseValidationTest {
-
-    @ClassRule public static final SpringClassRule SPRING_CLASS_RULE = new SpringClassRule();
-    @Rule public final SpringMethodRule springMethodRule = new SpringMethodRule();
+public class WaypointEndpointTest extends BaseSpringValidationTest {
 
     private @Inject Transformer<Waypoint, Poi> waypointToPoiTransformer;
     private @Inject Transformer<Waypoint, TypedWaypoint> waypointToWalkwayTransformer;
@@ -83,7 +71,7 @@ public class WaypointEndpointTest extends BaseValidationTest {
     @Test
     public void shouldGetTypedWaypointsFailValidationWhenBboxIsPresentAndInvalid() throws Exception {
         Method method = WaypointEndpoint.class.getMethod("getTypedWaypoints", BoundingBox.class);
-        BoundingBox bbox = new BoundingBox(Coordinates.ofLatLng(1111, 12313), Coordinates.ofLatLng(1111, 12313));
+        BoundingBox bbox = BoundingBox.ofBottomTop(Coordinates.ofLatLng(1111d, 12313d), Coordinates.ofLatLng(1111d, 12313d));
         Object[] parameterValues = { bbox };
 
         assertBoundingBoxValidation(method, parameterValues);
@@ -100,7 +88,7 @@ public class WaypointEndpointTest extends BaseValidationTest {
     @Test
     public void shouldGetWalkwaysFailValidationWhenBboxIsPresentAndInvalid() throws Exception {
         Method method = WaypointEndpoint.class.getMethod("getWalkways", BoundingBox.class);
-        BoundingBox bbox = new BoundingBox(Coordinates.ofLatLng(1111, 12313), Coordinates.ofLatLng(1111, 12313));
+        BoundingBox bbox = BoundingBox.ofBottomTop(Coordinates.ofLatLng(1111d, 12313d), Coordinates.ofLatLng(1111d, 12313d));
         Object[] parameterValues = { bbox };
 
         assertBoundingBoxValidation(method, parameterValues);
@@ -117,7 +105,7 @@ public class WaypointEndpointTest extends BaseValidationTest {
     @Test
     public void shouldGetPoisFailValidationWhenBboxIsPresentAndInvalid() throws Exception {
         Method method = WaypointEndpoint.class.getMethod("getPois", BoundingBox.class, String.class);
-        BoundingBox bbox = new BoundingBox(Coordinates.ofLatLng(1111, 12313), Coordinates.ofLatLng(1111, 12313));
+        BoundingBox bbox = BoundingBox.ofBottomTop(Coordinates.ofLatLng(1111d, 12313d), Coordinates.ofLatLng(1111d, 12313d));
         Object[] parameterValues = { bbox, null };
 
         assertBoundingBoxValidation(method, parameterValues);
@@ -197,7 +185,7 @@ public class WaypointEndpointTest extends BaseValidationTest {
     @Test
     public void shouldGetPoiSuggestionsFailValidationWhenBboxIsPresentAndInvalid() throws Exception {
         Method method = WaypointEndpoint.class.getMethod("getPoiSuggestions", BoundingBox.class, String.class);
-        BoundingBox bbox = new BoundingBox(Coordinates.ofLatLng(1111, 12313), Coordinates.ofLatLng(1111, 12313));
+        BoundingBox bbox = BoundingBox.ofBottomTop(Coordinates.ofLatLng(1111d, 12313d), Coordinates.ofLatLng(1111d, 12313d));
         Object[] parameterValues = { bbox, null };
 
         assertBoundingBoxValidation(method, parameterValues);
@@ -226,7 +214,7 @@ public class WaypointEndpointTest extends BaseValidationTest {
     @Test
     public void shouldGetNearTypedWaypointsFailValidationWhenCoordiantesFailValidation() throws Exception {
         Method method = WaypointEndpoint.class.getMethod("getNearTypedWaypoints", Coordinates.class, Integer.class, Integer.class);
-        Object[] parameterValues = { Coordinates.ofLatLng(1111, 12313), null, null };
+        Object[] parameterValues = { Coordinates.ofLatLng(1111d, 12313d), null, null };
         Set<ConstraintViolation<WaypointEndpoint>> violations = validator().forExecutables().validateParameters(
                 endpoint,
                 method,
@@ -258,7 +246,7 @@ public class WaypointEndpointTest extends BaseValidationTest {
     @Test
     public void shouldGetNearPoisFailValidationWhenCoordiantesFailValidation() throws Exception {
         Method method = WaypointEndpoint.class.getMethod("getNearPois", Coordinates.class, Integer.class, Integer.class);
-        Object[] parameterValues = { Coordinates.ofLatLng(1111, 12313), null, null };
+        Object[] parameterValues = { Coordinates.ofLatLng(1111d, 12313d), null, null };
         Set<ConstraintViolation<WaypointEndpoint>> violations = validator().forExecutables().validateParameters(
                 endpoint,
                 method,
@@ -290,7 +278,7 @@ public class WaypointEndpointTest extends BaseValidationTest {
     @Test
     public void shouldGetNearWalwaysFailValidationWhenCoordiantesFailValidation() throws Exception {
         Method method = WaypointEndpoint.class.getMethod("getNearWalways", Coordinates.class, Integer.class, Integer.class);
-        Object[] parameterValues = { Coordinates.ofLatLng(1111, 12313), null, null };
+        Object[] parameterValues = { Coordinates.ofLatLng(1111d, 12313d), null, null };
         Set<ConstraintViolation<WaypointEndpoint>> violations = validator().forExecutables().validateParameters(
                 endpoint,
                 method,
@@ -388,8 +376,6 @@ public class WaypointEndpointTest extends BaseValidationTest {
     }
 
     private void assertBoundingBoxValidation(Method method, Object[] parameterValues) {
-//        BoundingBox bbox = new BoundingBox(Coordinates.ofLatLng(1111, 12313), Coordinates.ofLatLng(1111, 12313));
-//        Object[] parameterValues = { bbox };
         Set<ConstraintViolation<WaypointEndpoint>> violations = validator().forExecutables().validateParameters(
                 endpoint,
                 method,

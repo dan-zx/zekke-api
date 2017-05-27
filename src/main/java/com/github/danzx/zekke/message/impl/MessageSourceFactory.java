@@ -13,14 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.test.mockito;
+package com.github.danzx.zekke.message.impl;
 
-import org.junit.Rule;
+import com.github.danzx.zekke.message.MessageSource;
 
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+/**
+ * @author Daniel Pedraza-Arcega
+ */
+public class MessageSourceFactory {
 
-public class BaseMockitoTest {
+    public static MessageSource defaultSource() {
+        return InstanceHolder.INSTANCE;
+    }
 
-    @Rule public final MockitoRule mockitoInitializerRule = MockitoJUnit.rule();
+    private static class InstanceHolder {
+        private static final String MESSAGES_BASENAME = "com.github.danzx.zekke.Messages";
+        private static final MessageSource INSTANCE = new DefaultMessageDecorator(new ResourceBundleMessageSource(MESSAGES_BASENAME));
+    }
 }

@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.test.mockito;
+package com.github.danzx.zekke.constraint.validator;
 
-import org.junit.Rule;
+import com.github.danzx.zekke.constraint.NotNullId;
 
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+/**
+ * Validates that an object has a getId() method visible and its result is not null.
+ * 
+ * @author Daniel Pedraza-Arcega
+ */
+public class NotNullIdValidator extends BaseIdValidator<NotNullId> {
 
-public class BaseMockitoTest {
-
-    @Rule public final MockitoRule mockitoInitializerRule = MockitoJUnit.rule();
+    public NotNullIdValidator() {
+        super(false);
+    }
 }

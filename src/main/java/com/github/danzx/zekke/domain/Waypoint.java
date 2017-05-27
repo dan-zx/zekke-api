@@ -22,6 +22,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.validation.constraints.NotNull;
+
+import com.github.danzx.zekke.domain.constraint.CheckWaypoint;
 import com.github.danzx.zekke.util.Strings;
 
 import org.mongodb.morphia.annotations.Embedded;
@@ -38,6 +41,7 @@ import org.mongodb.morphia.utils.IndexType;
  * 
  * @author Daniel Pedraza-Arcega 
  */
+@CheckWaypoint
 @Entity(value = "waypoints", noClassnameStored = true)
 @Indexes(
         @Index(fields = @Field(value = "location", type = IndexType.GEO2DSPHERE))
@@ -47,10 +51,9 @@ public class Waypoint extends BaseEntity<Long> {
     public enum Type { POI, WALKWAY }
 
     private String name;
-    private Type type;
-
-    @Embedded private Point location;
-    @Embedded private Set<Path> paths = new HashSet<>();
+    @NotNull private Type type;
+    @NotNull @Embedded private Point location;
+    @NotNull @Embedded private Set<Path> paths = new HashSet<>();
 
     public Optional<String> getName() {
         return Optional.ofNullable(name);

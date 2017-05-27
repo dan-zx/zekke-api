@@ -45,13 +45,13 @@ public class BoundingBoxTest {
 
     @Test
     public void shouldEqualsBeFalseWhenAtLeastOnePropertyIsDifferent() {
-        BoundingBox testBbox = new BoundingBox(BBOX_TESTEE.getBottomLeftCoordinates(), Coordinates.ofLatLng(35.89, -77.984));
+        BoundingBox testBbox = BoundingBox.ofBottomTop(BBOX_TESTEE.getBottomCoordinates(), Coordinates.ofLatLng(35.89, -77.984));
         assertThat(BBOX_TESTEE.equals(testBbox)).isFalse();
 
-        testBbox = new BoundingBox(Coordinates.ofLatLng(35.89, -77.984), BBOX_TESTEE.getUpperRightCoordinates());
+        testBbox = BoundingBox.ofBottomTop(Coordinates.ofLatLng(35.89, -77.984), BBOX_TESTEE.getTopCoordinates());
         assertThat(BBOX_TESTEE.equals(testBbox)).isFalse();
         
-        testBbox = new BoundingBox(Coordinates.ofLatLng(35.89, -77.984), Coordinates.ofLatLng(35.89, -77.984));
+        testBbox = BoundingBox.ofBottomTop(Coordinates.ofLatLng(35.89, -77.984), Coordinates.ofLatLng(35.89, -77.984));
         assertThat(BBOX_TESTEE.equals(testBbox)).isFalse();
     }
 
@@ -62,7 +62,7 @@ public class BoundingBoxTest {
     }
 
     private static BoundingBox newBoundingBox() {
-        return new BoundingBox(
+        return BoundingBox.ofBottomTop(
                 Coordinates.ofLatLng(19.054492, -98.283176), 
                 Coordinates.ofLatLng(43.9876, -103.7564));
     }

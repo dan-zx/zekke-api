@@ -7,6 +7,7 @@ appender('console', ConsoleAppender) {
 logger('javax.management', WARN)
 logger('com.mongodb', WARN)
 logger('de.flapdoodle.embed', WARN)
+logger('ma.glasnost.orika', WARN)
 logger('org.apache.catalina', WARN)
 logger('org.apache.commons.beanutils', WARN)
 logger('org.apache.coyote', WARN)

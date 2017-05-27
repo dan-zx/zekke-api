@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-import com.github.danzx.zekke.constraint.validator.IdValidator;
+import com.github.danzx.zekke.constraint.validator.NullIdValidator;
 
 /**
  * Checks the object's id is either null or not null.
@@ -38,20 +38,18 @@ import com.github.danzx.zekke.constraint.validator.IdValidator;
 @Documented
 @Target({FIELD, METHOD, PARAMETER, ANNOTATION_TYPE})
 @Retention(RUNTIME)
-@Constraint(validatedBy = IdValidator.class)
-public @interface CheckId {
+@Constraint(validatedBy = NullIdValidator.class)
+public @interface NullId {
 
-    String message() default "Invalid id";
+    String message() default "{javax.validation.constraints.Null.message}";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
 
-    boolean shouldBeNull();
-
     @Target({FIELD, METHOD, PARAMETER, ANNOTATION_TYPE})
     @Retention(RUNTIME)
     @interface List {
-        CheckId[] value();
+        NullId[] value();
     }
 }

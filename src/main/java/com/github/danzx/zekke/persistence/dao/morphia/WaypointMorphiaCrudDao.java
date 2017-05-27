@@ -100,8 +100,8 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
         Query<Waypoint> query = createQuery();
         query.criteria(Fields.Waypoint.LOCATION)
             .within(Shape.box(
-                    toShapePoint(bbox.getBottomLeftCoordinates()), 
-                    toShapePoint(bbox.getUpperRightCoordinates())
+                    toShapePoint(bbox.getBottomCoordinates()), 
+                    toShapePoint(bbox.getTopCoordinates())
                 )
         );
         if (optionalNameQuery.isPresent()) {

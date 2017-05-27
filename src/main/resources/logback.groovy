@@ -5,6 +5,7 @@ appender('console', ConsoleAppender) {
 }
 
 logger('javax.management', WARN)
+logger('ma.glasnost.orika', WARN)
 logger('org.apache.catalina', WARN)
 logger('org.apache.coyote', WARN)
 logger('org.apache.tomcat', WARN)

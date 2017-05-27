@@ -13,14 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.test.mockito;
+package com.github.danzx.zekke.message;
 
-import org.junit.Rule;
+import java.util.Locale;
+import java.util.Optional;
 
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+/**
+ * @author Daniel Pedraza-Arcega
+ *
+ */
+public class LocaleHolder {
 
-public class BaseMockitoTest {
+    public static final ThreadLocal<Locale> THREAD_LOCAL = new ThreadLocal<Locale>();
 
-    @Rule public final MockitoRule mockitoInitializerRule = MockitoJUnit.rule();
+    public static Locale get() {
+        return Optional.ofNullable(THREAD_LOCAL.get()).orElse(Locale.ROOT);
+    }
+
+    public static void set(Locale locale) {
+        THREAD_LOCAL.set(locale);
+    }
+
+    public static void unset() {
+        THREAD_LOCAL.remove();
+    }
 }

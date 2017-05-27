@@ -25,19 +25,18 @@ import javax.inject.Inject;
 import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
-import com.github.danzx.zekke.domain.validator.PoiValidator;
-import com.github.danzx.zekke.domain.validator.WalkwayValidator;
 import com.github.danzx.zekke.persistence.dao.WaypointDao;
 import com.github.danzx.zekke.service.WaypointService;
 
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 /**
  * Default Waypoint service implementation.
  * 
  * @author Daniel Pedraza-Arcega
  */
-@Service
+@Validated @Service
 public class WaypointServiceImpl implements WaypointService {
 
     private final WaypointDao dao;
@@ -48,25 +47,7 @@ public class WaypointServiceImpl implements WaypointService {
 
     @Override
     public void persist(Waypoint waypoint) {
-        requireNonNull(waypoint);
-        requireNonNull(waypoint.getType());
-        requireNonNull(waypoint.getLocation());
-        switch (waypoint.getType()) {
-            case POI:
-                new PoiValidator(waypoint).validate();
-                break;
-            case WALKWAY:
-                new WalkwayValidator(waypoint).validate();
-                break;
-            default: break;
-        }
         dao.saveOrUpdate(waypoint);
-    }
-
-    @Override
-    public boolean delete(Waypoint waypoint) {
-        requireNonNull(waypoint);
-        return dao.deleteById(waypoint.getId());
     }
 
     @Override
@@ -76,21 +57,23 @@ public class WaypointServiceImpl implements WaypointService {
 
     @Override
     public List<Waypoint> findWaypoints(WaypointsQuery query) {
-        requireNonNull(query);
-        return query.getBoundingBox()
+        return Optional.ofNullable(query.getBoundingBox())
             .map(bbox -> dao.findWithinBox(bbox, query.getWaypointType(), query.getNameQuery(), false))
             .orElse(dao.findOptionallyByTypeAndNameQuery(query.getWaypointType(), query.getNameQuery()));
     }
 
     @Override
     public List<Waypoint> findNearWaypoints(NearWaypointsQuery query) {
-        requireNonNull(query);
         return dao.findNear(query.getLocation(), query.getMaxDistance(), query.getLimit(), query.getWaypointType());
     }
 
     @Override
     public List<Waypoint> findPoisForNameCompletion(BoundingBox bbox, String nameQuery) {
-        requireNonNull(bbox);
         return dao.findWithinBox(bbox, Type.POI, nameQuery, true);
+    }
+
+    @Override
+    public boolean delete(Waypoint waypoint) {
+        return dao.deleteById(waypoint.getId());
     }
 }

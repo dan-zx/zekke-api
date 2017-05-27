@@ -15,38 +15,45 @@
  */
 package com.github.danzx.zekke.constraint.validator;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-
-import com.github.danzx.zekke.constraint.CheckId;
 
 /**
  * Validates that an object has a getId() method visible and its result is either null or not null.
  * 
  * @author Daniel Pedraza-Arcega
  */
-public class IdValidator  implements ConstraintValidator<CheckId, Object> {
+abstract class BaseIdValidator<A extends Annotation> implements ConstraintValidator<A, Object> {
 
-    private boolean shouldBeNull;
+    private static final String ID_GETTER = "getId";
+    private static final String ID_PROPERTY = "id";
 
-    protected void init(boolean shouldBeNull) {
+    private final boolean shouldBeNull;
+
+    BaseIdValidator(boolean shouldBeNull) {
         this.shouldBeNull = shouldBeNull;
     }
 
     @Override
-    public void initialize(CheckId constraintAnnotation) {
-        init(constraintAnnotation.shouldBeNull());
-    }
+    public void initialize(A constraintAnnotation) { }
 
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
         if (value == null) return true;
         try {
-            Method getIdMethod = value.getClass().getMethod("getId");
+            Method getIdMethod = value.getClass().getMethod(ID_GETTER);
             Object id = getIdMethod.invoke(value);
-            return (shouldBeNull && id == null) || (!shouldBeNull && id != null);
+            boolean isValid = (shouldBeNull && id == null) || (!shouldBeNull && id != null);
+            if (!isValid) {
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(context.getDefaultConstraintMessageTemplate())
+                    .addPropertyNode(ID_PROPERTY)
+                    .addConstraintViolation();
+            }
+            return isValid;
         } catch (Exception e) {
             throw new IllegalArgumentException("Object to validate does not have an accessible getId() method", e);
         }

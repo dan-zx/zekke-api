@@ -105,7 +105,6 @@ public class CoordinatesTest extends BaseValidationTest {
         assertThat(VALID_COORDINATES.hashCode()).isEqualTo(VALID_COORDINATES.hashCode()).isEqualTo(testPoint.hashCode());
     }
 
-
     protected Object[][] invalidLatLng() {
         return new Object[][] {
             {INVALID_UPPER_LAT, VALID_COORDINATES.getLongitude()},

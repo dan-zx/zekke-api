@@ -15,8 +15,13 @@
  */
 package com.github.danzx.zekke.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+
+import java.lang.reflect.Method;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
 
 import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Coordinates;
@@ -25,55 +30,44 @@ import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.persistence.dao.WaypointDao;
 import com.github.danzx.zekke.service.WaypointService.NearWaypointsQuery;
 import com.github.danzx.zekke.service.WaypointService.WaypointsQuery;
-import com.github.danzx.zekke.test.mockito.BaseMockitoTest;
-
+import com.github.danzx.zekke.test.mockito.BaseMockitoValidationTest;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Test;
-
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-public class WaypointServiceImplTest extends BaseMockitoTest {
+@RunWith(JUnitParamsRunner.class)
+public class WaypointServiceImplTest extends BaseMockitoValidationTest {
 
     private @Mock WaypointDao dao; 
     
     private @InjectMocks WaypointServiceImpl service; 
 
     @Test 
-    public void shouldThrowNullPointerExceptionWhenPersistNull() { 
-        assertThatThrownBy(() -> service.persist(null)).isInstanceOf(NullPointerException.class); 
+    public void shouldFailValidationWhenPersistNull() throws Exception {
+        Method method = WaypointServiceImpl.class.getMethod("persist", Waypoint.class);
+        Object[] parameterValues = { null };
+        Set<ConstraintViolation<WaypointServiceImpl>> violations = validator().forExecutables().validateParameters(
+                service,
+                method,
+                parameterValues
+        );
+        assertThat(violations).isNotNull().isNotEmpty().hasSize(1);
     }
 
     @Test
-    public void shouldThrowNullPointerExceptionWhenPersistWaypointWithoutType() {
-        Waypoint waypoint = new Waypoint();
-        waypoint.setName("a name");
-        waypoint.setLocation(Coordinates.ofLatLng(12.24, 53.545));
-        assertThatThrownBy(() -> service.persist(new Waypoint())).isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    public void shouldThrowNullPointerExceptionWhenPersistWaypointWithoutLocation() {
-        Waypoint waypoint = new Waypoint();
-        waypoint.setName("a name");
-        waypoint.setType(Type.POI);
-        assertThatThrownBy(() -> service.persist(new Waypoint())).isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    public void shouldThrowIllegalArgumentExceptionWhenPersistPoiWithoutName() {
-        Waypoint poi = new Waypoint();
-        poi.setType(Type.POI);
-        poi.setLocation(Coordinates.ofLatLng(12.24, 53.545));
-        assertThatThrownBy(() -> service.persist(poi)).isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    public void shouldThrowIllegalArgumentExceptionWhenPersistWalkwayWithName() {
-        Waypoint walkway = new Waypoint();
-        walkway.setType(Type.WALKWAY);
-        walkway.setName("a name");
-        walkway.setLocation(Coordinates.ofLatLng(12.24, 53.545));
-        assertThatThrownBy(() -> service.persist(walkway)).isInstanceOf(IllegalArgumentException.class);
+    @Parameters(method = "invalidWaypointsToPersist")
+    public void shouldFailValidationWhenPersistInvalidWaypoint(Waypoint waypoint, int numberOfViolations) throws Exception {
+        Method method = WaypointServiceImpl.class.getMethod("persist", Waypoint.class);
+        Object[] parameterValues = { waypoint };
+        Set<ConstraintViolation<WaypointServiceImpl>> violations = validator().forExecutables().validateParameters(
+                service,
+                method,
+                parameterValues
+        );
+        assertThat(violations).isNotNull().isNotEmpty().hasSize(numberOfViolations);
     }
 
     @Test 
@@ -96,8 +90,27 @@ public class WaypointServiceImplTest extends BaseMockitoTest {
     } 
  
     @Test 
-    public void shouldThrowNullPointerExceptionWhenDeleteNull() { 
-        assertThatThrownBy(() -> service.delete(null)).isInstanceOf(NullPointerException.class); 
+    public void shouldFailValidationWhenDeleteNull() throws Exception {
+        Method method = WaypointServiceImpl.class.getMethod("delete", Waypoint.class);
+        Object[] parameterValues = { null };
+        Set<ConstraintViolation<WaypointServiceImpl>> violations = validator().forExecutables().validateParameters(
+                service,
+                method,
+                parameterValues
+        );
+        assertThat(violations).isNotNull().isNotEmpty().hasSize(1);
+    }
+
+    @Test 
+    public void shouldFailValidationWhenDeleteWaypointWithIdNull() throws Exception {
+        Method method = WaypointServiceImpl.class.getMethod("delete", Waypoint.class);
+        Object[] parameterValues = { new Waypoint() };
+        Set<ConstraintViolation<WaypointServiceImpl>> violations = validator().forExecutables().validateParameters(
+                service,
+                method,
+                parameterValues
+        );
+        assertThat(violations).isNotNull().isNotEmpty().hasSize(1);
     }
 
     @Test 
@@ -120,7 +133,7 @@ public class WaypointServiceImplTest extends BaseMockitoTest {
     public void shouldForwardToFindWithinBoxWhenFindWaypointsHasBbox() {
         Coordinates c1 = Coordinates.ofLatLng(12.24, 53.545);
         Coordinates c2 = Coordinates.ofLatLng(21.45, 37.5);
-        BoundingBox bbox = new BoundingBox(c1, c2);
+        BoundingBox bbox = BoundingBox.ofBottomTop(c1, c2);
         WaypointsQuery query = new WaypointsQuery.Builder()
                 .withinBoundingBox(bbox)
                 .build();
@@ -146,8 +159,34 @@ public class WaypointServiceImplTest extends BaseMockitoTest {
     public void shouldForwardToFindWithinBoxWhenFindPoisForNameCompletion() {
         Coordinates c1 = Coordinates.ofLatLng(12.24, 53.545);
         Coordinates c2 = Coordinates.ofLatLng(21.45, 37.5);
-        BoundingBox bbox = new BoundingBox(c1, c2);
+        BoundingBox bbox = BoundingBox.ofBottomTop(c1, c2);
         service.findPoisForNameCompletion(bbox, null);
         verify(dao).findWithinBox(bbox, Type.POI, null, true);
+    }
+
+    protected Object[][] invalidWaypointsToPersist() {
+        Waypoint w1 = new Waypoint();
+        Waypoint w2 = new Waypoint();
+        w2.setType(Type.POI);
+
+        Waypoint w3 = new Waypoint();
+        w3.setType(Type.WALKWAY);
+
+        Waypoint w4 = new Waypoint();
+        w4.setType(Type.WALKWAY);
+        w4.setLocation(Coordinates.ofLatLng(12.4, -52.5));
+        w4.setName("Name");
+
+        Waypoint w5 = new Waypoint();
+        w5.setType(Type.POI);
+        w5.setLocation(Coordinates.ofLatLng(12.4, -52.5));
+
+        return new Object[][] {
+            {w1, 2},
+            {w2, 2},
+            {w3, 1},
+            {w4, 1},
+            {w5, 1}
+        };
     }
 }

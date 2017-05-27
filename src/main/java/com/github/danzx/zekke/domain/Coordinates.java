@@ -17,6 +17,8 @@ package com.github.danzx.zekke.domain;
 
 import java.util.Objects;
 
+import javax.validation.constraints.NotNull;
+
 import com.github.danzx.zekke.constraint.FloatRange;
 
 import org.mongodb.morphia.geo.GeoJson;
@@ -34,25 +36,56 @@ public class Coordinates {
     public static final double MAX_LONGITUDE = 180;
     public static final double MIN_LONGITUDE = -MAX_LONGITUDE;
 
-    @FloatRange(min = MIN_LATITUDE,  max = MAX_LATITUDE)  private final double latitude;
-    @FloatRange(min = MIN_LONGITUDE, max = MAX_LONGITUDE) private final double longitude;
+    private static final String LAT_LNG_SEPARATOR = ",";
 
-    /** @deprecated in favor of {@link #ofLatLng(double, double)} */
+    @NotNull @FloatRange(min = MIN_LATITUDE,  max = MAX_LATITUDE)  private final Double latitude;
+    @NotNull @FloatRange(min = MIN_LONGITUDE, max = MAX_LONGITUDE) private final Double longitude;
+
+    /**
+     * Only used by third party frameworks.
+     * 
+     * @deprecated in favor of {@link #ofLatLng(double, double)}
+     */
     @Deprecated
-    public Coordinates(double latitude, double longitude) {
+    public Coordinates(Double latitude, Double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    /** Factory constructor. */
-    public static Coordinates ofLatLng(double latitude, double longitude) {
+    /**
+     * Factory constructor.
+     * 
+     *  @param latitude is a decimal number between -90.0 and 90.0.
+     *  @param longitude is a decimal number between -180.0 and 180.0.
+     */
+    public static Coordinates ofLatLng(Double latitude, Double longitude) {
         return new Coordinates(latitude, longitude);
+    }
+
+    /**
+     * Creates a Coordinates object from the string representation as described in
+     * {@link #toString()}.
+     * 
+     * @param value a string that specifies a Coordinates object.
+     * @return a Coordinates object with the specified value.
+     * @throws IllegalArgumentException if the value does not conform to the string representation
+     *         as described in {@link #toString()}.
+     */
+    public static Coordinates fromString(String value) {
+        if (value == null) return null;
+        String[] latlng = value.split(LAT_LNG_SEPARATOR);
+        if (latlng.length != 2) throw new IllegalArgumentException("Coordinates bad format");
+        try {
+            return ofLatLng(Double.parseDouble(latlng[0]), Double.parseDouble(latlng[1]));
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("Componets of Coordinates must be doubles");
+        }
     }
 
     /** Converts a GeoJson point to a Coordinates object. */
     static Coordinates valueOf(Point point) {
         if (point == null) return null;
-        return new Coordinates(point.getLatitude(), point.getLongitude());
+        return ofLatLng(point.getLatitude(), point.getLongitude());
     }
 
     /** Converts this object to a GeoJson point. */
@@ -91,8 +124,13 @@ public class Coordinates {
         return Objects.hash(latitude, longitude);
     }
 
+    /**
+     * Returns a String object representing this Coordinates object. 
+     * 
+     * @return {@code <latitude_value>,<longitude_value>}
+     */
     @Override
     public String toString() {
-        return "{ latitude:" + latitude + ", longitude:" + longitude + " }";
+        return latitude + LAT_LNG_SEPARATOR + longitude;
     }
 }

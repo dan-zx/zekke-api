@@ -20,7 +20,11 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import com.github.danzx.zekke.base.Buildable;
+import com.github.danzx.zekke.constraint.NotNullId;
 import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
@@ -31,7 +35,7 @@ import com.github.danzx.zekke.domain.Waypoint.Type;
  * 
  * @author Daniel Pedraza-Arcega
  */
-public interface WaypointService extends PersistentService<Waypoint> {
+public interface WaypointService {
 
     /**
      * Persists the given waypoint into the underlying datastore.
@@ -42,7 +46,7 @@ public interface WaypointService extends PersistentService<Waypoint> {
      * @throws ServiceException if the given waypoint is of type {@value Type#POI} and a name is not
      *         present.
      */
-    void persist(Waypoint waypoint);
+    void persist(@NotNull @Valid Waypoint waypoint);
 
     /**
      * Finds a waypoint by its id.
@@ -58,7 +62,7 @@ public interface WaypointService extends PersistentService<Waypoint> {
      * @param query a query.
      * @return a list of waypoints or an empty list.
      */
-    List<Waypoint> findWaypoints(WaypointsQuery query);
+    List<Waypoint> findWaypoints(@NotNull WaypointsQuery query);
 
     /**
      * Finds all waypoints near a point matching the given query.
@@ -66,7 +70,7 @@ public interface WaypointService extends PersistentService<Waypoint> {
      * @param query a query.
      * @return a list of waypoints or an empty list.
      */
-    List<Waypoint> findNearWaypoints(NearWaypointsQuery query);
+    List<Waypoint> findNearWaypoints(@NotNull NearWaypointsQuery query);
 
     /**
      * Finds all POIs with only its id and name initialized matching the given query.
@@ -75,7 +79,15 @@ public interface WaypointService extends PersistentService<Waypoint> {
      * @param nameQuery a name query.
      * @return a list of waypoints or an empty list.
      */
-    List<Waypoint> findPoisForNameCompletion(BoundingBox bbox, String nameQuery);
+    List<Waypoint> findPoisForNameCompletion(@NotNull @Valid BoundingBox bbox, String nameQuery);
+
+    /**
+     * Deletes the given waypoint from the underlying datastore.
+     *  
+     * @param waypoint the waypoint to delete.
+     * @return true if the object with given was deleted; otherwise false.
+     */
+    boolean delete(@NotNull @NotNullId Waypoint waypoint);
 
     class WaypointsQuery {
         private final Builder builder;
@@ -84,8 +96,8 @@ public interface WaypointService extends PersistentService<Waypoint> {
             this.builder = builder;
         }
 
-        public Optional<BoundingBox> getBoundingBox() {
-            return Optional.ofNullable(builder.boundingBox);
+        public BoundingBox getBoundingBox() {
+            return builder.boundingBox;
         }
 
         public String getNameQuery() {

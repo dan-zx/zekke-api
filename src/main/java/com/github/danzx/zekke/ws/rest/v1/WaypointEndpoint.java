@@ -36,7 +36,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.github.danzx.zekke.constraint.CheckId;
+import com.github.danzx.zekke.constraint.NullId;
 import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
@@ -134,7 +134,7 @@ public class WaypointEndpoint {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public TypedWaypoint newWaypoint(@NotNull @CheckId(shouldBeNull = true) @Valid TypedWaypoint typedWaypoint) {
+    public TypedWaypoint newWaypoint(@NotNull @NullId @Valid TypedWaypoint typedWaypoint) {
         Waypoint waypoint = waypointToTypedWaypointTransformer.revert(typedWaypoint);
         waypointService.persist(waypoint);
         typedWaypoint.setId(waypoint.getId());

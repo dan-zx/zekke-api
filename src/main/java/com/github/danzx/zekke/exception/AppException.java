@@ -16,12 +16,14 @@
 package com.github.danzx.zekke.exception;
 
 import static com.github.danzx.zekke.util.Strings.requireNonBlank;
+import static java.util.Objects.requireNonNull;
 
 import java.util.Locale;
 import java.util.Optional;
 
 import com.github.danzx.zekke.base.Buildable;
-import com.github.danzx.zekke.util.Messages;
+import com.github.danzx.zekke.message.MessageSource;
+import com.github.danzx.zekke.message.impl.MessageSourceFactory;
 
 /**
  * Base application exception.
@@ -34,6 +36,7 @@ public abstract class AppException extends RuntimeException {
 
     private final Optional<String> messageKey;
     private final Object[] messageArgs;
+    private final MessageSource messageSource = MessageSourceFactory.defaultSource();
 
     /**
      * Buildable constructor.
@@ -51,8 +54,9 @@ public abstract class AppException extends RuntimeException {
      * @return the localized version of the this exception's message.
      */
     public String getMessage(Locale locale) {
+        requireNonNull(locale);
         return messageKey
-                .map(messageKey -> Messages.getMessage(messageKey, locale == null ? Locale.ROOT : locale, messageArgs))
+                .map(messageKey -> messageSource.getMessage(messageKey, locale, messageArgs))
                 .orElse(getMessage());
     }
 
@@ -64,6 +68,7 @@ public abstract class AppException extends RuntimeException {
      */
     public static abstract class BaseAppExceptionBuilder<E extends AppException> implements Buildable<E> {
 
+        private final MessageSource messageSource = MessageSourceFactory.defaultSource();
         private String message;
         private Optional<String> messageKey;
         private Object[] messageArgs;
@@ -110,7 +115,7 @@ public abstract class AppException extends RuntimeException {
         }
 
         private String getMessage() {
-            return messageKey.map(messageKey -> Messages.getMessage(messageKey, messageArgs)).orElse(message);
+            return messageKey.map(messageKey -> messageSource.getMessage(messageKey, messageArgs)).orElse(message);
         }
 
         /** @return a new exception of type {@code E}. */

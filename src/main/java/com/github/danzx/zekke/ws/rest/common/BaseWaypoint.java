@@ -15,6 +15,7 @@
  */
 package com.github.danzx.zekke.ws.rest.common;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,7 +32,7 @@ public abstract class BaseWaypoint {
 
     private Long id;
 
-    @NotNull private Coordinates location;
+    @NotNull @Valid private Coordinates location;
 
     public Long getId() {
         return id;

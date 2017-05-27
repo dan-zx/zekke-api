@@ -13,5 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** Classes that convert REST parameters from/to strings-object-string. */
-package com.github.danzx.zekke.ws.rest.paramconverter;
+package com.github.danzx.zekke.test.mockito;
+
+import com.github.danzx.zekke.test.BaseValidationTest;
+import org.junit.Rule;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+
+public class BaseMockitoValidationTest extends BaseValidationTest {
+
+    @Rule public final MockitoRule mockitoInitializerRule = MockitoJUnit.rule();
+}

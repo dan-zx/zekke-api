@@ -13,5 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** Domain object validators. */
-package com.github.danzx.zekke.domain.validator;
+package com.github.danzx.zekke.test.spring;
+
+import com.github.danzx.zekke.test.mockito.BaseMockitoTest;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.springframework.test.context.junit4.rules.SpringClassRule;
+import org.springframework.test.context.junit4.rules.SpringMethodRule;
+
+public abstract class BaseMockitoSpringTest extends BaseMockitoTest {
+
+    @ClassRule public static final SpringClassRule SPRING_CLASS_RULE = new SpringClassRule();
+    @Rule public final SpringMethodRule springMethodRule = new SpringMethodRule();
+}
