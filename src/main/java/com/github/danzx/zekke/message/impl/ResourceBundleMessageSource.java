@@ -1,9 +1,10 @@
 package com.github.danzx.zekke.message.impl;
 
-import static com.github.danzx.zekke.util.Strings.requireNonBlank;
 import static java.util.Collections.singleton;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
+
+import static com.github.danzx.zekke.util.Strings.requireNonBlank;
 
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -14,15 +15,32 @@ import java.util.Set;
 import com.github.danzx.zekke.message.MessageNotFoundException;
 import com.github.danzx.zekke.message.MessageSource;
 
+/**
+ * Uses a ResourceBundle to locate messages. Throws MessageNotFoundException when a message cannot
+ * be found.
+ * 
+ * @author Daniel Pedraza-Arcega
+ */
 public class ResourceBundleMessageSource implements MessageSource {
     
     private final String basename;
     private final Set<Locale> supportedLocales;
 
+    /**
+     * Constructs a new ResourceBundleMessageSource. Only finds messages in the root locale.
+     * 
+     * @param basename the basename of the ResourceBundle.
+     */
     public ResourceBundleMessageSource(String basename) {
         this(basename, singleton(Locale.ROOT));
     }
 
+    /**
+     * Constructs a new ResourceBundleMessageSource.
+     * 
+     * @param basename the basename of the ResourceBundle.
+     * @param supportedLocales a set of supported locales find the correct translation.
+     */
     public ResourceBundleMessageSource(String basename, Set<Locale> supportedLocales) {
         this.basename = requireNonBlank(basename);
         requireNonNull(supportedLocales);

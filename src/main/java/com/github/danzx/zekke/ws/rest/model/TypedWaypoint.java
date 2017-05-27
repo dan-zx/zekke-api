@@ -13,11 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.ws.rest.common;
+package com.github.danzx.zekke.ws.rest.model;
+
+import javax.validation.constraints.NotNull;
+
+import com.github.danzx.zekke.domain.Waypoint.Type;
 
 /**
- * Walkway request/response object.
+ * Waypoint request/response object with type.
  * 
  * @author Daniel Pedraza-Arcega
  */
-public class Walkway extends BaseWaypoint { }
+public class TypedWaypoint extends BaseWaypoint {
+
+    @NotNull private Type type;
+
+    private String name;
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}

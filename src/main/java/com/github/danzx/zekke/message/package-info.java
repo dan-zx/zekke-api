@@ -13,29 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.service;
-
-/**
- * Persistent service.
- * 
- * @param <E> the element to persist.
- * 
- * @author Daniel Pedraza-Arcega
- */
-public interface PersistentService<E> {
-
-    /**
-     * Persists the given element into the underlying datastore.
-     *  
-     * @param element an element to persist.
-     */
-    void persist(E element);
-
-    /**
-     * Deletes the given element from the underlying datastore.
-     *  
-     * @param element the element to delete.
-     * @return true if the object with given was deleted; otherwise false.
-     */
-    boolean delete(E element);
-}
+/** Message sources and exceptions. */
+package com.github.danzx.zekke.message;

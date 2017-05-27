@@ -27,11 +27,12 @@ import javax.ws.rs.ext.Provider;
 import com.github.danzx.zekke.message.LocaleHolder;
 
 /**
+ * This filter sets the primary client locale to the LocaleHolder.
+ * 
  * @author Daniel Pedraza-Arcega
- *
  */
 @Provider
-public class AcceptLanguageRequestFilter implements ContainerRequestFilter {
+public class ClientLocaleHolederListener implements ContainerRequestFilter {
 
     private HttpHeaders headers;
 

@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**  Bean validation annotations for domain constraints. */
-package com.github.danzx.zekke.domain.constraint;
+/** Exception mappers. */
+package com.github.danzx.zekke.ws.rest.errormapper;

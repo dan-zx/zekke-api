@@ -22,8 +22,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 
 /**
+ * General web configuration
+ * 
  * @author Daniel Pedraza-Arcega
- *
  */
 @Configuration
 public class WebConfig {

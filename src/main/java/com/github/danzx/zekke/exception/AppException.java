@@ -15,8 +15,9 @@
  */
 package com.github.danzx.zekke.exception;
 
-import static com.github.danzx.zekke.util.Strings.requireNonBlank;
 import static java.util.Objects.requireNonNull;
+
+import static com.github.danzx.zekke.util.Strings.requireNonBlank;
 
 import java.util.Locale;
 import java.util.Optional;

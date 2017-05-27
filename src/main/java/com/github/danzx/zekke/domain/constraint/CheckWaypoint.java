@@ -29,8 +29,9 @@ import javax.validation.Payload;
 import com.github.danzx.zekke.domain.constraint.validator.WaypointValidator;
 
 /**
+ * Validate that the Waypoint is correct.
+ * 
  * @author Daniel Pedraza-Arcega
- *
  */
 @Documented
 @Retention(RUNTIME)

@@ -30,8 +30,7 @@ import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.test.spring.BaseSpringTest;
-import com.github.danzx.zekke.ws.rest.common.TypedWaypoint;
-
+import com.github.danzx.zekke.ws.rest.model.TypedWaypoint;
 import org.junit.Before;
 import org.junit.Test;
 

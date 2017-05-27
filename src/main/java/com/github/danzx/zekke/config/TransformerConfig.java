@@ -17,9 +17,9 @@ package com.github.danzx.zekke.config;
 
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
-import com.github.danzx.zekke.ws.rest.common.Poi;
-import com.github.danzx.zekke.ws.rest.common.TypedWaypoint;
-import com.github.danzx.zekke.ws.rest.common.Walkway;
+import com.github.danzx.zekke.ws.rest.model.Poi;
+import com.github.danzx.zekke.ws.rest.model.TypedWaypoint;
+import com.github.danzx.zekke.ws.rest.model.Walkway;
 import com.github.danzx.zekke.ws.rest.transformer.Transformer;
 import com.github.danzx.zekke.ws.rest.transformer.orika.WaypointOrikaTransformer;
 

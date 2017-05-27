@@ -44,9 +44,9 @@ import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.service.WaypointService;
 import com.github.danzx.zekke.service.WaypointService.NearWaypointsQuery;
 import com.github.danzx.zekke.service.WaypointService.WaypointsQuery;
-import com.github.danzx.zekke.ws.rest.common.Poi;
-import com.github.danzx.zekke.ws.rest.common.TypedWaypoint;
-import com.github.danzx.zekke.ws.rest.common.Walkway;
+import com.github.danzx.zekke.ws.rest.model.Poi;
+import com.github.danzx.zekke.ws.rest.model.TypedWaypoint;
+import com.github.danzx.zekke.ws.rest.model.Walkway;
 import com.github.danzx.zekke.ws.rest.transformer.Transformer;
 
 import org.springframework.stereotype.Component;

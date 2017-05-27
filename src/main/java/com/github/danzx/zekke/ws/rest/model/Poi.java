@@ -13,5 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** Response and request objects. */
-package com.github.danzx.zekke.ws.rest.common;
+package com.github.danzx.zekke.ws.rest.model;
+
+/**
+ * POI request/response object.
+ * 
+ * @author Daniel Pedraza-Arcega
+ */
+public class Poi extends BaseWaypoint {
+
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}

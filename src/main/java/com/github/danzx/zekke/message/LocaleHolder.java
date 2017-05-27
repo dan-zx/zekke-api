@@ -19,8 +19,10 @@ import java.util.Locale;
 import java.util.Optional;
 
 /**
+ * This class uses a ThreadLocal to hold a Locale that will be used to interpolate messages to the 
+ * correct language.
+ * 
  * @author Daniel Pedraza-Arcega
- *
  */
 public class LocaleHolder {
 

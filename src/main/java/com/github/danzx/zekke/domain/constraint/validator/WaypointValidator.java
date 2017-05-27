@@ -23,7 +23,7 @@ import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.domain.constraint.CheckWaypoint;
 
 /**
- * Waypoint validator. Checks for non null
+ * Waypoint validator.
  * 
  * @author Daniel Pedraza-Arcega
  */

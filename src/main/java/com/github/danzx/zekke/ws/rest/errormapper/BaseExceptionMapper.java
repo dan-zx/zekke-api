@@ -24,13 +24,21 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
 /**
+ * Base JSON exception mapper.
+ * 
  * @author Daniel Pedraza-Arcega
- *
  */
 abstract class BaseExceptionMapper<E extends Throwable> implements ExceptionMapper<E> {
 
     private HttpHeaders headers;
 
+    /**
+     * Creates a new response.
+     * 
+     * @param status the status
+     * @param entity the entity.
+     * @return a JSON response.
+     */
     protected Response buildJsonResponse(Response.Status status, Object entity) {
         return Response.status(status)
                 .type(MediaType.APPLICATION_JSON)
@@ -38,11 +46,12 @@ abstract class BaseExceptionMapper<E extends Throwable> implements ExceptionMapp
                 .build();
     }
 
+    /** @retun the client primary locale or Locale.ROOT, never null. */
     protected Locale getClientLocale() {
         return headers.getAcceptableLanguages().stream().findFirst().orElse(Locale.ROOT);
     }
 
-    public HttpHeaders getHeaders() {
+    protected HttpHeaders getHeaders() {
         return headers;
     }
 

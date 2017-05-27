@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.github.danzx.zekke.ws.rest.common;
+package com.github.danzx.zekke.ws.rest.model;
 
 import java.util.HashMap;
 import java.util.Map;
