@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.ws.rest.transformer;
+package com.github.danzx.zekke.transformer;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -30,17 +30,17 @@ import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.test.spring.BaseSpringTest;
-import com.github.danzx.zekke.transformer.Transformer;
-import com.github.danzx.zekke.ws.rest.model.Poi;
+import com.github.danzx.zekke.ws.rest.model.TypedWaypoint;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(classes = TransformerConfig.class)
-public class Waypoint2PoiTransformerTest extends BaseSpringTest {
+public class Waypoint2TypedWaypointTransformerTest extends BaseSpringTest {
 
-    private @Inject Transformer<Waypoint, Poi> transformer;
+    private @Inject Transformer<Waypoint, TypedWaypoint> transformer;
 
     @Before
     public void setUp() {
@@ -50,15 +50,22 @@ public class Waypoint2PoiTransformerTest extends BaseSpringTest {
     @Test
     public void shouldConvertSingle() {
         Waypoint waypoint = newWaypoint(1L, "Name", Type.POI, 12.43, 43.5);
-        Poi actualPoi = transformer.convertAtoB(waypoint);
-        assertThat(actualPoi).isNotNull().extracting(Poi::getId, Poi::getName, Poi::getLocation).containsOnly(waypoint.getId(), waypoint.getName().get(), waypoint.getLocation());
+        TypedWaypoint actual = transformer.convertAtoB(waypoint);
+        assertThat(actual).isNotNull().extracting(TypedWaypoint::getId, TypedWaypoint::getName, TypedWaypoint::getLocation, TypedWaypoint::getType).containsOnly(waypoint.getId(), waypoint.getName().get(), waypoint.getLocation(), waypoint.getType());
     }
 
     @Test
     public void shouldRevertSingle() {
         Waypoint expectedWaypoint = newWaypoint(1L, "Name", Type.POI, 12.43, 43.5);
-        Waypoint actualWaypoint = transformer.convertBtoA(transformer.convertAtoB(expectedWaypoint));
-        assertThat(actualWaypoint).isNotNull().isEqualTo(expectedWaypoint);
+        Waypoint actual = transformer.convertBtoA(transformer.convertAtoB(expectedWaypoint));
+        assertThat(actual).isNotNull().isEqualTo(expectedWaypoint);
+    }
+
+    @Test
+    public void shouldRevertSingle2() {
+        Waypoint expectedWaypoint = newWaypoint(1L, null, Type.WALKWAY, 12.43, 43.5);
+        Waypoint actual = transformer.convertBtoA(transformer.convertAtoB(expectedWaypoint));
+        assertThat(actual).isNotNull().isEqualTo(expectedWaypoint);
     }
 
     @Test
@@ -74,8 +81,8 @@ public class Waypoint2PoiTransformerTest extends BaseSpringTest {
     @Test
     public void shouldConvertList() {
         Waypoint waypoint = newWaypoint(1L, "Name", Type.POI, 12.43, 43.5);
-        List<Poi> actualPois = transformer.convertListAtoListB(singletonList(waypoint));
-        assertThat(actualPois).isNotNull().isNotEmpty().extracting(Poi::getId, Poi::getName, Poi::getLocation).containsOnly(tuple(waypoint.getId(), waypoint.getName().get(), waypoint.getLocation()));
+        List<TypedWaypoint> actual = transformer.convertListAtoListB(singletonList(waypoint));
+        assertThat(actual).isNotNull().extracting(TypedWaypoint::getId, TypedWaypoint::getName, TypedWaypoint::getLocation, TypedWaypoint::getType).containsOnly(tuple(waypoint.getId(), waypoint.getName().get(), waypoint.getLocation(), waypoint.getType()));
     }
 
     @Test
