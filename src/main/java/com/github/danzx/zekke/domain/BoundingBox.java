@@ -27,7 +27,7 @@ import javax.validation.constraints.NotNull;
  */
 public class BoundingBox {
 
-    private static final String COORDINATES_SEPARATOR = "|";
+    private static final String COORDINATES_SEPARATOR = ";";
 
     @NotNull @Valid private final Coordinates bottomCoordinates;
     @NotNull @Valid private final Coordinates topCoordinates;
@@ -104,7 +104,7 @@ public class BoundingBox {
     /**
      * Returns a String object representing this BoundingBox. 
      * 
-     * @return {@code <bottom_latitude>,<left_longitude>|<top_latitude>,<right_longitude>}
+     * @return {@code <bottom_latitude>,<left_longitude>;<top_latitude>,<right_longitude>}
      */
     @Override
     public String toString() {

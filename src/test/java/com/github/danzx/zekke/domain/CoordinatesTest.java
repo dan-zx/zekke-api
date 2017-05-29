@@ -21,6 +21,7 @@ import static com.github.danzx.zekke.domain.Coordinates.MIN_LATITUDE;
 import static com.github.danzx.zekke.domain.Coordinates.MIN_LONGITUDE;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Set;
 
@@ -103,6 +104,22 @@ public class CoordinatesTest extends BaseValidationTest {
     public void shouldHashCodeBeEqualWhenSameObjectReference() {
         Coordinates testPoint = Coordinates.ofLatLng(VALID_COORDINATES.getLatitude(), VALID_COORDINATES.getLongitude());
         assertThat(VALID_COORDINATES.hashCode()).isEqualTo(VALID_COORDINATES.hashCode()).isEqualTo(testPoint.hashCode());
+    }
+
+    @Test
+    public void shouldConvertToAndFromString() {
+        assertThat(Coordinates.fromString(VALID_COORDINATES.toString())).isNotNull().isEqualTo(VALID_COORDINATES);
+    }
+
+    @Test
+    public void shouldFromStringReturnNullWhenNull() {
+        assertThat(Coordinates.fromString(null)).isNull();
+    }
+
+    @Test
+    public void shouldFromStringThrowIllegalArgumentExceptionWhenValidIsNotValid() {
+        assertThatThrownBy(() -> Coordinates.fromString("sdfsdf")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Coordinates.fromString("sdf,sdf")).isInstanceOf(IllegalArgumentException.class);
     }
 
     protected Object[][] invalidLatLng() {

@@ -15,7 +15,7 @@
  */
 package com.github.danzx.zekke.domain;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import org.junit.Test;
 
@@ -59,6 +59,21 @@ public class BoundingBoxTest {
     public void shouldHashCodeBeEqualWhenSameObjectReference() {
         BoundingBox testBbox = newBoundingBox();
         assertThat(BBOX_TESTEE.hashCode()).isEqualTo(BBOX_TESTEE.hashCode()).isEqualTo(testBbox.hashCode());
+    }
+
+    @Test
+    public void shouldConvertToAndFromString() {
+        assertThat(BoundingBox.fromString(BBOX_TESTEE.toString())).isNotNull().isEqualTo(BBOX_TESTEE);
+    }
+
+    @Test
+    public void shouldFromStringReturnNullWhenNull() {
+        assertThat(BoundingBox.fromString(null)).isNull();
+    }
+
+    @Test
+    public void shouldFromStringThrowIllegalArgumentExceptionWhenValidIsNotValid() {
+        assertThatThrownBy(() -> BoundingBox.fromString("sdfsdf")).isInstanceOf(IllegalArgumentException.class);
     }
 
     private static BoundingBox newBoundingBox() {

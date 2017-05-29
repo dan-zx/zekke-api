@@ -77,6 +77,18 @@ public class StringsTest {
     }
 
     @Test
+    public void shouldRequireNonNullDoNotThrowAnyExceptionAndReturnTheSameStringWhenNotBlank() {
+        String s = "sjdfh";
+        assertThat(requireNonBlank(s)).isEqualTo(s);
+    }
+
+    @Test
+    public void shouldRequireNonNullDoNotThrowAnyExceptionAndReturnTheSameStringWhenNotBlank2() {
+        String s = "sjdfh";
+        assertThat(requireNonBlank(s, "message")).isEqualTo(s);
+    }
+
+    @Test
     @Parameters(method = "allCapsStrings")
     public void shouldConvertAllCapsToPascalCase(String allCaps) {
         assertThat(allCapsToCamelCase(allCaps, true)).isNotBlank().isEqualTo("AllCaps");
