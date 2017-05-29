@@ -30,6 +30,7 @@ import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.test.spring.BaseSpringTest;
+import com.github.danzx.zekke.transformer.Transformer;
 import com.github.danzx.zekke.ws.rest.model.Walkway;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,49 +50,49 @@ public class Waypoint2WalkwayTransformerTest extends BaseSpringTest {
     @Test
     public void shouldConvertSingle() {
         Waypoint waypoint = newWaypoint(1L, null, Type.WALKWAY, 12.43, 43.5);
-        Walkway actualWalkway = transformer.convert(waypoint);
+        Walkway actualWalkway = transformer.convertAtoB(waypoint);
         assertThat(actualWalkway).isNotNull().extracting(Walkway::getId, Walkway::getLocation).containsOnly(waypoint.getId(), waypoint.getLocation());
     }
 
     @Test
     public void shouldRevertSingle() {
         Waypoint expectedWaypoint = newWaypoint(1L, null, Type.WALKWAY, 12.43, 43.5);
-        Waypoint actualWaypoint = transformer.revert(transformer.convert(expectedWaypoint));
+        Waypoint actualWaypoint = transformer.convertBtoA(transformer.convertAtoB(expectedWaypoint));
         assertThat(actualWaypoint).isNotNull().isEqualTo(expectedWaypoint);
     }
 
     @Test
     public void shouldConvertNull() {
-        assertThat(transformer.convert(null)).isNull();
+        assertThat(transformer.convertAtoB(null)).isNull();
     }
 
     @Test
     public void shouldRevertNull() {
-        assertThat(transformer.revert(null)).isNull();
+        assertThat(transformer.convertBtoA(null)).isNull();
     }
 
     @Test
     public void shouldConvertList() {
         Waypoint waypoint = newWaypoint(1L, null, Type.WALKWAY, 12.43, 43.5);
-        List<Walkway> actualWalkways = transformer.convertList(singletonList(waypoint));
+        List<Walkway> actualWalkways = transformer.convertListAtoListB(singletonList(waypoint));
         assertThat(actualWalkways).isNotNull().isNotEmpty().extracting(Walkway::getId, Walkway::getLocation).containsOnly(tuple(waypoint.getId(), waypoint.getLocation()));
     }
 
     @Test
     public void shouldConvertEmptyList() {
-        assertThat(transformer.convertList(emptyList())).isNotNull().isEmpty();
+        assertThat(transformer.convertListAtoListB(emptyList())).isNotNull().isEmpty();
     }
 
     @Test
     public void shouldRevertList() {
         List<Waypoint> expectedWaypoints = singletonList(newWaypoint(1L, null, Type.WALKWAY, 12.43, 43.5));
-        List<Waypoint> actualWaypoints = transformer.revertList(transformer.convertList(expectedWaypoints));
+        List<Waypoint> actualWaypoints = transformer.convertListBtoListA(transformer.convertListAtoListB(expectedWaypoints));
         assertThat(actualWaypoints).isNotNull().isNotEmpty().hasSameSizeAs(expectedWaypoints).isEqualTo(expectedWaypoints);
     }
 
     @Test
     public void shouldRevertEmptyList() {
-        assertThat(transformer.revertList(emptyList())).isNotNull().isEmpty();
+        assertThat(transformer.convertListBtoListA(emptyList())).isNotNull().isEmpty();
     }
 
     private Waypoint newWaypoint(long id, String name, Type type, double lat, double lng) {

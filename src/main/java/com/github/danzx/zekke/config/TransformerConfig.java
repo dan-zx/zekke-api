@@ -17,11 +17,11 @@ package com.github.danzx.zekke.config;
 
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
+import com.github.danzx.zekke.transformer.Transformer;
+import com.github.danzx.zekke.transformer.orika.WaypointOrikaTransformer;
 import com.github.danzx.zekke.ws.rest.model.Poi;
 import com.github.danzx.zekke.ws.rest.model.TypedWaypoint;
 import com.github.danzx.zekke.ws.rest.model.Walkway;
-import com.github.danzx.zekke.ws.rest.transformer.Transformer;
-import com.github.danzx.zekke.ws.rest.transformer.orika.WaypointOrikaTransformer;
 
 import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MapperFacade;

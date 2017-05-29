@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.ws.rest.transformer;
+package com.github.danzx.zekke.transformer;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
@@ -25,26 +25,26 @@ import java.util.List;
  * 
  * @author Daniel Pedraza-Arcega
  *
- * @param <T1> the first object type.
- * @param <T2> the second object type.
+ * @param <A> the first object type.
+ * @param <B> the second object type.
  */
-public interface Transformer<T1, T2> {
+public interface Transformer<A, B> {
 
     /** Converts the first type object into the second. */
-    T2 convert(T1 source);
+    B convertAtoB(A source);
 
     /** Converts the second type object into the first. */
-    T1 revert(T2 source);
+    A convertBtoA(B source);
 
     /** Converts a list of the first type object into a list of the second type. */
-    default List<T2> convertList(List<T1> list) {
+    default List<B> convertListAtoListB(List<A> list) {
         requireNonNull(list);
-        return list.stream().map(this::convert).collect(toList());
+        return list.stream().map(this::convertAtoB).collect(toList());
     }
 
     /** Converts a list of the second type object into a list of the first type. */
-    default List<T1> revertList(List<T2> list) {
+    default List<A> convertListBtoListA(List<B> list) {
         requireNonNull(list);
-        return list.stream().map(this::revert).collect(toList());
+        return list.stream().map(this::convertBtoA).collect(toList());
     }
 }

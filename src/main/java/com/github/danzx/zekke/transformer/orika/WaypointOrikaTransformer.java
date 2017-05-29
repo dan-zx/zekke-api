@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.ws.rest.transformer.orika;
+package com.github.danzx.zekke.transformer.orika;
 
 import static java.util.Objects.requireNonNull;
 
 import com.github.danzx.zekke.domain.Waypoint;
-import com.github.danzx.zekke.ws.rest.transformer.Transformer;
+import com.github.danzx.zekke.transformer.Transformer;
 
 import ma.glasnost.orika.MapperFacade;
 
@@ -40,20 +40,12 @@ public class WaypointOrikaTransformer<T> implements Transformer<Waypoint, T> {
     }
 
     @Override
-    public T convert(Waypoint source) {
+    public T convertAtoB(Waypoint source) {
         return mapperFacade.map(source, targetClass);
     }
 
     @Override
-    public Waypoint revert(T source) {
+    public Waypoint convertBtoA(T source) {
         return mapperFacade.map(source, Waypoint.class);
-    }
-
-    protected MapperFacade getMapperFacade() {
-        return mapperFacade;
-    }
-
-    protected Class<T> getTargetClass() {
-        return targetClass;
     }
 }

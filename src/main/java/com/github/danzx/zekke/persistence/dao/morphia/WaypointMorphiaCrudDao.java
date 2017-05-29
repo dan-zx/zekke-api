@@ -30,9 +30,10 @@ import com.github.danzx.zekke.persistence.dao.WaypointDao;
 import com.github.danzx.zekke.persistence.internal.mongo.Fields;
 import com.github.danzx.zekke.persistence.internal.mongo.MongoSequence;
 import com.github.danzx.zekke.persistence.internal.mongo.MongoSequenceManager;
+import com.github.danzx.zekke.transformer.Transformer;
 
 import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.geo.GeoJson;
+import org.mongodb.morphia.geo.Point;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.Shape;
 
@@ -49,10 +50,18 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
     private static final int NO_LIMIT = 0;
 
     private final MongoSequenceManager sequenceManager;
+    private final Transformer<Coordinates, Point> coordinatesTransformer;
+    private final Transformer<BoundingBox, Shape> boundingBoxTransformer;
 
-    public @Inject WaypointMorphiaCrudDao(Datastore datastore, MongoSequenceManager sequenceManager) {
+    public @Inject WaypointMorphiaCrudDao(
+                                          Datastore datastore, 
+                                          MongoSequenceManager sequenceManager, 
+                                          Transformer<Coordinates, Point> coordinatesTransformer,
+                                          Transformer<BoundingBox, Shape> boundingBoxTransformer) {
         super(datastore, Waypoint.class);
         this.sequenceManager = requireNonNull(sequenceManager);
+        this.coordinatesTransformer = requireNonNull(coordinatesTransformer);
+        this.boundingBoxTransformer = requireNonNull(boundingBoxTransformer);
     }
 
     @Override
@@ -85,7 +94,7 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
         Query<Waypoint> query = createQuery()
                 .field(Fields.Waypoint.LOCATION)
                 // A NullPointerException is thrown here but it seems to be working anyways WTF?
-                .near(GeoJson.point(location.getLatitude(), location.getLongitude()), optionalMaxDistance.orElse(DEFAULT_MAX_DISTANCE))
+                .near(coordinatesTransformer.convertAtoB(location), optionalMaxDistance.orElse(DEFAULT_MAX_DISTANCE))
                 // Deprecated but I don't now what other options can be used.
                 .limit(optionalLimit.orElse(NO_LIMIT));
         optionalWaypointType.ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));
@@ -98,12 +107,7 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
         Optional<Type> optionalWaypointType = Optional.ofNullable(waypointType);
         Optional<String> optionalNameQuery = Optional.ofNullable(nameQuery);
         Query<Waypoint> query = createQuery();
-        query.criteria(Fields.Waypoint.LOCATION)
-            .within(Shape.box(
-                    toShapePoint(bbox.getBottomCoordinates()), 
-                    toShapePoint(bbox.getTopCoordinates())
-                )
-        );
+        query.criteria(Fields.Waypoint.LOCATION).within(boundingBoxTransformer.convertAtoB(bbox));
         if (optionalNameQuery.isPresent()) {
             query.and(
                 query.criteria(Fields.Waypoint.NAME).containsIgnoreCase(optionalNameQuery.get()),
@@ -112,9 +116,5 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
         } else optionalWaypointType.ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));
         if (onlyIdAndName) query.project(Fields.Waypoint.NAME, true);
         return query.asList();
-    }
-
-    private Shape.Point toShapePoint(Coordinates coordinates) {
-        return new Shape.Point(coordinates.getLongitude(), coordinates.getLatitude());
     }
 }

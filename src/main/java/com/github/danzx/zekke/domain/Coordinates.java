@@ -20,8 +20,8 @@ import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
 import com.github.danzx.zekke.constraint.FloatRange;
+import com.github.danzx.zekke.transformer.mongo.Coordinates2GeoJsonPointTransformer;
 
-import org.mongodb.morphia.geo.GeoJson;
 import org.mongodb.morphia.geo.Point;
 
 /**
@@ -36,6 +36,7 @@ public class Coordinates {
     public static final double MAX_LONGITUDE = 180;
     public static final double MIN_LONGITUDE = -MAX_LONGITUDE;
 
+    private static final Coordinates2GeoJsonPointTransformer TRANSFORMER = new Coordinates2GeoJsonPointTransformer();
     private static final String LAT_LNG_SEPARATOR = ",";
 
     @NotNull @FloatRange(min = MIN_LATITUDE,  max = MAX_LATITUDE)  private final Double latitude;
@@ -84,13 +85,12 @@ public class Coordinates {
 
     /** Converts a GeoJson point to a Coordinates object. */
     static Coordinates valueOf(Point point) {
-        if (point == null) return null;
-        return ofLatLng(point.getLatitude(), point.getLongitude());
+        return TRANSFORMER.convertBtoA(point);
     }
 
     /** Converts this object to a GeoJson point. */
     Point toGeoJsonPoint() {
-        return GeoJson.point(latitude, longitude);
+        return TRANSFORMER.convertAtoB(this);
     }
 
     public double getLatitude() {

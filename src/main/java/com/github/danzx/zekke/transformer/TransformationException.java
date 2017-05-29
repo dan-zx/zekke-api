@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.ws.rest.transformer;
+package com.github.danzx.zekke.transformer;
 
 import com.github.danzx.zekke.exception.AppException;
 

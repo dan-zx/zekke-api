@@ -44,10 +44,10 @@ import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.service.WaypointService;
 import com.github.danzx.zekke.service.WaypointService.NearWaypointsQuery;
 import com.github.danzx.zekke.service.WaypointService.WaypointsQuery;
+import com.github.danzx.zekke.transformer.Transformer;
 import com.github.danzx.zekke.ws.rest.model.Poi;
 import com.github.danzx.zekke.ws.rest.model.TypedWaypoint;
 import com.github.danzx.zekke.ws.rest.model.Walkway;
-import com.github.danzx.zekke.ws.rest.transformer.Transformer;
 
 import org.springframework.stereotype.Component;
 
@@ -87,7 +87,7 @@ public class WaypointEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     public List<TypedWaypoint> getTypedWaypoints(@Valid @QueryParam("bbox") BoundingBox bbox) {
         List<Waypoint> waypoints = queryWaypoints(null, bbox, null);
-        return waypointToTypedWaypointTransformer.convertList(waypoints);
+        return waypointToTypedWaypointTransformer.convertListAtoListB(waypoints);
     }
 
     /**
@@ -106,7 +106,7 @@ public class WaypointEndpoint {
             @Valid @QueryParam("bbox") BoundingBox bbox,
             @QueryParam("query") String queryStr) {
         List<Waypoint> waypoints = queryWaypoints(Type.POI, bbox, queryStr);
-        return waypointToPoiTransformer.convertList(waypoints);
+        return waypointToPoiTransformer.convertListAtoListB(waypoints);
     }
 
     /**
@@ -122,7 +122,7 @@ public class WaypointEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     public List<Walkway> getWalkways(@Valid @QueryParam("bbox") BoundingBox bbox) {
         List<Waypoint> waypoints = queryWaypoints(Type.WALKWAY, bbox, null);
-        return waypointToWalkwayTransformer.convertList(waypoints);
+        return waypointToWalkwayTransformer.convertListAtoListB(waypoints);
     }
 
     /**
@@ -135,7 +135,7 @@ public class WaypointEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public TypedWaypoint newWaypoint(@NotNull @NullId @Valid TypedWaypoint typedWaypoint) {
-        Waypoint waypoint = waypointToTypedWaypointTransformer.revert(typedWaypoint);
+        Waypoint waypoint = waypointToTypedWaypointTransformer.convertBtoA(typedWaypoint);
         waypointService.persist(waypoint);
         typedWaypoint.setId(waypoint.getId());
         return typedWaypoint;
@@ -157,7 +157,7 @@ public class WaypointEndpoint {
             @Valid @QueryParam("bbox") BoundingBox bbox, 
             @QueryParam("query") String queryStr) {
         List<Waypoint> pois = waypointService.findPoisForNameCompletion(bbox, queryStr);
-        return waypointToPoiTransformer.convertList(pois);
+        return waypointToPoiTransformer.convertListAtoListB(pois);
     }
 
     /**
@@ -178,7 +178,7 @@ public class WaypointEndpoint {
             @QueryParam("limit") Integer limit
             ) {
         List<Waypoint> waypoints = queryNearWaypoints(null, location, distance, limit);
-        return waypointToTypedWaypointTransformer.convertList(waypoints);
+        return waypointToTypedWaypointTransformer.convertListAtoListB(waypoints);
     }
 
     /**
@@ -199,7 +199,7 @@ public class WaypointEndpoint {
             @QueryParam("limit") Integer limit
             ) {
         List<Waypoint> waypoints = queryNearWaypoints(Type.POI, location, distance, limit);
-        return waypointToPoiTransformer.convertList(waypoints);
+        return waypointToPoiTransformer.convertListAtoListB(waypoints);
     }
 
     /**
@@ -220,7 +220,7 @@ public class WaypointEndpoint {
             @QueryParam("limit") Integer limit
             ) {
         List<Waypoint> waypoints = queryNearWaypoints(Type.WALKWAY, location, distance, limit);
-        return waypointToWalkwayTransformer.convertList(waypoints);
+        return waypointToWalkwayTransformer.convertListAtoListB(waypoints);
     }
 
     /**
@@ -234,7 +234,7 @@ public class WaypointEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getWaypoint(@NotNull @PathParam("id") Long id) {
         return waypointService.findWaypointById(id)
-                .map(waypoint -> waypointToTypedWaypointTransformer.convert(waypoint))
+                .map(waypoint -> waypointToTypedWaypointTransformer.convertAtoB(waypoint))
                 .map(typedWaypoint -> Response.ok(typedWaypoint).build())
                 .orElse(Response.status(Status.NOT_FOUND).build());
     }
