@@ -18,10 +18,17 @@ package com.github.danzx.zekke.message.impl;
 import com.github.danzx.zekke.message.MessageSource;
 
 /**
+ * Creates message sources.
+ * 
  * @author Daniel Pedraza-Arcega
  */
 public class MessageSourceFactory {
 
+    private MessageSourceFactory() {
+        throw new AssertionError();
+    }
+
+    /** @return the default message source for this application. */
     public static MessageSource defaultSource() {
         return InstanceHolder.INSTANCE;
     }
@@ -29,5 +36,9 @@ public class MessageSourceFactory {
     private static class InstanceHolder {
         private static final String MESSAGES_BASENAME = "com.github.danzx.zekke.Messages";
         private static final MessageSource INSTANCE = new DefaultMessageDecorator(new ResourceBundleMessageSource(MESSAGES_BASENAME));
+
+        private InstanceHolder() {
+            throw new AssertionError();
+        }
     }
 }
