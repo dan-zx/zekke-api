@@ -178,7 +178,7 @@ public interface WaypointService {
             }
 
             public Builder limitResulsTo(Integer limit) {
-                if (limit != null && limit > 0) this.limit = limit;
+                this.limit = limit;
                 return this;
             }
 
