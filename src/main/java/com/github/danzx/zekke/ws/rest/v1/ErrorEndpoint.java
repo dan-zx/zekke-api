@@ -20,6 +20,7 @@ import static com.github.danzx.zekke.ws.rest.ApiVersions.V_1;
 import java.util.List;
 import java.util.Locale;
 
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
@@ -53,7 +54,7 @@ public class ErrorEndpoint {
     @GET
     @Path("/404")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response resourceNotFound(@HeaderParam("Accept-Language") List<Locale> locales) {
+    public Response resourceNotFound(@NotNull @HeaderParam("Accept-Language") List<Locale> locales) {
         Locale clientLocale = locales.stream().findFirst().orElse(Locale.ROOT);
         Response.Status status = Response.Status.NOT_FOUND;
         ErrorMessage errorMessage = new ErrorMessage.Builder()
