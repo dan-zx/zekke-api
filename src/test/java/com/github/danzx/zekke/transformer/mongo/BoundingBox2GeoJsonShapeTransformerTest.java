@@ -15,7 +15,7 @@
  */
 package com.github.danzx.zekke.transformer.mongo;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Coordinates;
@@ -36,7 +36,12 @@ public class BoundingBox2GeoJsonShapeTransformerTest {
     }
 
     @Test
-    public void shouldNullToNull() {
+    public void shouldConbertNullAToNullB() {
         assertThat(TRANSFORMER.convertAtoB(null)).isNull();
+    }
+
+    @Test
+    public void shouldConvertBtoAThrowUnsupportedOperationException() {
+        assertThatThrownBy(() -> TRANSFORMER.convertBtoA(null)).isInstanceOf(UnsupportedOperationException.class);
     }
 }
