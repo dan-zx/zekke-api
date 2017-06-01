@@ -41,9 +41,9 @@ public interface WaypointService {
      * Persists the given waypoint into the underlying datastore.
      * 
      * @param waypoint an element to persist.
-     * @throws ServiceException if the given waypoint is of type {@value Type#WALKWAY} and a name is
+     * @throws ServiceException if the given waypoint is of type {@link Type#WALKWAY} and a name is
      *         present.
-     * @throws ServiceException if the given waypoint is of type {@value Type#POI} and a name is not
+     * @throws ServiceException if the given waypoint is of type {@link Type#POI} and a name is not
      *         present.
      */
     void persist(@NotNull @Valid Waypoint waypoint);

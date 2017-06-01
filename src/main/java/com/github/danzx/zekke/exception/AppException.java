@@ -80,7 +80,10 @@ public abstract class AppException extends RuntimeException {
             messageKey = Optional.empty();
         }
 
-        /** @param messageKey the key for the desired message. */
+        /** 
+         * @param messageKey the key for the desired message.
+         * @return this object for method chaining.
+         */
         public BaseAppExceptionBuilder<E> messageKey(String messageKey) {
             requireNonBlank(messageKey);
             this.messageKey = Optional.of(messageKey);
@@ -88,7 +91,10 @@ public abstract class AppException extends RuntimeException {
             return this;
         }
 
-        /** @param message the message of the exception. */
+        /** 
+         * @param message the message of the exception.
+         * @return this object for method chaining.
+         */
         public BaseAppExceptionBuilder<E> message(String message) {
             this.message = requireNonBlank(message);
             messageKey = Optional.empty();
@@ -98,6 +104,7 @@ public abstract class AppException extends RuntimeException {
         /**
          * @param arg1 the object to be formatted and substituted in the message.
          * @param moreArgs other objects to be formatted and substituted in the message.
+         * @return this object for method chaining.
          */
         public BaseAppExceptionBuilder<E> messageArgs(Object arg1, Object... moreArgs) {
             if (moreArgs == null || moreArgs.length == 0) messageArgs = new Object[] {arg1};
@@ -109,7 +116,10 @@ public abstract class AppException extends RuntimeException {
             return this;
         }
 
-        /** @param throwable the cause. */
+        /** 
+         * @param throwable the cause.
+         * @return this object for method chaining. 
+         */
         public BaseAppExceptionBuilder<E> cause(Throwable throwable) {
             this.throwable = throwable;
             return this;

@@ -25,8 +25,6 @@ import com.github.danzx.zekke.domain.Waypoint.Type;
 /**
  * Waypoint CRUD DAO.
  * 
- * @param <W> a waypoint implementation.
- * 
  * @author Daniel Pedraza-Arcega
  */
 public interface WaypointDao extends CrudDao<Waypoint, Long> {

@@ -46,7 +46,7 @@ abstract class BaseExceptionMapper<E extends Throwable> implements ExceptionMapp
                 .build();
     }
 
-    /** @retun the client primary locale or Locale.ROOT, never null. */
+    /** @return the client primary locale or Locale.ROOT, never null. */
     protected Locale getClientLocale() {
         return headers.getAcceptableLanguages().stream().findFirst().orElse(Locale.ROOT);
     }

@@ -45,7 +45,9 @@ public class Coordinates {
     /**
      * Only used by third party frameworks.
      * 
-     * @deprecated in favor of {@link #ofLatLng(double, double)}
+     * @deprecated in favor of {@link #ofLatLng(Double, Double)}
+     * @param latitude is a decimal number between -90.0 and 90.0.
+     * @param longitude is a decimal number between -180.0 and 180.0.
      */
     @Deprecated
     public Coordinates(Double latitude, Double longitude) {
@@ -56,8 +58,9 @@ public class Coordinates {
     /**
      * Factory constructor.
      * 
-     *  @param latitude is a decimal number between -90.0 and 90.0.
-     *  @param longitude is a decimal number between -180.0 and 180.0.
+     * @param latitude is a decimal number between -90.0 and 90.0.
+     * @param longitude is a decimal number between -180.0 and 180.0.
+     * @return a new Coordinates object.
      */
     public static Coordinates ofLatLng(Double latitude, Double longitude) {
         return new Coordinates(latitude, longitude);
@@ -112,7 +115,9 @@ public class Coordinates {
     /**
      * Use this method to complete your equals method.
      * 
-     * @see {@link #equals(Object)}
+     * @see java.lang.Object#equals(java.lang.Object)
+     * @param other the reference object with which to compare.
+     * @return {@code true} if this object is the same as the argument; {@code false} otherwise.
      */
     protected boolean isCoordinatesEqualTo(Coordinates other) {
         return Objects.equals(latitude, other.latitude) && 

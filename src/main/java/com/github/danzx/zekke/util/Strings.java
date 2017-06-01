@@ -101,7 +101,7 @@ public class Strings {
     }
 
     /**
-     * @param a string. 
+     * @param s a string. 
      * @return the given string between double quotes.
      */
     public static String quoted(String s) {

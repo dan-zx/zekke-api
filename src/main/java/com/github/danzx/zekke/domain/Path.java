@@ -68,7 +68,10 @@ public class Path {
 
     /**
      * Use this method to complete your equals method.
-     * @see {@link #equals(Object)}
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     * @param other the reference object with which to compare.
+     * @return {@code true} if this object is the same as the argument; {@code false} otherwise.
      */
     protected boolean isPathEqualTo(Path other) {
         return Objects.equals(fromWaypoint, other.fromWaypoint) &&

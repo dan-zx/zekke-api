@@ -36,6 +36,8 @@ public class BoundingBox {
      * Only used by third party frameworks.
      * 
      * @deprecated in favor of {@link #ofBottomTop(Coordinates, Coordinates)}
+     * @param bottomCoordinates the bottom coordinates.
+     * @param topCoordinates the top coordinates.
      */
     @Deprecated
     public BoundingBox(Coordinates bottomCoordinates, Coordinates topCoordinates) {
@@ -48,6 +50,7 @@ public class BoundingBox {
      * 
      * @param bottomCoordinates the bottom coordinates.
      * @param topCoordinates the top coordinates.
+     * @return a new BoundingBox.
      */
     public static BoundingBox ofBottomTop(Coordinates bottomCoordinates, Coordinates topCoordinates) {
         return new BoundingBox(bottomCoordinates, topCoordinates);
@@ -94,11 +97,13 @@ public class BoundingBox {
     /**
      * Use this method to complete your equals method.
      * 
-     * @see {@link #equals(Object)}
+     * @see java.lang.Object#equals(java.lang.Object)
+     * @param other the reference object with which to compare.
+     * @return {@code true} if this object is the same as the argument; {@code false} otherwise.
      */
-    protected boolean isBoundingBoxEqualTo(BoundingBox bbox) {
-        return Objects.equals(bottomCoordinates, bbox.bottomCoordinates) &&
-               Objects.equals(topCoordinates, bbox.topCoordinates);
+    protected boolean isBoundingBoxEqualTo(BoundingBox other) {
+        return Objects.equals(bottomCoordinates, other.bottomCoordinates) &&
+               Objects.equals(topCoordinates, other.topCoordinates);
     }
 
     /**

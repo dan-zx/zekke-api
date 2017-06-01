@@ -30,21 +30,40 @@ import java.util.List;
  */
 public interface Transformer<A, B> {
 
-    /** Converts the first type object into the second. */
+    /** 
+     * Converts the first type object into the second.
+     * 
+     * @param source the object to be converted.
+     * @return the object converted. 
+     */
     B convertAtoB(A source);
 
-    /** Converts the second type object into the first. */
+    /**
+     * Converts the second type object into the first.
+     * 
+     * @param source the object to be converted.
+     * @return the object converted.
+     */
     A convertBtoA(B source);
 
-    /** Converts a list of the first type object into a list of the second type. */
-    default List<B> convertListAtoListB(List<A> list) {
-        requireNonNull(list);
-        return list.stream().map(this::convertAtoB).collect(toList());
+    /**
+     * Converts a list of the first type object into a list of the second type.
+     * 
+     * @param sourceList the list of objects to be converted.
+     * @return a list with the objects converted.
+     */
+    default List<B> convertListAtoListB(List<A> sourceList) {
+        requireNonNull(sourceList);
+        return sourceList.stream().map(this::convertAtoB).collect(toList());
     }
 
-    /** Converts a list of the second type object into a list of the first type. */
-    default List<A> convertListBtoListA(List<B> list) {
-        requireNonNull(list);
-        return list.stream().map(this::convertBtoA).collect(toList());
+    /** Converts a list of the second type object into a list of the first type. 
+     * 
+     * @param sourceList the list of objects to be converted.
+     * @return a list with the objects converted.
+     */
+    default List<A> convertListBtoListA(List<B> sourceList) {
+        requireNonNull(sourceList);
+        return sourceList.stream().map(this::convertBtoA).collect(toList());
     }
 }

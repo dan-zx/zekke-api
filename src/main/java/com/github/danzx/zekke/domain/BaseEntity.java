@@ -48,7 +48,10 @@ public abstract class BaseEntity<ID extends Serializable> {
 
     /**
      * Use this method to complete your equals method.
-     * @see {@link #equals(Object)}
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     * @param other the reference object with which to compare.
+     * @return {@code true} if this object is the same as the argument; {@code false} otherwise.
      */
     protected boolean isEntityEqualTo(BaseEntity<?> other) {
         return Objects.equals(id, other.id);

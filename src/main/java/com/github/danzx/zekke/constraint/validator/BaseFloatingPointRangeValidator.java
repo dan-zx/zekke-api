@@ -29,7 +29,11 @@ abstract class BaseFloatingPointRangeValidator<N extends Number> implements Cons
     private double min;
     private double max;
 
-    /** @see {@link #initialize(java.lang.annotation.Annotation)} */
+    /**
+     * @see ConstraintValidator#initialize(java.lang.annotation.Annotation)
+     * @param min {@link FloatRange#min()}
+     * @param max {@link FloatRange#max()}
+     */
     protected void init(double min, double max){
         this.min = min;
         this.max = max;
@@ -40,12 +44,18 @@ abstract class BaseFloatingPointRangeValidator<N extends Number> implements Cons
         init(constraintAnnotation.min(), constraintAnnotation.max());
     }
 
-    /** @return {@code true} if the value is in range (inclusive), otherwise {@code false}. */
+    /**
+     * @param value the value to check.
+     * @return {@code true} if the value is in range (inclusive); {@code false} otherwise.
+     */
     protected boolean isInRange(double value) {
         return min <= value && value <= max;
     }
 
-    /** @return {@code true} if the value is in range (inclusive), otherwise {@code false}. */
+    /**
+     * @param value the value to check.
+     * @return {@code true} if the value is in range (inclusive); {@code false} otherwise.
+     */
     protected boolean isInRange(float value) {
         return min <= value && value <= max;
     }
