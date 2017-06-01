@@ -53,8 +53,7 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
     private final Transformer<Coordinates, Point> coordinatesTransformer;
     private final Transformer<BoundingBox, Shape> boundingBoxTransformer;
 
-    public @Inject WaypointMorphiaCrudDao(
-                                          Datastore datastore, 
+    public @Inject WaypointMorphiaCrudDao(Datastore datastore, 
                                           MongoSequenceManager sequenceManager, 
                                           Transformer<Coordinates, Point> coordinatesTransformer,
                                           Transformer<BoundingBox, Shape> boundingBoxTransformer) {

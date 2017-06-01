@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.transformer;
+package com.github.danzx.zekke.domain.transformer;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -30,6 +30,7 @@ import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.test.spring.BaseSpringTest;
+import com.github.danzx.zekke.transformer.Transformer;
 import com.github.danzx.zekke.ws.rest.model.Walkway;
 
 import org.junit.Before;

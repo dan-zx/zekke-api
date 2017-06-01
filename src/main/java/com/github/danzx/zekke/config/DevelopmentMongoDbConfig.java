@@ -19,6 +19,7 @@ import static java.util.Collections.singletonList;
 
 import static com.github.danzx.zekke.config.Profiles.DEVELOPMENT;
 
+import com.github.danzx.zekke.mongo.MongoDbSettings;
 import com.mongodb.MongoClient;
 
 import org.springframework.context.annotation.Bean;

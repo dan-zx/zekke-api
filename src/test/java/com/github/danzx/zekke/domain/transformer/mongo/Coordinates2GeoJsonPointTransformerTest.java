@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.transformer.mongo;
+package com.github.danzx.zekke.domain.transformer.mongo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.danzx.zekke.domain.Coordinates;
 
+import org.junit.Test;
+
 import org.mongodb.morphia.geo.GeoJson;
 import org.mongodb.morphia.geo.Point;
-
-import org.junit.Test;
 
 public class Coordinates2GeoJsonPointTransformerTest {
 

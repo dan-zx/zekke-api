@@ -15,6 +15,8 @@
  */
 package com.github.danzx.zekke.config;
 
+import com.github.danzx.zekke.mongo.MongoDbSettings;
+
 import com.mongodb.MongoClient;
 
 import org.mongodb.morphia.Datastore;

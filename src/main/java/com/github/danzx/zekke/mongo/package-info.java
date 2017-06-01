@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** Tranformers for mongo objects to app domain objects. */
-package com.github.danzx.zekke.transformer.mongo;
+/** General MongoDB objects and helpers. */
+package com.github.danzx.zekke.mongo;

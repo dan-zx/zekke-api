@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 /** Version 1 REST Endopoints. */
-package com.github.danzx.zekke.ws.rest.v1;
+package com.github.danzx.zekke.ws.rest.api;

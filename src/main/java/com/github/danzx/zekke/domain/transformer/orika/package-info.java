@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-/** Transformers that use orika mapper */
-package com.github.danzx.zekke.transformer.orika;
+/** Transformers for domain objects that use orika mapper */
+package com.github.danzx.zekke.domain.transformer.orika;

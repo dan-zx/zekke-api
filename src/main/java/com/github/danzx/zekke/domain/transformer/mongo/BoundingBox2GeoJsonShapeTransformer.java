@@ -13,33 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.transformer.mongo;
+package com.github.danzx.zekke.domain.transformer.mongo;
 
-import com.github.danzx.zekke.domain.Coordinates;
+import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.transformer.Transformer;
 
-import org.mongodb.morphia.geo.GeoJson;
-import org.mongodb.morphia.geo.Point;
+import org.mongodb.morphia.query.Shape;
 
 import org.springframework.stereotype.Component;
 
 /**
- * Transforms domain Coordinates to GeoJson Point a viceversa.
+ * Transforms BoundingBox objects to GeoJson Shapes and viceversa.
  * 
  * @author Daniel Pedraza-Arcega
  */
 @Component
-public class Coordinates2GeoJsonPointTransformer implements Transformer<Coordinates, Point> {
+public class BoundingBox2GeoJsonShapeTransformer implements Transformer<BoundingBox, Shape> {
 
     @Override
-    public Point convertAtoB(Coordinates source) {
+    public Shape convertAtoB(BoundingBox source) {
         if (source == null) return null;
-        return GeoJson.point(source.getLatitude(), source.getLongitude());
+        return Shape.box(
+                new Shape.Point(source.getBottomCoordinates().getLongitude(), source.getBottomCoordinates().getLatitude()), 
+                new Shape.Point(source.getTopCoordinates().getLongitude(), source.getTopCoordinates().getLatitude()));
     }
 
     @Override
-    public Coordinates convertBtoA(Point source) {
-        if (source == null) return null;
-        return Coordinates.ofLatLng(source.getLatitude(), source.getLongitude());
+    public BoundingBox convertBtoA(Shape source) {
+        throw new UnsupportedOperationException();
     }
 }

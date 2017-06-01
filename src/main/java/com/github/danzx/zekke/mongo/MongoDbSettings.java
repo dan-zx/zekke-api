@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.config;
+package com.github.danzx.zekke.mongo;
 
 import static java.util.Objects.requireNonNull;
 
@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
- * Mongo DB database location and settings to access the ZeKKe database.
+ * Mongo DB database location and settings to access the application database.
  * 
  * @author Daniel Pedraza-Arcega
  */

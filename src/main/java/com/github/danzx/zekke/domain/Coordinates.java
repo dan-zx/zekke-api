@@ -20,7 +20,7 @@ import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
 import com.github.danzx.zekke.constraint.FloatRange;
-import com.github.danzx.zekke.transformer.mongo.Coordinates2GeoJsonPointTransformer;
+import com.github.danzx.zekke.domain.transformer.mongo.Coordinates2GeoJsonPointTransformer;
 
 import org.mongodb.morphia.geo.Point;
 

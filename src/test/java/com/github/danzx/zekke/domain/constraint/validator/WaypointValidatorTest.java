@@ -15,9 +15,9 @@
  */
 package com.github.danzx.zekke.domain.constraint.validator;
 
-import javax.validation.ConstraintValidatorContext;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import javax.validation.ConstraintValidatorContext;
 
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
