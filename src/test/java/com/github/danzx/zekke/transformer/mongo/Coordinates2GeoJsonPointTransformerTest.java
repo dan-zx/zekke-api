@@ -18,8 +18,10 @@ package com.github.danzx.zekke.transformer.mongo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.danzx.zekke.domain.Coordinates;
+
 import org.mongodb.morphia.geo.GeoJson;
 import org.mongodb.morphia.geo.Point;
+
 import org.junit.Test;
 
 public class Coordinates2GeoJsonPointTransformerTest {

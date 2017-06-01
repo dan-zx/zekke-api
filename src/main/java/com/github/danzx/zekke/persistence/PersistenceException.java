@@ -13,34 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.message;
+package com.github.danzx.zekke.persistence;
 
-import java.util.Locale;
-import java.util.Optional;
+import com.github.danzx.zekke.exception.AppException;
 
 /**
- * This class uses a ThreadLocal to hold a Locale that will be used to interpolate messages to the 
- * correct language.
+ * Exception thrown at data access/persistance.
  * 
  * @author Daniel Pedraza-Arcega
  */
-public class LocaleHolder {
+public class PersistenceException extends AppException {
 
-    public static final ThreadLocal<Locale> THREAD_LOCAL = new ThreadLocal<Locale>();
+    private static final long serialVersionUID = 5789086275216533762L;
 
-    private LocaleHolder() {
-        throw new AssertionError();
+    private PersistenceException(BaseAppExceptionBuilder<? extends AppException> builder) {
+        super(builder);
     }
 
-    public static Locale get() {
-        return Optional.ofNullable(THREAD_LOCAL.get()).orElse(Locale.ROOT);
-    }
+    public static class Builder extends BaseAppExceptionBuilder<PersistenceException> {
 
-    public static void set(Locale locale) {
-        THREAD_LOCAL.set(locale);
-    }
-
-    public static void unset() {
-        THREAD_LOCAL.remove();
+        @Override
+        public PersistenceException build() {
+            return new PersistenceException(this);
+        }
     }
 }

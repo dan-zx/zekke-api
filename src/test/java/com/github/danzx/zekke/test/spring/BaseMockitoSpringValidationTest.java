@@ -16,10 +16,13 @@
 package com.github.danzx.zekke.test.spring;
 
 import com.github.danzx.zekke.test.BaseValidationTest;
+
 import org.junit.ClassRule;
 import org.junit.Rule;
+
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 

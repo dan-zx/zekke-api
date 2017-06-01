@@ -17,6 +17,8 @@ package com.github.danzx.zekke.ws.rest.errormapper;
 
 import static java.util.stream.Collectors.joining;
 
+import static com.github.danzx.zekke.util.Strings.isNullOrBlank;
+
 import java.util.Locale;
 import java.util.stream.StreamSupport;
 
@@ -29,6 +31,7 @@ import javax.ws.rs.ext.Provider;
 
 import com.github.danzx.zekke.message.MessageSource;
 import com.github.danzx.zekke.message.impl.MessageSourceFactory;
+import com.github.danzx.zekke.util.Strings;
 import com.github.danzx.zekke.ws.rest.model.ErrorMessage;
 
 import org.slf4j.Logger;
@@ -66,6 +69,13 @@ public class ConstraintViolationExceptionMapper extends BaseExceptionMapper<Cons
             .filter(node -> node.getKind() == ElementKind.PROPERTY)
             .map(Node::toString)
             .collect(joining("."));
+        if (isNullOrBlank(property)) {
+            property = StreamSupport.stream(constraintViolation.getPropertyPath().spliterator(), false)
+                    .filter(node -> node.getKind() == ElementKind.PARAMETER)
+                    .map(Node::toString)
+                    .findFirst()
+                    .orElse(Strings.EMPTY);
+        }
         errorMessageBuilder.addParamError(property, constraintViolation.getMessage());
     }
 }

@@ -16,6 +16,7 @@
 package com.github.danzx.zekke.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.Mockito.verify;
 
 import java.lang.reflect.Method;
@@ -31,10 +32,13 @@ import com.github.danzx.zekke.persistence.dao.WaypointDao;
 import com.github.danzx.zekke.service.WaypointService.NearWaypointsQuery;
 import com.github.danzx.zekke.service.WaypointService.WaypointsQuery;
 import com.github.danzx.zekke.test.mockito.BaseMockitoValidationTest;
+
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 

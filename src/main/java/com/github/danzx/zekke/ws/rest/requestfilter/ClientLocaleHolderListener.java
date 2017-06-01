@@ -32,7 +32,7 @@ import com.github.danzx.zekke.message.LocaleHolder;
  * @author Daniel Pedraza-Arcega
  */
 @Provider
-public class ClientLocaleHolederListener implements ContainerRequestFilter {
+public class ClientLocaleHolderListener implements ContainerRequestFilter {
 
     private HttpHeaders headers;
 

@@ -16,6 +16,7 @@
 package com.github.danzx.zekke.test.spring;
 
 import com.github.danzx.zekke.test.BaseValidationTest;
+
 import org.junit.ClassRule;
 import org.junit.Rule;
 

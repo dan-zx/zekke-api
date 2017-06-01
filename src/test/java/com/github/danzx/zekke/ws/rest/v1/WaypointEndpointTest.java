@@ -16,7 +16,9 @@
 package com.github.danzx.zekke.ws.rest.v1;
 
 import static java.util.Collections.emptyList;
+
 import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -43,10 +45,13 @@ import com.github.danzx.zekke.transformer.Transformer;
 import com.github.danzx.zekke.ws.rest.model.Poi;
 import com.github.danzx.zekke.ws.rest.model.TypedWaypoint;
 import com.github.danzx.zekke.ws.rest.model.Walkway;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(classes = TransformerConfig.class)
@@ -69,7 +74,7 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
     }
 
     @Test
-    public void shouldGetTypedWaypointsFailValidationWhenBboxIsPresentAndInvalid() throws Exception {
+    public void shouldGetTypedWaypointsFailValidationWhenBboxNotNullButInvalid() throws Exception {
         Method method = WaypointEndpoint.class.getMethod("getTypedWaypoints", BoundingBox.class);
         BoundingBox bbox = BoundingBox.ofBottomTop(Coordinates.ofLatLng(1111d, 12313d), Coordinates.ofLatLng(1111d, 12313d));
         Object[] parameterValues = { bbox };
@@ -86,7 +91,7 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
     }
 
     @Test
-    public void shouldGetWalkwaysFailValidationWhenBboxIsPresentAndInvalid() throws Exception {
+    public void shouldGetWalkwaysFailValidationWhenBboxNotNullButInvalid() throws Exception {
         Method method = WaypointEndpoint.class.getMethod("getWalkways", BoundingBox.class);
         BoundingBox bbox = BoundingBox.ofBottomTop(Coordinates.ofLatLng(1111d, 12313d), Coordinates.ofLatLng(1111d, 12313d));
         Object[] parameterValues = { bbox };
@@ -103,7 +108,7 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
     }
 
     @Test
-    public void shouldGetPoisFailValidationWhenBboxIsPresentAndInvalid() throws Exception {
+    public void shouldGetPoisFailValidationWhenBboxIsNotNullButInvalid() throws Exception {
         Method method = WaypointEndpoint.class.getMethod("getPois", BoundingBox.class, String.class);
         BoundingBox bbox = BoundingBox.ofBottomTop(Coordinates.ofLatLng(1111d, 12313d), Coordinates.ofLatLng(1111d, 12313d));
         Object[] parameterValues = { bbox, null };
@@ -154,7 +159,7 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
     }
 
     @Test
-    public void shouldNewWaypointFailValidationWhenPayloadFieldsFailValidation() throws Exception {
+    public void shouldNewWaypointFailValidationWhenPayloadRequiredFieldsAreNull() throws Exception {
         Method method = WaypointEndpoint.class.getMethod("newWaypoint", TypedWaypoint.class);
         Object[] parameterValues = { new TypedWaypoint() };
         Set<ConstraintViolation<WaypointEndpoint>> violations = validator().forExecutables().validateParameters(
@@ -183,7 +188,23 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
     }
 
     @Test
-    public void shouldGetPoiSuggestionsFailValidationWhenBboxIsPresentAndInvalid() throws Exception {
+    public void shouldNewWaypointFailValidationWhenPayloadLocationIsNotNullButInvalid() throws Exception {
+        Method method = WaypointEndpoint.class.getMethod("newWaypoint", TypedWaypoint.class);
+        TypedWaypoint payload = new TypedWaypoint();
+        payload.setName("A Name");
+        payload.setType(Type.POI);
+        payload.setLocation(Coordinates.ofLatLng(1111d, 12313d));
+        Object[] parameterValues = { payload };
+        Set<ConstraintViolation<WaypointEndpoint>> violations = validator().forExecutables().validateParameters(
+                endpoint,
+                method,
+                parameterValues
+        );
+        assertThat(violations).isNotNull().isNotEmpty().hasSize(2);
+    }
+
+    @Test
+    public void shouldGetPoiSuggestionsFailValidationWhenBboxIsNotNullButInvalid() throws Exception {
         Method method = WaypointEndpoint.class.getMethod("getPoiSuggestions", BoundingBox.class, String.class);
         BoundingBox bbox = BoundingBox.ofBottomTop(Coordinates.ofLatLng(1111d, 12313d), Coordinates.ofLatLng(1111d, 12313d));
         Object[] parameterValues = { bbox, null };
@@ -212,7 +233,7 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
     }
 
     @Test
-    public void shouldGetNearTypedWaypointsFailValidationWhenCoordiantesFailValidation() throws Exception {
+    public void shouldGetNearTypedWaypointsFailValidationWhenCoordiantesIsNotNullButInvalid() throws Exception {
         Method method = WaypointEndpoint.class.getMethod("getNearTypedWaypoints", Coordinates.class, Integer.class, Integer.class);
         Object[] parameterValues = { Coordinates.ofLatLng(1111d, 12313d), null, null };
         Set<ConstraintViolation<WaypointEndpoint>> violations = validator().forExecutables().validateParameters(
@@ -244,7 +265,7 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
     }
 
     @Test
-    public void shouldGetNearPoisFailValidationWhenCoordiantesFailValidation() throws Exception {
+    public void shouldGetNearPoisFailValidationWhenCoordiantesIsNotNullButInvalid() throws Exception {
         Method method = WaypointEndpoint.class.getMethod("getNearPois", Coordinates.class, Integer.class, Integer.class);
         Object[] parameterValues = { Coordinates.ofLatLng(1111d, 12313d), null, null };
         Set<ConstraintViolation<WaypointEndpoint>> violations = validator().forExecutables().validateParameters(
@@ -276,7 +297,7 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
     }
 
     @Test
-    public void shouldGetNearWalwaysFailValidationWhenCoordiantesFailValidation() throws Exception {
+    public void shouldGetNearWalwaysFailValidationWhenCoordiantesIsNotNullButInvalid() throws Exception {
         Method method = WaypointEndpoint.class.getMethod("getNearWalways", Coordinates.class, Integer.class, Integer.class);
         Object[] parameterValues = { Coordinates.ofLatLng(1111d, 12313d), null, null };
         Set<ConstraintViolation<WaypointEndpoint>> violations = validator().forExecutables().validateParameters(

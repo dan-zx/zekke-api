@@ -15,17 +15,20 @@
  */
 package com.github.danzx.zekke.domain.constraint.validator;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.validation.ConstraintValidatorContext;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.test.mockito.BaseMockitoTest;
+
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.mockito.Answers;
 import org.mockito.Mock;
 

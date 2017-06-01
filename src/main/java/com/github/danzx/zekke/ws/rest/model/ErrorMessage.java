@@ -19,8 +19,9 @@ import java.util.Map;
 import com.github.danzx.zekke.base.Buildable;
 
 /**
+ * Error response object.
+ * 
  * @author Daniel Pedraza-Arcega
- *
  */
 public class ErrorMessage {
 
