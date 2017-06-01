@@ -15,6 +15,10 @@
  */
 package com.github.danzx.zekke.test;
 
+import java.util.Locale;
+
+import javax.validation.Configuration;
+import javax.validation.MessageInterpolator;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
@@ -26,10 +30,32 @@ public abstract class BaseValidationTest {
 
     @BeforeClass
     public static void setUpValidator() {
-        validator = Validation.buildDefaultValidatorFactory().getValidator();
+        Configuration<?> configuration = Validation.byDefaultProvider().configure();
+        validator = configuration
+                .messageInterpolator(new RootMessageInterpolator(configuration.getDefaultMessageInterpolator()))
+                .buildValidatorFactory()
+                .getValidator();
     }
 
     protected static Validator validator() {
         return validator;
+    }
+
+    private static class RootMessageInterpolator implements MessageInterpolator {
+        private final MessageInterpolator delegate;
+
+        private RootMessageInterpolator(MessageInterpolator delegate) { 
+            this.delegate = delegate; 
+        }
+
+        @Override
+        public String interpolate(String message, Context context) {
+            return this.delegate.interpolate(message, context, Locale.ROOT);
+        }
+
+        @Override
+        public String interpolate(String message, Context context, Locale locale) {
+            return this.delegate.interpolate(message, context, locale);
+        }
     }
 }
