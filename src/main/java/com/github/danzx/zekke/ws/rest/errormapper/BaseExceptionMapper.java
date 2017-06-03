@@ -30,7 +30,7 @@ import javax.ws.rs.ext.ExceptionMapper;
  */
 abstract class BaseExceptionMapper<E extends Throwable> implements ExceptionMapper<E> {
 
-    private HttpHeaders headers;
+    private @Context HttpHeaders headers;
 
     /**
      * Creates a new response.
@@ -55,7 +55,7 @@ abstract class BaseExceptionMapper<E extends Throwable> implements ExceptionMapp
         return headers;
     }
 
-    public void setHeaders(@Context HttpHeaders headers) {
+    public void setHeaders(HttpHeaders headers) {
         this.headers = headers;
     }
 }

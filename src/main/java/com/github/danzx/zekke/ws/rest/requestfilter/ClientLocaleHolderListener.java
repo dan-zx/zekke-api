@@ -34,7 +34,7 @@ import com.github.danzx.zekke.message.LocaleHolder;
 @Provider
 public class ClientLocaleHolderListener implements ContainerRequestFilter {
 
-    private HttpHeaders headers;
+    private @Context HttpHeaders headers;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
@@ -42,7 +42,7 @@ public class ClientLocaleHolderListener implements ContainerRequestFilter {
         LocaleHolder.set(primaryClientLocale);
     }
 
-    public void setHeaders(@Context HttpHeaders headers) {
+    public void setHeaders(HttpHeaders headers) {
         this.headers = headers;
     }
 }
