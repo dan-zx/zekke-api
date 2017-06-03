@@ -31,13 +31,8 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import com.github.danzx.zekke.domain.Coordinates;
-import com.github.danzx.zekke.message.LocaleHolder;
 
 import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.validation.ValidationConfig;
-
-import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
-import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
 
 import org.springframework.stereotype.Component;
 
@@ -67,27 +62,6 @@ public class WebServiceConfig extends ResourceConfig {
         }
     }
 
-    @Provider
-    public class ValidationConfigurationContextResolver implements ContextResolver<ValidationConfig> {
-
-        @Override
-        public ValidationConfig getContext(Class<?> type) {
-            return new ValidationConfig().messageInterpolator(new CustomMessageInterpolator());
-        }
-    }
-
-    private class CustomMessageInterpolator extends ResourceBundleMessageInterpolator {
-        private static final String VALIDATION_MESSAGES_BASENAME = "com.github.danzx.zekke.ValidationMessages";
-
-        private CustomMessageInterpolator() {
-            super(new PlatformResourceBundleLocator(VALIDATION_MESSAGES_BASENAME));
-        }
-
-        @Override
-        public String interpolate(String message, Context context) {
-            return super.interpolate(message, context, LocaleHolder.get());
-        }
-    }
 
     private static class CoordinatesDeserializer extends StdDeserializer<Coordinates> {
         private static final long serialVersionUID = 210982872801797100L;

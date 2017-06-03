@@ -18,6 +18,9 @@ package com.github.danzx.zekke.message;
 import java.util.Locale;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class uses a ThreadLocal to hold a Locale that will be used to interpolate messages to the 
  * correct language.
@@ -26,6 +29,7 @@ import java.util.Optional;
  */
 public class LocaleHolder {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocaleHolder.class);
     public static final ThreadLocal<Locale> THREAD_LOCAL = new ThreadLocal<Locale>();
 
     private LocaleHolder() {
@@ -37,6 +41,7 @@ public class LocaleHolder {
     }
 
     public static void set(Locale locale) {
+        LOGGER.debug("Setting {}", locale);
         THREAD_LOCAL.set(locale);
     }
 

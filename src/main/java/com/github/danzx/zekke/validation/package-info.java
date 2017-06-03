@@ -13,16 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.test.mockito;
-
-import com.github.danzx.zekke.test.validation.BaseValidationTest;
-
-import org.junit.Rule;
-
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-
-public class BaseMockitoValidationTest extends BaseValidationTest {
-
-    @Rule public final MockitoRule mockitoInitializerRule = MockitoJUnit.rule();
-}
+/** Bean validation general objects and configuration. */
+package com.github.danzx.zekke.validation;

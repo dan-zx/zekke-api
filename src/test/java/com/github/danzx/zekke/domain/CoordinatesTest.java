@@ -27,7 +27,7 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
-import com.github.danzx.zekke.test.BaseValidationTest;
+import com.github.danzx.zekke.test.validation.BaseValidationTest;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;

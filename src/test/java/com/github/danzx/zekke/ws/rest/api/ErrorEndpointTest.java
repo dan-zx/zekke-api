@@ -28,7 +28,7 @@ import javax.validation.ConstraintViolation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.github.danzx.zekke.test.BaseValidationTest;
+import com.github.danzx.zekke.test.validation.BaseValidationTest;
 import com.github.danzx.zekke.ws.rest.model.ErrorMessage;
 
 import org.junit.Test;

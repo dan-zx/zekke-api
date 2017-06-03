@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.test;
+package com.github.danzx.zekke.test.validation;
 
-import java.util.Locale;
+import static com.github.danzx.zekke.validation.ValidationConfig.APP_VALIDATION_MESSAGES;
 
-import javax.validation.Configuration;
-import javax.validation.MessageInterpolator;
 import javax.validation.Validation;
 import javax.validation.Validator;
+
+import com.github.danzx.zekke.validation.DefaulLocaleMessageInterpolatorDecorator;
+
+import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
+import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
 
 import org.junit.BeforeClass;
 
@@ -30,32 +33,17 @@ public abstract class BaseValidationTest {
 
     @BeforeClass
     public static void setUpValidator() {
-        Configuration<?> configuration = Validation.byDefaultProvider().configure();
-        validator = configuration
-                .messageInterpolator(new RootMessageInterpolator(configuration.getDefaultMessageInterpolator()))
+        DefaulLocaleMessageInterpolatorDecorator messageInterpolator = 
+                new DefaulLocaleMessageInterpolatorDecorator(
+                        new ResourceBundleMessageInterpolator(
+                                new PlatformResourceBundleLocator(APP_VALIDATION_MESSAGES)));
+        validator = Validation.byDefaultProvider().configure()
+                .messageInterpolator(messageInterpolator)
                 .buildValidatorFactory()
                 .getValidator();
     }
 
     protected static Validator validator() {
         return validator;
-    }
-
-    private static class RootMessageInterpolator implements MessageInterpolator {
-        private final MessageInterpolator delegate;
-
-        private RootMessageInterpolator(MessageInterpolator delegate) { 
-            this.delegate = delegate; 
-        }
-
-        @Override
-        public String interpolate(String message, Context context) {
-            return this.delegate.interpolate(message, context, Locale.ROOT);
-        }
-
-        @Override
-        public String interpolate(String message, Context context, Locale locale) {
-            return this.delegate.interpolate(message, context, locale);
-        }
     }
 }
