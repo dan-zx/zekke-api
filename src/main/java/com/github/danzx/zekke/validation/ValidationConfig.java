@@ -15,16 +15,12 @@
  */
 package com.github.danzx.zekke.validation;
 
-import javax.validation.Validation;
 import javax.validation.Validator;
-
-import com.github.danzx.zekke.message.LocaleHolder;
-
-import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
-import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 /**
  * Bean Validation configuration.
@@ -38,18 +34,11 @@ public class ValidationConfig {
 
     @Bean
     public Validator validator() {
-        // TODO: It seems this interpolator is only working with messages that cannot be resolved by
-        // the default (unknown) message interpolator. Maybe spring is creating another interpolator
-        // that uses to resolve all the known BV messages and, when it fails, it goes to mine to
-        // resolve the missing message.
-        DefaulLocaleMessageInterpolatorDecorator messageInterpolator = 
-                new DefaulLocaleMessageInterpolatorDecorator(
-                        new ResourceBundleMessageInterpolator(
-                                new PlatformResourceBundleLocator(APP_VALIDATION_MESSAGES)));
-        messageInterpolator.setLocaleResoultionStrategy(() -> LocaleHolder.get());
-        return Validation.byDefaultProvider().configure()
-                .messageInterpolator(messageInterpolator)
-                .buildValidatorFactory()
-                .getValidator();
+        LocalValidatorFactoryBean springValidatorFactory = new LocalValidatorFactoryBean();
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename(APP_VALIDATION_MESSAGES);
+        messageSource.setFallbackToSystemLocale(false);
+        springValidatorFactory.setValidationMessageSource(messageSource);
+        return springValidatorFactory;
     }
 }

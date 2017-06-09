@@ -15,19 +15,11 @@
  */
 package com.github.danzx.zekke.message.impl;
 
-import static java.util.Collections.emptySet;
-import static java.util.Collections.singleton;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 
 import com.github.danzx.zekke.message.MessageSource;
-import com.github.danzx.zekke.test.paramprovider.BlankStringProvider;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
@@ -35,42 +27,22 @@ import junitparams.Parameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.context.support.ResourceBundleMessageSource;
+
 @RunWith(JUnitParamsRunner.class)
-public class DefaultMessageDecoratedResourceBundleMessageSourceTest {
+public class DefaultMessageDecoratedSpringAdaptedMessageSourceTest {
 
     private static final String MISSING_KEY_FORMAT = "XXX<%s>XXX";
     private static final MessageSource TEST_MESSAGES;
     private static final Locale SPANISH = new Locale.Builder().setLanguage("es").build();
 
     static {
-        Set<Locale> supportedLocales = new HashSet<>(Arrays.asList(Locale.ROOT, SPANISH));
-        DefaultMessageDecorator messageSource = new DefaultMessageDecorator(new ResourceBundleMessageSource("messages.TestMessages", supportedLocales));
+        ResourceBundleMessageSource springMessageSource = new ResourceBundleMessageSource();
+        springMessageSource.setBasename("messages.TestMessages");
+        springMessageSource.setFallbackToSystemLocale(false);
+        DefaultMessageDecorator messageSource = new DefaultMessageDecorator(new SpringMessageSourceAdapter(springMessageSource));
         messageSource.setMissingKeyFormat(MISSING_KEY_FORMAT);
         TEST_MESSAGES = messageSource;
-    }
-
-    @Test
-    @Parameters(method = "constructorArgs")
-    public void shouldBuildResourceBundleMessageSource(String basename, Set<Locale> locales) {
-        ResourceBundleMessageSource messageSource = locales == null ? new ResourceBundleMessageSource(basename) : new ResourceBundleMessageSource(basename, locales);
-        assertThat(messageSource.getBasename()).isNotNull().isNotBlank().isEqualTo(basename);
-        assertThat(messageSource.getSupportedLocales()).isNotNull().isNotEmpty().containsOnly(Locale.ROOT);
-    }
-
-    @Test
-    public void shouldThrowNullPointExceptionWhenKeyIsNull() {
-        assertThatThrownBy(() -> TEST_MESSAGES.getMessage(null)).isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    @Parameters(source = BlankStringProvider.class)
-    public void shouldThrowIllegalArgumentExceptionWhenKeyIsBlank(String blankKey) {
-        assertThatThrownBy(() -> TEST_MESSAGES.getMessage(blankKey)).isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    public void shouldThrowNullPointerExceptionWhenLocaleIsNull() {
-        assertThatThrownBy(() -> TEST_MESSAGES.getMessage("whatever", (Locale) null)).isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -85,14 +57,6 @@ public class DefaultMessageDecoratedResourceBundleMessageSourceTest {
     public void shouldGetMessageUsingArguments(String messageKey, Locale locale, Object[] args, String expectedMessage) {
         String actualMessage = locale == null ? TEST_MESSAGES.getMessage(messageKey, args) : TEST_MESSAGES.getMessage(messageKey, locale, args);
         assertThat(actualMessage).isNotNull().isNotEmpty().isEqualTo(expectedMessage);
-    }
-
-    protected Object[] constructorArgs() {
-        return new Object[][] {
-            {"messages.TestMessages", null},
-            {"messages.TestMessages", emptySet()},
-            {"messages.TestMessages", singleton(Locale.ROOT)},
-        };
     }
 
     protected Object[] messagesWithoutArgs() {

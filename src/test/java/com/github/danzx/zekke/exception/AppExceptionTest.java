@@ -20,6 +20,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Optional;
 
+import com.github.danzx.zekke.message.MessageSource;
+import com.github.danzx.zekke.message.impl.DefaultMessageDecorator;
+import com.github.danzx.zekke.message.impl.SpringMessageSourceAdapter;
 import com.github.danzx.zekke.test.paramprovider.BlankStringProvider;
 
 import junitparams.JUnitParamsRunner;
@@ -27,6 +30,8 @@ import junitparams.Parameters;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 @RunWith(JUnitParamsRunner.class)
 public class AppExceptionTest {
@@ -110,9 +115,18 @@ public class AppExceptionTest {
     private static class TestAppException extends AppException {
 
         private static final long serialVersionUID = 1L;
+        private static final MessageSource TEST_MESSAGES;
+
+        static {
+            ResourceBundleMessageSource springMessageSource = new ResourceBundleMessageSource();
+            springMessageSource.setBasename("messages.TestMessages");
+            springMessageSource.setFallbackToSystemLocale(false);
+            TEST_MESSAGES = new DefaultMessageDecorator(new SpringMessageSourceAdapter(springMessageSource));
+        }
 
         private TestAppException(Builder builder) {
             super(builder);
+            setMessageSourceForTesting(TEST_MESSAGES);
         }
 
         private static class Builder extends BaseAppExceptionBuilder<TestAppException> {

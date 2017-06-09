@@ -54,19 +54,6 @@ public class AppExceptionMapperTest extends BaseMockitoTest {
             .containsOnly(500, ErrorMessage.Type.SERVER_ERROR, "Boom!!!", null);
     }
 
-    @Test
-    public void shouldMapperRespondWithErrorMessageKey() {
-        Response response = mapper.toResponse(new TestAppException.Builder().messageKey("test.message").build());
-
-        assertThat(response).isNotNull().extracting(Response::getStatusInfo, Response::getMediaType).containsExactly(Response.Status.INTERNAL_SERVER_ERROR, MediaType.APPLICATION_JSON_TYPE);
-        assertThat(response.getEntity()).isNotNull().isInstanceOf(ErrorMessage.class);
-
-        ErrorMessage entity = (ErrorMessage) response.getEntity();
-        assertThat(entity)
-            .extracting(ErrorMessage::getStatusCode, ErrorMessage::getErrorType, ErrorMessage::getErrorDetail, ErrorMessage::getParamErrors)
-            .containsOnly(500, ErrorMessage.Type.SERVER_ERROR, "Test message", null);
-    }
-
     private static class TestAppException extends AppException {
 
         private static final long serialVersionUID = 1L;

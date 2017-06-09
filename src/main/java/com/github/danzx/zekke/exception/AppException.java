@@ -35,9 +35,10 @@ public abstract class AppException extends RuntimeException {
 
     private static final long serialVersionUID = -298618049284453181L;
 
+    private final String message;
     private final Optional<String> messageKey;
     private final Object[] messageArgs;
-    private final MessageSource messageSource = MessageSourceFactory.defaultSource();
+    private MessageSource messageSource;
 
     /**
      * Buildable constructor.
@@ -45,9 +46,16 @@ public abstract class AppException extends RuntimeException {
      * @param builder a builder.
      */
     protected AppException(BaseAppExceptionBuilder<? extends AppException> builder) {
-        super(builder.getMessage(), builder.throwable);
+        super(builder.throwable);
+        this.message = builder.message;
         this.messageKey = builder.messageKey;
         this.messageArgs = builder.messageArgs;
+        messageSource = MessageSourceFactory.defaultSource();
+    }
+
+    @Override
+    public String getMessage() {
+        return getMessage(Locale.ROOT);
     }
 
     /**
@@ -58,7 +66,16 @@ public abstract class AppException extends RuntimeException {
         requireNonNull(locale);
         return messageKey
                 .map(messageKey -> messageSource.getMessage(messageKey, locale, messageArgs))
-                .orElse(getMessage());
+                .orElse(message);
+    }
+
+    /**
+     * Setter for testing purposes.
+     * 
+     * @param messageSource the message source to use.
+     */
+    void setMessageSourceForTesting(MessageSource messageSource) {
+        this.messageSource = requireNonNull(messageSource);
     }
 
     /**
@@ -69,7 +86,6 @@ public abstract class AppException extends RuntimeException {
      */
     public static abstract class BaseAppExceptionBuilder<E extends AppException> implements Buildable<E> {
 
-        private final MessageSource messageSource = MessageSourceFactory.defaultSource();
         private String message;
         private Optional<String> messageKey;
         private Object[] messageArgs;
@@ -123,10 +139,6 @@ public abstract class AppException extends RuntimeException {
         public BaseAppExceptionBuilder<E> cause(Throwable throwable) {
             this.throwable = throwable;
             return this;
-        }
-
-        private String getMessage() {
-            return messageKey.map(messageKey -> messageSource.getMessage(messageKey, messageArgs)).orElse(message);
         }
 
         /** @return a new exception of type {@code E}. */

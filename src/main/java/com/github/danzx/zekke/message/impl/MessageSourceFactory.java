@@ -17,6 +17,8 @@ package com.github.danzx.zekke.message.impl;
 
 import com.github.danzx.zekke.message.MessageSource;
 
+import org.springframework.context.support.ResourceBundleMessageSource;
+
 /**
  * Creates message sources.
  * 
@@ -34,8 +36,15 @@ public class MessageSourceFactory {
     }
 
     private static class InstanceHolder {
-        private static final String MESSAGES_BASENAME = "com.github.danzx.zekke.Messages";
-        private static final MessageSource INSTANCE = new DefaultMessageDecorator(new ResourceBundleMessageSource(MESSAGES_BASENAME));
+        private static final String APP_MESSAGES = "com.github.danzx.zekke.Messages";
+        private static final MessageSource INSTANCE; 
+
+        static {
+            ResourceBundleMessageSource springMessageSource = new ResourceBundleMessageSource();
+            springMessageSource.setBasename(APP_MESSAGES);
+            springMessageSource.setFallbackToSystemLocale(false);
+            INSTANCE = new DefaultMessageDecorator(new SpringMessageSourceAdapter(springMessageSource));
+        }
 
         private InstanceHolder() {
             throw new AssertionError();
