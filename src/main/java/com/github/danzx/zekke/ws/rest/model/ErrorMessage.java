@@ -25,7 +25,7 @@ import com.github.danzx.zekke.base.Buildable;
  */
 public class ErrorMessage {
 
-    public enum Type { PARAM_VALIDATION, RESOURCE_NOT_FOUND, SERVER_ERROR, OTHER }
+    public enum Type { PARAM_VALIDATION, RESOURCE_NOT_FOUND, SERVER_ERROR, AUTHORIZATION, OTHER }
 
     private final int statusCode;
     private final String errorDetail;

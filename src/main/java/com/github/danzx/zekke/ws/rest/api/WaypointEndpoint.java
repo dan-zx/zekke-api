@@ -44,6 +44,7 @@ import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
+import com.github.danzx.zekke.security.UserRole;
 import com.github.danzx.zekke.service.WaypointService;
 import com.github.danzx.zekke.service.WaypointService.NearWaypointsQuery;
 import com.github.danzx.zekke.service.WaypointService.WaypointsQuery;
@@ -54,16 +55,18 @@ import com.github.danzx.zekke.ws.rest.model.Poi;
 import com.github.danzx.zekke.ws.rest.model.TypedWaypoint;
 import com.github.danzx.zekke.ws.rest.model.Walkway;
 import com.github.danzx.zekke.ws.rest.patch.ObjectPatch;
+import com.github.danzx.zekke.ws.rest.security.RequireRoleAccess;
 
 import org.springframework.stereotype.Component;
 
 /**
- * Waypoints endpoint. 
+ * Waypoints endpoint. Only authenticated user can use this endpoint
  * 
  * @author Daniel Pedraza-Arcega
  */
 @Component
 @Path(V_1 + "/waypoints")
+@RequireRoleAccess(roleRequired = UserRole.ANONYMOUS)
 public class WaypointEndpoint {
 
     private final WaypointService waypointService;
@@ -132,7 +135,7 @@ public class WaypointEndpoint {
     }
 
     /**
-     * Creates a new waypoint.
+     * Creates a new waypoint. Requires an admin use this endpoint.
      * 
      * @param typedWaypoint a TypedWaypoint.
      * @return the same TypedWaypoint with an id.
@@ -140,6 +143,7 @@ public class WaypointEndpoint {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @RequireRoleAccess(roleRequired = UserRole.ADMIN)
     public TypedWaypoint newWaypoint(@NotNull @NullId @Valid TypedWaypoint typedWaypoint) {
         Waypoint waypoint = waypointToTypedWaypointTransformer.convertBtoA(typedWaypoint);
         waypointService.persist(waypoint);
@@ -246,13 +250,14 @@ public class WaypointEndpoint {
     }
 
     /**
-     * Deletes a waypoint by it's id.
+     * Deletes a waypoint by it's id. Requires an admin use this endpoint.
      * 
      * @param id an id.
      * @return a 204 No Content or 404 Not Found.
      */
     @DELETE
     @Path("/{id}")
+    @RequireRoleAccess(roleRequired = UserRole.ADMIN)
     public Response deleteWaypoint(@NotNull @PathParam("id") Long id) {
         Waypoint waypoint = new Waypoint();
         waypoint.setId(id);
@@ -262,7 +267,7 @@ public class WaypointEndpoint {
     }
 
     /**
-     * Patches a waypoint by it's id.
+     * Patches a waypoint by it's id. Requires an admin use this endpoint.
      * 
      * @param id an id.
      * @param patch the update.
@@ -272,6 +277,7 @@ public class WaypointEndpoint {
     @Path("/{id}")
     @Consumes(MediaTypes.APPLICATION_JSON_PATCH)
     @Produces(MediaType.APPLICATION_JSON)
+    @RequireRoleAccess(roleRequired = UserRole.ADMIN)
     public Response patchWaypoint(@NotNull @PathParam("id") Long id, @NotNull ObjectPatch patch) {
         Optional<Waypoint> optWaypoint = waypointService.findWaypointById(id);
         Set<com.github.danzx.zekke.domain.Path> paths = optWaypoint.map(Waypoint::getPaths).orElse(emptySet());
