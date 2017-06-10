@@ -17,10 +17,11 @@ package com.github.danzx.zekke.test.validation;
 
 import static com.github.danzx.zekke.validation.ValidationConfig.APP_VALIDATION_MESSAGES;
 
+import java.util.Locale;
+
+import javax.validation.MessageInterpolator;
 import javax.validation.Validation;
 import javax.validation.Validator;
-
-import com.github.danzx.zekke.validation.DefaulLocaleMessageInterpolatorDecorator;
 
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
@@ -33,8 +34,8 @@ public abstract class BaseValidationTest {
 
     @BeforeClass
     public static void setUpValidator() {
-        DefaulLocaleMessageInterpolatorDecorator messageInterpolator = 
-                new DefaulLocaleMessageInterpolatorDecorator(
+        MessageInterpolator messageInterpolator = 
+                new RootLocaleMessageInterpolatorDecorator(
                         new ResourceBundleMessageInterpolator(
                                 new PlatformResourceBundleLocator(APP_VALIDATION_MESSAGES)));
         validator = Validation.byDefaultProvider().configure()
@@ -45,5 +46,24 @@ public abstract class BaseValidationTest {
 
     protected static Validator validator() {
         return validator;
+    }
+
+    private static class RootLocaleMessageInterpolatorDecorator implements MessageInterpolator {
+
+        private final MessageInterpolator decorated;
+
+        private RootLocaleMessageInterpolatorDecorator(MessageInterpolator decorated) {
+            this.decorated = decorated;
+        }
+
+        @Override
+        public String interpolate(String messageTemplate, Context context) {
+            return interpolate(messageTemplate, context, Locale.ROOT);
+        }
+
+        @Override
+        public String interpolate(String messageTemplate, Context context, Locale locale) {
+            return decorated.interpolate(messageTemplate, context, locale);
+        }
     }
 }
