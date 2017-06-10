@@ -55,6 +55,11 @@ public class ErrorMessage {
         return paramErrors;
     }
 
+    @Override
+    public String toString() {
+        return "{ statusCode=" + statusCode + ", errorDetail=" + errorDetail + ", errorType=" + errorType + ", paramErrors=" + paramErrors + " }";
+    }
+
     public static class Builder implements Buildable<ErrorMessage> {
 
         private int statusCode = 500;

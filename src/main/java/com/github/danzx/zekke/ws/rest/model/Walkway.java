@@ -20,4 +20,10 @@ package com.github.danzx.zekke.ws.rest.model;
  * 
  * @author Daniel Pedraza-Arcega
  */
-public class Walkway extends BaseWaypoint { }
+public class Walkway extends BaseWaypoint {
+
+    @Override
+    public String toString() {
+        return "{ id=" + getId() + ", location=" + getLocation() + " }";
+    }
+}

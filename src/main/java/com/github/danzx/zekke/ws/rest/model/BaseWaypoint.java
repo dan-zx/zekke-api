@@ -18,9 +18,6 @@ package com.github.danzx.zekke.ws.rest.model;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.github.danzx.zekke.domain.Coordinates;
 
 /**
@@ -48,15 +45,5 @@ public abstract class BaseWaypoint {
 
     public void setLocation(Coordinates location) {
         this.location = location;
-    }
-
-    @Override
-    public String toString() {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
     }
 }
