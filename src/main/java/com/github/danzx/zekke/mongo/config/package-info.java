@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** General MongoDB objects and helpers. */
-package com.github.danzx.zekke.mongo;
+/** MongoDB configurations. */
+package com.github.danzx.zekke.mongo.config;

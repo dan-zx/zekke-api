@@ -18,7 +18,7 @@ import static com.github.danzx.zekke.persistence.internal.mongo.CommonOperators.
 
 import javax.inject.Inject;
 
-import com.github.danzx.zekke.mongo.MongoDbSettings;
+import com.github.danzx.zekke.mongo.config.MongoDbSettings;
 import com.github.danzx.zekke.persistence.internal.mongo.Fields;
 import com.github.danzx.zekke.test.spring.BaseSpringIntegrationTest;
 

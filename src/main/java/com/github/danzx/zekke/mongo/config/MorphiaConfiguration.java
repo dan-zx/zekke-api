@@ -13,32 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.config;
+package com.github.danzx.zekke.mongo.config;
 
-import static java.util.Collections.singletonList;
-
-import static com.github.danzx.zekke.config.Profiles.DEVELOPMENT;
-
-import com.github.danzx.zekke.mongo.MongoDbSettings;
 import com.mongodb.MongoClient;
+
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.Morphia;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 /**
- * MongoDB configuration.
+ * Morphia configuration.
  * 
  * @author Daniel Pedraza-Arcega
  */
 @Configuration
-@Profile(DEVELOPMENT)
-public class DevelopmentMongoDbConfig {
+public class MorphiaConfiguration {
 
     @Bean
-    public MongoClient mongoClient(MongoDbSettings mongoSettings) {
-        return mongoSettings.getCredential().isPresent() ? 
-                new MongoClient(mongoSettings.getAddress(), singletonList(mongoSettings.getCredential().get())) : 
-                new MongoClient(mongoSettings.getAddress());
+    public Datastore datastore(MongoClient mongoClient, MongoDbSettings mongoSettings) {
+        return morphia().createDatastore(mongoClient, mongoSettings.getDatabase());
+    }
+
+    @Bean
+    public Morphia morphia() {
+        return new Morphia().mapPackage("com.github.danzx.zekke.domain");
     }
 }

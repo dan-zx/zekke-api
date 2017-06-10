@@ -22,7 +22,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
-import com.github.danzx.zekke.mongo.MongoDbSettings;
+import com.github.danzx.zekke.mongo.config.MongoDbSettings;
 import com.github.danzx.zekke.test.spring.ForIntegration;
 
 import com.mongodb.MongoClient;

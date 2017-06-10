@@ -25,9 +25,10 @@ import static com.mongodb.client.model.Filters.eq;
 
 import javax.inject.Inject;
 
-import com.github.danzx.zekke.mongo.MongoDbSettings;
+import com.github.danzx.zekke.mongo.config.MongoDbSettings;
 import com.github.danzx.zekke.persistence.internal.Sequence;
 import com.github.danzx.zekke.persistence.internal.SequenceManager;
+
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
