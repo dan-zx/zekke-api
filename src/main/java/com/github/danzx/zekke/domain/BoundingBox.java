@@ -29,31 +29,21 @@ public class BoundingBox {
 
     private static final String COORDINATES_SEPARATOR = ";";
 
-    @NotNull @Valid private final Coordinates bottomCoordinates;
-    @NotNull @Valid private final Coordinates topCoordinates;
+    @NotNull @Valid private Coordinates bottomCoordinates;
+    @NotNull @Valid private Coordinates topCoordinates;
 
-    /**
-     * Only used by third party frameworks.
-     * 
-     * @deprecated in favor of {@link #ofBottomTop(Coordinates, Coordinates)}
-     * @param bottomCoordinates the bottom coordinates.
-     * @param topCoordinates the top coordinates.
-     */
-    @Deprecated
-    public BoundingBox(Coordinates bottomCoordinates, Coordinates topCoordinates) {
-        this.bottomCoordinates = bottomCoordinates;
-        this.topCoordinates = topCoordinates;
-    }
-
-    /**
-     * Factory constructor.
-     * 
-     * @param bottomCoordinates the bottom coordinates.
-     * @param topCoordinates the top coordinates.
-     * @return a new BoundingBox.
-     */
-    public static BoundingBox ofBottomTop(Coordinates bottomCoordinates, Coordinates topCoordinates) {
-        return new BoundingBox(bottomCoordinates, topCoordinates);
+    /** 
+     * Factory constructor. 
+     *  
+     * @param bottomCoordinates the bottom coordinates. 
+     * @param topCoordinates the top coordinates. 
+     * @return a new BoundingBox. 
+     */ 
+    public static BoundingBox ofBottomTop(Coordinates bottomCoordinates, Coordinates topCoordinates) { 
+        BoundingBox bbox = new BoundingBox();
+        bbox.bottomCoordinates = bottomCoordinates;
+        bbox.topCoordinates = topCoordinates;
+        return bbox;
     }
 
     /**
@@ -77,8 +67,16 @@ public class BoundingBox {
         return bottomCoordinates;
     }
 
+    public void setBottomCoordinates(Coordinates bottomCoordinates) {
+        this.bottomCoordinates = bottomCoordinates;
+    }
+
     public Coordinates getTopCoordinates() {
         return topCoordinates;
+    }
+
+    public void setTopCoordinates(Coordinates topCoordinates) {
+        this.topCoordinates = topCoordinates;
     }
 
     @Override

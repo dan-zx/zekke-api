@@ -39,21 +39,8 @@ public class Coordinates {
     private static final Coordinates2GeoJsonPointTransformer TRANSFORMER = new Coordinates2GeoJsonPointTransformer();
     private static final String LAT_LNG_SEPARATOR = ",";
 
-    @NotNull @FloatRange(min = MIN_LATITUDE,  max = MAX_LATITUDE)  private final Double latitude;
-    @NotNull @FloatRange(min = MIN_LONGITUDE, max = MAX_LONGITUDE) private final Double longitude;
-
-    /**
-     * Only used by third party frameworks.
-     * 
-     * @deprecated in favor of {@link #ofLatLng(Double, Double)}
-     * @param latitude is a decimal number between -90.0 and 90.0.
-     * @param longitude is a decimal number between -180.0 and 180.0.
-     */
-    @Deprecated
-    public Coordinates(Double latitude, Double longitude) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
+    @NotNull @FloatRange(min = MIN_LATITUDE,  max = MAX_LATITUDE)  private Double latitude;
+    @NotNull @FloatRange(min = MIN_LONGITUDE, max = MAX_LONGITUDE) private Double longitude;
 
     /**
      * Factory constructor.
@@ -63,7 +50,10 @@ public class Coordinates {
      * @return a new Coordinates object.
      */
     public static Coordinates ofLatLng(Double latitude, Double longitude) {
-        return new Coordinates(latitude, longitude);
+        Coordinates coordinates = new Coordinates();
+        coordinates.latitude = latitude;
+        coordinates.longitude = longitude;
+        return coordinates;
     }
 
     /**
@@ -82,7 +72,7 @@ public class Coordinates {
         try {
             return ofLatLng(Double.parseDouble(latlng[0]), Double.parseDouble(latlng[1]));
         } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException("Componets of Coordinates must be doubles");
+            throw new IllegalArgumentException("Componets of Coordinates must be doubles", ex);
         }
     }
 
@@ -100,8 +90,16 @@ public class Coordinates {
         return latitude;
     }
 
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
     public Double getLongitude() {
         return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
     @Override
