@@ -15,7 +15,7 @@
  */
 package com.github.danzx.zekke.test.validation;
 
-import static com.github.danzx.zekke.validation.ValidationConfig.APP_VALIDATION_MESSAGES;
+import static com.github.danzx.zekke.validation.config.ValidationConfig.APP_VALIDATION_MESSAGES;
 
 import java.util.Locale;
 

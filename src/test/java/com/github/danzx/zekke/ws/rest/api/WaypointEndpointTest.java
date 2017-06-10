@@ -39,7 +39,6 @@ import javax.ws.rs.core.Response.Status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.github.danzx.zekke.config.TransformerConfig;
 import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
@@ -47,7 +46,11 @@ import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.service.WaypointService;
 import com.github.danzx.zekke.test.spring.BaseSpringValidationTest;
 import com.github.danzx.zekke.transformer.Transformer;
-import com.github.danzx.zekke.ws.rest.ObjectMapperConfig;
+import com.github.danzx.zekke.ws.rest.config.ModelTransformerConfig;
+import com.github.danzx.zekke.ws.rest.config.ObjectMapperConfig;
+import com.github.danzx.zekke.ws.rest.config.WaypointToPoiMapping;
+import com.github.danzx.zekke.ws.rest.config.WaypointToTypedWaypointMapping;
+import com.github.danzx.zekke.ws.rest.config.WaypointToWalkwayMapping;
 import com.github.danzx.zekke.ws.rest.model.Poi;
 import com.github.danzx.zekke.ws.rest.model.TypedWaypoint;
 import com.github.danzx.zekke.ws.rest.model.Walkway;
@@ -55,6 +58,8 @@ import com.github.danzx.zekke.ws.rest.patch.ObjectPatch;
 import com.github.danzx.zekke.ws.rest.patch.jsonpatch.JsonObjectPatch;
 
 import com.github.fge.jsonpatch.JsonPatch;
+
+import net.rakugakibox.spring.boot.orika.OrikaAutoConfiguration;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -64,7 +69,14 @@ import org.mockito.stubbing.Answer;
 
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(classes = {TransformerConfig.class, ObjectMapperConfig.class})
+@ContextConfiguration(classes = {
+        OrikaAutoConfiguration.class,
+        ModelTransformerConfig.class,
+        WaypointToPoiMapping.class,
+        WaypointToTypedWaypointMapping.class,
+        WaypointToWalkwayMapping.class,
+        ObjectMapperConfig.class
+})
 public class WaypointEndpointTest extends BaseSpringValidationTest {
 
     private @Inject Transformer<Waypoint, Poi> waypointToPoiTransformer;

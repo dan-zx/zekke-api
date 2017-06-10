@@ -27,7 +27,7 @@ import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.test.spring.BaseSpringTest;
 import com.github.danzx.zekke.util.Strings;
-import com.github.danzx.zekke.ws.rest.ObjectMapperConfig;
+import com.github.danzx.zekke.ws.rest.config.ObjectMapperConfig;
 import com.github.danzx.zekke.ws.rest.model.TypedWaypoint;
 
 import com.github.fge.jsonpatch.JsonPatch;

@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 /** Bean validation general objects and configuration. */
-package com.github.danzx.zekke.validation;
+package com.github.danzx.zekke.validation.config;

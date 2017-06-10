@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'jacoco'
-    id 'org.springframework.boot' version '1.5.2.RELEASE'
+    id 'org.springframework.boot' version '1.5.4.RELEASE'
 }
 
 group 'com.github.danzx.zekke'
@@ -15,39 +15,39 @@ repositories {
 }
 
 ext {
-    assertjVersion     = '3.6.2'
-    beanUtilsVersion   = '1.9.3'
-    embedMongoVersion  = '2.0.0'
-    guavaVersion       = '21.0'
-    groovyVersion      = '2.4.7'
-    ioUtilsVersion     = '2.5'
-    javaxInjectVersion = '1'
-    jsonPatchVersion   = '1.9'
-    junitParamsVersion = '1.0.6'
-    morphiaVersion     = '1.3.2'
-    orikaVersion       = '1.5.1'
+    assertjVersion         = '3.6.2'
+    beanUtilsVersion       = '1.9.3'
+    embedMongoVersion      = '2.0.0'
+    guavaVersion           = '21.0'
+    groovyVersion          = '2.4.7'
+    ioUtilsVersion         = '2.5'
+    javaxInjectVersion     = '1'
+    jsonPatchVersion       = '1.9'
+    junitParamsVersion     = '1.0.6'
+    morphiaVersion         = '1.3.2'
+    orikaSpringBootVersion = '1.3.0'
 }
 
 dependencies {
     // SPRING BOOT
-    compile 'org.springframework.boot:spring-boot-starter-jersey'
     compile "javax.inject:javax.inject:${javaxInjectVersion}"
+    compile 'org.springframework.boot:spring-boot-starter-jersey'
 
     // OTHERS
-    runtime "org.codehaus.groovy:groovy:${groovyVersion}"
-    compile "ma.glasnost.orika:orika-core:${orikaVersion}"
     compile "com.github.fge:json-patch:${jsonPatchVersion}"
+    compile "net.rakugakibox.spring.boot:orika-spring-boot-starter:${orikaSpringBootVersion}"
+    runtime "org.codehaus.groovy:groovy:${groovyVersion}"
 
     // MongoDB
     compile "org.mongodb.morphia:morphia:${morphiaVersion}"
 
-     // TEST
+    // TEST
+    testCompile "com.google.guava:guava:${guavaVersion}"
+    testCompile "commons-beanutils:commons-beanutils:${beanUtilsVersion}"
+    testCompile "de.flapdoodle.embed:de.flapdoodle.embed.mongo:${embedMongoVersion}"
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile "org.assertj:assertj-core:${assertjVersion}"
     testCompile "pl.pragmatists:JUnitParams:${junitParamsVersion}"
-    testCompile "commons-beanutils:commons-beanutils:${beanUtilsVersion}"
-    testCompile "com.google.guava:guava:${guavaVersion}"
-    testCompile "de.flapdoodle.embed:de.flapdoodle.embed.mongo:${embedMongoVersion}"
 }
 
 jacocoTestReport {

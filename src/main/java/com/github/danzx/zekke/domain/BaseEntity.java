@@ -15,8 +15,6 @@
  */
 package com.github.danzx.zekke.domain;
 
-import static java.util.Objects.requireNonNull;
-
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -38,7 +36,7 @@ public abstract class BaseEntity<ID extends Serializable> {
     }
 
     public void setId(ID id) {
-        this.id = requireNonNull(id);
+        this.id = id;
     }
 
     @Override

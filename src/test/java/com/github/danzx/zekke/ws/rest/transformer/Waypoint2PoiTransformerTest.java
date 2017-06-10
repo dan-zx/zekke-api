@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.domain.transformer;
+package com.github.danzx.zekke.ws.rest.transformer;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -25,23 +25,30 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import com.github.danzx.zekke.config.TransformerConfig;
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.test.spring.BaseSpringTest;
 import com.github.danzx.zekke.transformer.Transformer;
-import com.github.danzx.zekke.ws.rest.model.Walkway;
+import com.github.danzx.zekke.ws.rest.config.ModelTransformerConfig;
+import com.github.danzx.zekke.ws.rest.config.WaypointToPoiMapping;
+import com.github.danzx.zekke.ws.rest.model.Poi;
+
+import net.rakugakibox.spring.boot.orika.OrikaAutoConfiguration;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(classes = TransformerConfig.class)
-public class Waypoint2WalkwayTransformerTest extends BaseSpringTest {
+@ContextConfiguration(classes = {
+        OrikaAutoConfiguration.class,
+        ModelTransformerConfig.class,
+        WaypointToPoiMapping.class
+})
+public class Waypoint2PoiTransformerTest extends BaseSpringTest {
 
-    private @Inject Transformer<Waypoint, Walkway> transformer;
+    private @Inject Transformer<Waypoint, Poi> transformer;
 
     @Before
     public void setUp() {
@@ -50,14 +57,14 @@ public class Waypoint2WalkwayTransformerTest extends BaseSpringTest {
 
     @Test
     public void shouldConvertSingle() {
-        Waypoint waypoint = newWaypoint(1L, null, Type.WALKWAY, 12.43, 43.5);
-        Walkway actualWalkway = transformer.convertAtoB(waypoint);
-        assertThat(actualWalkway).isNotNull().extracting(Walkway::getId, Walkway::getLocation).containsOnly(waypoint.getId(), waypoint.getLocation());
+        Waypoint waypoint = newWaypoint(1L, "Name", Type.POI, 12.43, 43.5);
+        Poi actualPoi = transformer.convertAtoB(waypoint);
+        assertThat(actualPoi).isNotNull().extracting(Poi::getId, Poi::getName, Poi::getLocation).containsOnly(waypoint.getId(), waypoint.getName().get(), waypoint.getLocation());
     }
 
     @Test
     public void shouldRevertSingle() {
-        Waypoint expectedWaypoint = newWaypoint(1L, null, Type.WALKWAY, 12.43, 43.5);
+        Waypoint expectedWaypoint = newWaypoint(1L, "Name", Type.POI, 12.43, 43.5);
         Waypoint actualWaypoint = transformer.convertBtoA(transformer.convertAtoB(expectedWaypoint));
         assertThat(actualWaypoint).isNotNull().isEqualTo(expectedWaypoint);
     }
@@ -74,9 +81,9 @@ public class Waypoint2WalkwayTransformerTest extends BaseSpringTest {
 
     @Test
     public void shouldConvertList() {
-        Waypoint waypoint = newWaypoint(1L, null, Type.WALKWAY, 12.43, 43.5);
-        List<Walkway> actualWalkways = transformer.convertListAtoListB(singletonList(waypoint));
-        assertThat(actualWalkways).isNotNull().isNotEmpty().extracting(Walkway::getId, Walkway::getLocation).containsOnly(tuple(waypoint.getId(), waypoint.getLocation()));
+        Waypoint waypoint = newWaypoint(1L, "Name", Type.POI, 12.43, 43.5);
+        List<Poi> actualPois = transformer.convertListAtoListB(singletonList(waypoint));
+        assertThat(actualPois).isNotNull().isNotEmpty().extracting(Poi::getId, Poi::getName, Poi::getLocation).containsOnly(tuple(waypoint.getId(), waypoint.getName().get(), waypoint.getLocation()));
     }
 
     @Test
@@ -86,7 +93,7 @@ public class Waypoint2WalkwayTransformerTest extends BaseSpringTest {
 
     @Test
     public void shouldRevertList() {
-        List<Waypoint> expectedWaypoints = singletonList(newWaypoint(1L, null, Type.WALKWAY, 12.43, 43.5));
+        List<Waypoint> expectedWaypoints = singletonList(newWaypoint(1L, "Name", Type.POI, 12.43, 43.5));
         List<Waypoint> actualWaypoints = transformer.convertListBtoListA(transformer.convertListAtoListB(expectedWaypoints));
         assertThat(actualWaypoints).isNotNull().isNotEmpty().hasSameSizeAs(expectedWaypoints).isEqualTo(expectedWaypoints);
     }
@@ -99,7 +106,7 @@ public class Waypoint2WalkwayTransformerTest extends BaseSpringTest {
     private Waypoint newWaypoint(long id, String name, Type type, double lat, double lng) {
         Waypoint waypoint = new Waypoint();
         waypoint.setId(id);
-        if (name != null) waypoint.setName(name);
+        waypoint.setName(name);
         waypoint.setType(type);
         waypoint.setLocation(Coordinates.ofLatLng(lat, lng));
         return waypoint;
