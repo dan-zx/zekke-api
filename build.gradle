@@ -22,6 +22,7 @@ ext {
     groovyVersion      = '2.4.7'
     ioUtilsVersion     = '2.5'
     javaxInjectVersion = '1'
+    jsonPatchVersion   = '1.9'
     junitParamsVersion = '1.0.6'
     morphiaVersion     = '1.3.2'
     orikaVersion       = '1.5.1'
@@ -35,6 +36,7 @@ dependencies {
     // OTHERS
     runtime "org.codehaus.groovy:groovy:${groovyVersion}"
     compile "ma.glasnost.orika:orika-core:${orikaVersion}"
+    compile "com.github.fge:json-patch:${jsonPatchVersion}"
 
     // MongoDB
     compile "org.mongodb.morphia:morphia:${morphiaVersion}"

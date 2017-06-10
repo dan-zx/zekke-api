@@ -15,11 +15,14 @@
  */
 package com.github.danzx.zekke.ws.rest.api;
 
+import static java.util.Collections.emptySet;
 import static java.util.Objects.requireNonNull;
 
 import static com.github.danzx.zekke.ws.rest.ApiVersions.V_1;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -45,9 +48,12 @@ import com.github.danzx.zekke.service.WaypointService;
 import com.github.danzx.zekke.service.WaypointService.NearWaypointsQuery;
 import com.github.danzx.zekke.service.WaypointService.WaypointsQuery;
 import com.github.danzx.zekke.transformer.Transformer;
+import com.github.danzx.zekke.ws.rest.MediaTypes;
+import com.github.danzx.zekke.ws.rest.PATCH;
 import com.github.danzx.zekke.ws.rest.model.Poi;
 import com.github.danzx.zekke.ws.rest.model.TypedWaypoint;
 import com.github.danzx.zekke.ws.rest.model.Walkway;
+import com.github.danzx.zekke.ws.rest.patch.ObjectPatch;
 
 import org.springframework.stereotype.Component;
 
@@ -253,6 +259,34 @@ public class WaypointEndpoint {
         return waypointService.delete(waypoint) ? 
                 Response.noContent().build() : 
                 Response.status(Status.NOT_FOUND).build();
+    }
+
+    /**
+     * Patches a waypoint by it's id.
+     * 
+     * @param id an id.
+     * @param patch the update.
+     * @return a 200 OK with the updated waypoint or 404 Not Found.
+     */
+    @PATCH
+    @Path("/{id}")
+    @Consumes(MediaTypes.APPLICATION_JSON_PATCH)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response patchWaypoint(@NotNull @PathParam("id") Long id, @NotNull ObjectPatch patch) {
+        Optional<Waypoint> optWaypoint = waypointService.findWaypointById(id);
+        Set<com.github.danzx.zekke.domain.Path> paths = optWaypoint.map(Waypoint::getPaths).orElse(emptySet());
+        return optWaypoint
+            .map(waypointToTypedWaypointTransformer::convertAtoB)
+            .map(patch::apply)
+            .map(typedWaypoint -> {
+                    typedWaypoint.setId(id);
+                    Waypoint waypoint = waypointToTypedWaypointTransformer.convertBtoA(typedWaypoint);
+                    waypoint.setPaths(paths);
+                    waypointService.persist(waypoint);
+                    return typedWaypoint;
+                })
+            .map(typedWaypoint -> Response.ok(typedWaypoint).build())
+            .orElse(Response.status(Status.NOT_FOUND).build());
     }
 
     private List<Waypoint> queryWaypoints(Type waypointType, BoundingBox bbox,String queryStr) {

@@ -20,8 +20,11 @@ import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Method;
@@ -34,6 +37,8 @@ import javax.validation.ConstraintViolation;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.github.danzx.zekke.config.TransformerConfig;
 import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Coordinates;
@@ -42,9 +47,14 @@ import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.service.WaypointService;
 import com.github.danzx.zekke.test.spring.BaseSpringValidationTest;
 import com.github.danzx.zekke.transformer.Transformer;
+import com.github.danzx.zekke.ws.rest.ObjectMapperConfig;
 import com.github.danzx.zekke.ws.rest.model.Poi;
 import com.github.danzx.zekke.ws.rest.model.TypedWaypoint;
 import com.github.danzx.zekke.ws.rest.model.Walkway;
+import com.github.danzx.zekke.ws.rest.patch.ObjectPatch;
+import com.github.danzx.zekke.ws.rest.patch.jsonpatch.JsonObjectPatch;
+
+import com.github.fge.jsonpatch.JsonPatch;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -54,12 +64,13 @@ import org.mockito.stubbing.Answer;
 
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(classes = TransformerConfig.class)
+@ContextConfiguration(classes = {TransformerConfig.class, ObjectMapperConfig.class})
 public class WaypointEndpointTest extends BaseSpringValidationTest {
 
     private @Inject Transformer<Waypoint, Poi> waypointToPoiTransformer;
     private @Inject Transformer<Waypoint, TypedWaypoint> waypointToWalkwayTransformer;
     private @Inject Transformer<Waypoint, Walkway> waypointToTypedWaypointTransformer;
+    private @Inject ObjectMapper mapper;
 
     private WaypointService mockWaypointService;
     private WaypointEndpoint endpoint;
@@ -69,6 +80,7 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
         assertThat(waypointToPoiTransformer).isNotNull();
         assertThat(waypointToWalkwayTransformer).isNotNull();
         assertThat(waypointToTypedWaypointTransformer).isNotNull();
+        assertThat(mapper).isNotNull();
         mockWaypointService = mock(WaypointService.class);
         endpoint = new WaypointEndpoint(mockWaypointService, waypointToPoiTransformer, waypointToTypedWaypointTransformer, waypointToWalkwayTransformer);
     }
@@ -394,6 +406,67 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
         assertThat(response).isNotNull()
             .extracting(Response::getStatusInfo, Response::hasEntity, Response::getEntity)
             .containsOnly(Status.NOT_FOUND, false, null);
+    }
+
+    @Test
+    public void shouldPatchWaypointFailValidationWhenIdAndOrObjectPatchIsNull() throws Exception {
+        Method method = WaypointEndpoint.class.getMethod("patchWaypoint", Long.class, ObjectPatch.class);
+        Object[] parameterValues = { null, null };
+        Set<ConstraintViolation<WaypointEndpoint>> violations = validator().forExecutables().validateParameters(
+                endpoint,
+                method,
+                parameterValues
+        );
+        assertThat(violations).isNotNull().isNotEmpty().hasSize(2);
+    }
+
+    @Test
+    public void shouldPatchWaypointRespondWithNotFoundWhenNoDataIsFound() throws Exception {
+        when(mockWaypointService.findWaypointById(anyLong())).thenReturn(Optional.empty());
+
+        Response response = endpoint.patchWaypoint(1L, dummyPatch());
+
+        verify(mockWaypointService, never()).persist(any());
+
+        assertThat(response).isNotNull()
+            .extracting(Response::getStatusInfo, Response::hasEntity, Response::getEntity)
+            .containsOnly(Status.NOT_FOUND, false, null);
+    }
+
+    @Test
+    public void shouldPatchWaypointRespondOkWithBodyWhenDataIsFoundAndPatched() throws Exception {
+        long id = 1L;
+        TypedWaypoint responseBody = new TypedWaypoint();
+        responseBody.setId(id);
+        responseBody.setName("A Name");
+        responseBody.setType(Type.POI);
+        responseBody.setLocation(Coordinates.ofLatLng(12.43, 43.5));
+
+        Waypoint waypoint = new Waypoint();
+        waypoint.setId(responseBody.getId());
+        waypoint.setLocation(responseBody.getLocation());
+        waypoint.setName(responseBody.getName());
+        waypoint.setType(responseBody.getType());
+
+        when(mockWaypointService.findWaypointById(id)).thenReturn(Optional.of(waypoint));
+
+        Response response = endpoint.patchWaypoint(id, dummyPatch());
+
+        verify(mockWaypointService).persist(waypoint);
+
+        assertThat(response).isNotNull()
+            .extracting(Response::getStatusInfo, Response::hasEntity)
+            .containsOnly(Status.OK, true);
+
+        TypedWaypoint actualResponseBody = (TypedWaypoint) response.getEntity();
+        assertThat(actualResponseBody).isNotNull()
+            .extracting(TypedWaypoint::getId, TypedWaypoint::getName, TypedWaypoint::getLocation, TypedWaypoint::getType)
+            .containsOnly(responseBody.getId(), responseBody.getName(), responseBody.getLocation(), responseBody.getType());
+    }
+
+    private ObjectPatch dummyPatch() throws Exception {
+        JsonPatch jsonPatch = mapper.readValue("[]", JsonPatch.class);
+        return new JsonObjectPatch(mapper, jsonPatch);
     }
 
     private void assertBoundingBoxValidation(Method method, Object[] parameterValues) {
