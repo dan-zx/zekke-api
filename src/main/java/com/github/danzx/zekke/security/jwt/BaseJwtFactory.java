@@ -28,6 +28,8 @@ import com.github.danzx.zekke.security.UserRole;
  */
 public abstract class BaseJwtFactory implements JwtFactory {
 
+    private static final long ONE_MINUTE_IN_SECONDS = 60;
+
     private final long expirationTimeInMinutes;
     private final String issuer;
     private final SigningKeyHolder signingKeyHolder;
@@ -42,19 +44,19 @@ public abstract class BaseJwtFactory implements JwtFactory {
     public String newToken(UserRole role) {
         requireNonNull(role);
         Instant issueTime = Instant.now();
-        Instant experireTime = issueTime.plusSeconds(expirationTimeInMinutes * 60);
-        return createToken(issueTime, experireTime, role.name());
+        Instant expirationTime = issueTime.plusSeconds(expirationTimeInMinutes * ONE_MINUTE_IN_SECONDS);
+        return createToken(issueTime, expirationTime, role.name());
     }
 
     /**
      * Creates the actual token.
      * 
      * @param issueTime the time to issue the token.
-     * @param experireTime the time when the token expires.
+     * @param expirationTime the time when the token expires.
      * @param subject the subject.
      * @return a compacted JWT.
      */
-    protected abstract String createToken(Instant issueTime, Instant experireTime, String subject);
+    protected abstract String createToken(Instant issueTime, Instant expirationTime, String subject);
 
     protected long getExpirationTimeInMinutes() {
         return expirationTimeInMinutes;

@@ -44,13 +44,13 @@ public class JjwtFactory extends BaseJwtFactory {
     }
 
     @Override
-    protected String createToken(Instant issueTime, Instant experireTime, String subject) {
+    protected String createToken(Instant issueTime, Instant expirationTime, String subject) {
         return Jwts.builder()
                 .setSubject(subject)
                 .signWith(SignatureAlgorithm.HS512, getSigningKeyHolder().getKey())
                 .setIssuer(getIssuer())
                 .setIssuedAt(new Date(issueTime.toEpochMilli()))
-                .setExpiration(new Date(experireTime.toEpochMilli()))
+                .setExpiration(new Date(expirationTime.toEpochMilli()))
                 .compact();
     }
 }
