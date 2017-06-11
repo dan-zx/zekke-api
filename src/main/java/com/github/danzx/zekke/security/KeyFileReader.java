@@ -17,6 +17,8 @@ package com.github.danzx.zekke.security;
 
 import static java.util.Objects.requireNonNull;
 
+import static com.github.danzx.zekke.util.Strings.isNullOrBlank;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,7 +52,7 @@ public class KeyFileReader {
     public byte[] getKey() {
         try (BufferedReader reader = openReader()) {
             String line = reader.readLine();
-            if (line == null) throw new IllegalArgumentException("Key file is empty");
+            if (isNullOrBlank(line)) throw new IllegalArgumentException("Key file is empty");
             int lineLength = line.length();
             byte[] encodedBytes = new byte[(lineLength + Byte.SIZE - 1) / Byte.SIZE];
             char c;
