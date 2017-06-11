@@ -58,10 +58,6 @@ public abstract class BaseJwtFactory implements JwtFactory {
      */
     protected abstract String createToken(Instant issueTime, Instant expirationTime, String subject);
 
-    protected long getExpirationTimeInMinutes() {
-        return expirationTimeInMinutes;
-    }
-
     protected String getIssuer() {
         return issuer;
     }
