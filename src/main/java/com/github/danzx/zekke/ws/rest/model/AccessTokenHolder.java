@@ -37,4 +37,9 @@ public class AccessTokenHolder {
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
     }
+
+    @Override
+    public String toString() {
+        return "{ accessToken: " + accessToken + " }";
+    }
 }
