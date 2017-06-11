@@ -48,7 +48,7 @@ public class JsonPatchReader implements MessageBodyReader<ObjectPatch> {
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return type == ObjectPatch.class;
+        return ObjectPatch.class == type && MediaTypes.APPLICATION_JSON_PATCH_TYPE.isCompatible(mediaType);
     }
 
     @Override

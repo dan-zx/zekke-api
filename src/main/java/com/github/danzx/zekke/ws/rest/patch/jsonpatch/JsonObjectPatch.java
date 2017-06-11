@@ -15,6 +15,8 @@
  */
 package com.github.danzx.zekke.ws.rest.patch.jsonpatch;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -38,12 +40,13 @@ public class JsonObjectPatch implements ObjectPatch {
     private final JsonPatch patch;
 
     public JsonObjectPatch(ObjectMapper objectMapper, JsonPatch patch) {
-        this.objectMapper = objectMapper;
-        this.patch = patch;
+        this.objectMapper = requireNonNull(objectMapper);
+        this.patch = requireNonNull(patch);
     }
 
     @Override
     public <T> T apply(T target) throws ObjectPatchException {
+        requireNonNull(target);
         JsonNode source = objectMapper.valueToTree(target);
         JsonNode result;
         try {
