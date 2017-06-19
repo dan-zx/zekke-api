@@ -16,9 +16,6 @@
 package com.github.danzx.zekke.mongo.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import com.github.danzx.zekke.test.paramprovider.BlankStringProvider;
 
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
@@ -33,29 +30,16 @@ import org.junit.runner.RunWith;
 public class MongoDbSettingsTest {
 
     private static final String ANY_STR = "any";
-    private static final int ANY_INT = 80;
-    @Test
-    public void shouldConstructorThrowNullPointExceptionWhenHostIsNull() {
-        assertThatThrownBy(() -> new MongoDbSettings(null, ANY_STR, ANY_INT, ANY_STR, ANY_STR)).isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    public void shouldConstructorThrowNullPointExceptionWhenDatabaseIsNull() {
-        assertThatThrownBy(() -> new MongoDbSettings(ANY_STR, null, ANY_INT, ANY_STR, ANY_STR)).isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    @Parameters(source = BlankStringProvider.class) 
-    public void shouldConstructorThrowIllegalArgumentExceptionWhenDatabaseIsBlank(String blank) {
-        assertThatThrownBy(() -> new MongoDbSettings(ANY_STR, blank, ANY_INT, ANY_STR, ANY_STR)).isInstanceOf(IllegalArgumentException.class);
-    }
 
     @Test
     @Parameters(method = "usersAndPasswords")
     public void shouldConstructorObject(String user, String password, boolean isCredentialPresent) {
-        MongoDbSettings settings = new MongoDbSettings(ANY_STR, ANY_STR, ANY_INT, user, password);
+        MongoDbSettings settings = MongoDbSettings.ofDatabase(ANY_STR)
+            .withUser(user)
+            .withPassword(password)
+            .build();
         assertThat(settings.getDatabase()).isNotNull().isEqualTo(ANY_STR);
-        assertThat(settings.getAddress()).isNotNull().extracting(ServerAddress::getHost, ServerAddress::getPort).containsExactly(ANY_STR, ANY_INT);
+        assertThat(settings.getAddress()).isNotNull().extracting(ServerAddress::getHost, ServerAddress::getPort).containsExactly("localhost", 27017);
         assertThat(settings.getCredential().isPresent()).isEqualTo(isCredentialPresent);
         char[] passwordArray = password == null ? new char[0] : password.toCharArray();
         settings.getCredential().ifPresent(credential -> assertThat(credential).extracting(MongoCredential::getUserName, MongoCredential::getPassword).containsExactly(user, passwordArray));

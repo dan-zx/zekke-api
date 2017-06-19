@@ -13,20 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.config;
+package com.github.danzx.zekke.mongo.config;
+
+import static java.util.Collections.singletonList;
+
+import com.mongodb.MongoClient;
+
+import org.springframework.context.annotation.Bean;
 
 /**
- * Available profiles in the application.
+ * Mongo client configuration.
  * 
  * @author Daniel Pedraza-Arcega
  */
-public class Profiles {
+abstract class MongoClientConfig {
 
-    public static final String DEVELOPMENT = "dev";
-    public static final String STAGING = "staging";
-    public static final String PRODUCTION = "prod";
-
-    protected Profiles() { 
-        throw new AssertionError();
+    @Bean
+    public MongoClient mongoClient(MongoDbSettings mongoSettings) {
+        return mongoSettings.getCredential().isPresent() ?
+                new MongoClient(mongoSettings.getAddress(), singletonList(mongoSettings.getCredential().get())) :
+                new MongoClient(mongoSettings.getAddress());
     }
 }

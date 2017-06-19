@@ -15,29 +15,34 @@
  */
 package com.github.danzx.zekke.mongo.config;
 
-import static java.util.Collections.singletonList;
-
 import static com.github.danzx.zekke.config.Profiles.DEVELOPMENT;
 
-import com.mongodb.MongoClient;
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 /**
- * MongoDB configuration.
+ * MongoDB development configuration.
  * 
  * @author Daniel Pedraza-Arcega
  */
 @Configuration
 @Profile(DEVELOPMENT)
-public class DevelopmentMongoDbConfig {
+public class DevelopmentMongoDbConfig extends MongoClientConfig {
 
     @Bean
-    public MongoClient mongoClient(MongoDbSettings mongoSettings) {
-        return mongoSettings.getCredential().isPresent() ? 
-                new MongoClient(mongoSettings.getAddress(), singletonList(mongoSettings.getCredential().get())) : 
-                new MongoClient(mongoSettings.getAddress());
+    public MongoDbSettings mongoDbSettings(@Value("${mongodb.db}") String database,
+                                           @Value("${mongodb.host}") String host,
+                                           @Value("${mongodb.port}") int port,
+                                           @Value("${mongodb.db.user:#{null}}") String databaseUser,
+                                           @Value("${mongodb.db.password:#{null}}") String databasePassword) {
+        return MongoDbSettings
+                .ofDatabase(database)
+                .locatedAt(host)
+                .withPort(port)
+                .withUser(databaseUser)
+                .withPassword(databasePassword)
+                .build();
     }
 }
