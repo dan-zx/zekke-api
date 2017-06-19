@@ -30,6 +30,9 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -41,12 +44,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class JjwtVerifier extends BaseJwtVerifier {
 
+    private static final Logger log = LoggerFactory.getLogger(JjwtVerifier.class);
+
     public @Inject JjwtVerifier(@Value("${jwt.issuer}") String issuer, SigningKeyHolder signingKeyHolder) {
         super(issuer, signingKeyHolder);
     }
 
     @Override
     public void verify(String compactJws, UserRole role) throws JwtVerificationException {
+        log.debug("JWT: {}, expectedRole: {}", compactJws, role);
         requireNonNull(compactJws);
         requireNonNull(role);
         Jws<Claims> claims = null;

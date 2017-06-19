@@ -21,6 +21,9 @@ import com.github.danzx.zekke.transformer.Transformer;
 import org.mongodb.morphia.geo.GeoJson;
 import org.mongodb.morphia.geo.Point;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.stereotype.Component;
 
 /**
@@ -31,14 +34,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class Coordinates2GeoJsonPointTransformer implements Transformer<Coordinates, Point> {
 
+    private static final Logger log = LoggerFactory.getLogger(Coordinates2GeoJsonPointTransformer.class);
+
     @Override
     public Point convertAtoB(Coordinates source) {
+        log.debug("Coordinates: {}", source);
         if (source == null) return null;
         return GeoJson.point(source.getLatitude(), source.getLongitude());
     }
 
     @Override
     public Coordinates convertBtoA(Point source) {
+        log.debug("Point: {}", source);
         if (source == null) return null;
         return Coordinates.ofLatLng(source.getLatitude(), source.getLongitude());
     }

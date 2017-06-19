@@ -29,6 +29,9 @@ import com.github.danzx.zekke.security.UserRole;
 import com.github.danzx.zekke.security.jwt.JwtFactory;
 import com.github.danzx.zekke.ws.rest.model.AccessTokenHolder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.stereotype.Component;
 
 /**
@@ -39,6 +42,8 @@ import org.springframework.stereotype.Component;
 @Component
 @Path(V_1 + "/authentications/jwt/")
 public class JwtAuthenticationEndpoint {
+
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationEndpoint.class);
 
     private final JwtFactory jwtFactory;
 
@@ -55,6 +60,7 @@ public class JwtAuthenticationEndpoint {
     @Path("/anonymous")
     @Produces(MediaType.APPLICATION_JSON)
     public AccessTokenHolder authenticateAnonymously() {
+        log.info("GET /authentications/jwt/anonymous");
         String jwt = jwtFactory.newToken(UserRole.ANONYMOUS);
         return AccessTokenHolder.of(jwt);
     }

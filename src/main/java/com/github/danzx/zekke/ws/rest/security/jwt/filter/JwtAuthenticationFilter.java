@@ -39,6 +39,9 @@ import com.github.danzx.zekke.ws.rest.model.ErrorMessage;
 import com.github.danzx.zekke.ws.rest.model.ErrorMessage.Type;
 import com.github.danzx.zekke.ws.rest.security.RequireRoleAccess;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Authenticate user using JWT protocol.
  * 
@@ -49,6 +52,8 @@ import com.github.danzx.zekke.ws.rest.security.RequireRoleAccess;
 @Priority(Priorities.AUTHENTICATION)
 public class JwtAuthenticationFilter implements ContainerRequestFilter {
 
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
     private @Context ResourceInfo resourceInfo;
     private @Context JwtVerifier jwtVerifier;
 
@@ -56,11 +61,15 @@ public class JwtAuthenticationFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
+        log.debug("Accept-Languages={}", requestContext.getAcceptableLanguages());
         Locale clientLocale = requestContext.getAcceptableLanguages().stream().findFirst().orElse(Locale.ROOT);
+        String headerInfo = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
+        log.debug("{}={}", HttpHeaders.AUTHORIZATION, headerInfo);
         String token;
         try {
-            token = JwtHeaderExtractor.getToken(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION));
+            token = JwtHeaderExtractor.getToken(headerInfo);
         } catch (IllegalArgumentException ex) {
+            log.error("Invalid authorization header", ex);
             Response.Status status = Response.Status.UNAUTHORIZED;
             ErrorMessage errorMessage = new ErrorMessage.Builder()
                     .statusCode(status.getStatusCode())
@@ -75,9 +84,11 @@ public class JwtAuthenticationFilter implements ContainerRequestFilter {
             return;
         }
 
+        UserRole requiredRole = getRequiredRoleToAccessResource();
         try {
-            jwtVerifier.verify(token, getRequiredRoleToAccessResource());
+            jwtVerifier.verify(token, requiredRole);
         } catch (JwtVerificationException ex) {
+            log.error("JWT is invalid", ex);
             Response.Status status = Response.Status.UNAUTHORIZED;
             ErrorMessage errorMessage = new ErrorMessage.Builder()
                     .statusCode(status.getStatusCode())

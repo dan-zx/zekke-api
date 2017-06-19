@@ -23,6 +23,9 @@ import com.github.danzx.zekke.message.MessageSource;
 import com.github.danzx.zekke.message.impl.MessageSourceFactory;
 import com.github.danzx.zekke.ws.rest.model.ErrorMessage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Maps NotFoundException to JSON Responses.
  * 
@@ -31,10 +34,13 @@ import com.github.danzx.zekke.ws.rest.model.ErrorMessage;
 @Provider
 public class ResourceNotFoundExceptionMapper extends BaseExceptionMapper<NotFoundException> {
 
+    private static final Logger log = LoggerFactory.getLogger(ResourceNotFoundExceptionMapper.class);
+
     private final MessageSource messageSource = MessageSourceFactory.defaultSource();
 
     @Override
     public Response toResponse(NotFoundException exception) {
+        log.error("Resource not found", exception);
         Response.Status status = Response.Status.NOT_FOUND;
         ErrorMessage errorMessage = new ErrorMessage.Builder()
                 .statusCode(status.getStatusCode())

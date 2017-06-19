@@ -20,6 +20,9 @@ import com.github.danzx.zekke.transformer.Transformer;
 
 import org.mongodb.morphia.query.Shape;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.stereotype.Component;
 
 /**
@@ -30,8 +33,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class BoundingBox2GeoJsonShapeTransformer implements Transformer<BoundingBox, Shape> {
 
+    private static final Logger log = LoggerFactory.getLogger(BoundingBox2GeoJsonShapeTransformer.class);
+
     @Override
     public Shape convertAtoB(BoundingBox source) {
+        log.debug("bbox: {}", source);
         if (source == null) return null;
         return Shape.box(
                 new Shape.Point(source.getBottomCoordinates().getLongitude(), source.getBottomCoordinates().getLatitude()), 
@@ -40,6 +46,7 @@ public class BoundingBox2GeoJsonShapeTransformer implements Transformer<Bounding
 
     @Override
     public BoundingBox convertBtoA(Shape source) {
+        log.debug("Shape: {}", source);
         throw new UnsupportedOperationException();
     }
 }

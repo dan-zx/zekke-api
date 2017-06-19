@@ -19,12 +19,17 @@ import static java.util.Objects.requireNonNull;
 
 import com.github.danzx.zekke.security.UserRole;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Base JWT verifier.
  * 
  * @author Daniel Pedraza-Arcega
  */
 public abstract class BaseJwtVerifier implements JwtVerifier {
+
+    private static final Logger log = LoggerFactory.getLogger(BaseJwtVerifier.class);
 
     private final String issuer;
     private final SigningKeyHolder signingKeyHolder;
@@ -35,6 +40,7 @@ public abstract class BaseJwtVerifier implements JwtVerifier {
     }
 
     protected void verifyIssuer(String issuer) throws JwtVerificationException {
+        log.debug("{} == {}", this.issuer, issuer);
         if (!this.issuer.equals(issuer)) {
             throw new JwtVerificationException.Builder()
                 .messageKey("jwt.invalid.issuer")
@@ -43,6 +49,7 @@ public abstract class BaseJwtVerifier implements JwtVerifier {
     }
 
     protected void verifyUserPrivileges(UserRole expectedRole, String subject) throws JwtVerificationException {
+        log.debug("{} == {}", expectedRole, subject);
         UserRole subjectRole;
         try {
             subjectRole = UserRole.valueOf(subject);

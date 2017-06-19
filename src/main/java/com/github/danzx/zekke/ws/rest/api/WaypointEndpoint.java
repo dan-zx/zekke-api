@@ -57,6 +57,9 @@ import com.github.danzx.zekke.ws.rest.model.Walkway;
 import com.github.danzx.zekke.ws.rest.patch.ObjectPatch;
 import com.github.danzx.zekke.ws.rest.security.RequireRoleAccess;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.stereotype.Component;
 
 /**
@@ -68,6 +71,8 @@ import org.springframework.stereotype.Component;
 @Path(V_1 + "/waypoints")
 @RequireRoleAccess(roleRequired = UserRole.ANONYMOUS)
 public class WaypointEndpoint {
+
+    private static final Logger log = LoggerFactory.getLogger(WaypointEndpoint.class);
 
     private final WaypointService waypointService;
     private final Transformer<Waypoint, Poi> waypointToPoiTransformer;
@@ -95,6 +100,7 @@ public class WaypointEndpoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<TypedWaypoint> getTypedWaypoints(@Valid @QueryParam("bbox") BoundingBox bbox) {
+        log.info("GET /waypoints?bbox={}", bbox);
         List<Waypoint> waypoints = queryWaypoints(null, bbox, null);
         return waypointToTypedWaypointTransformer.convertListAtoListB(waypoints);
     }
@@ -114,6 +120,7 @@ public class WaypointEndpoint {
     public List<Poi> getPois(
             @Valid @QueryParam("bbox") BoundingBox bbox,
             @QueryParam("query") String queryStr) {
+        log.info("GET /waypoints/pois?bbox={}&query={}", bbox, queryStr);
         List<Waypoint> waypoints = queryWaypoints(Type.POI, bbox, queryStr);
         return waypointToPoiTransformer.convertListAtoListB(waypoints);
     }
@@ -130,6 +137,7 @@ public class WaypointEndpoint {
     @Path("/walkways")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Walkway> getWalkways(@Valid @QueryParam("bbox") BoundingBox bbox) {
+        log.info("GET /waypoints/walkways?bbox={}&query={}", bbox);
         List<Waypoint> waypoints = queryWaypoints(Type.WALKWAY, bbox, null);
         return waypointToWalkwayTransformer.convertListAtoListB(waypoints);
     }
@@ -145,6 +153,7 @@ public class WaypointEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @RequireRoleAccess(roleRequired = UserRole.ADMIN)
     public TypedWaypoint newWaypoint(@NotNull @NullId @Valid TypedWaypoint typedWaypoint) {
+        log.info("POST /waypoints -- body: {}", typedWaypoint);
         Waypoint waypoint = waypointToTypedWaypointTransformer.convertBtoA(typedWaypoint);
         waypointService.persist(waypoint);
         typedWaypoint.setId(waypoint.getId());
@@ -166,6 +175,7 @@ public class WaypointEndpoint {
     public List<Poi> getPoiSuggestions(
             @Valid @QueryParam("bbox") BoundingBox bbox, 
             @QueryParam("query") String queryStr) {
+        log.info("GET /waypoints/pois/suggestnames?bbox={}&query={}", bbox);
         List<Waypoint> pois = waypointService.findPoisForNameCompletion(bbox, queryStr);
         return waypointToPoiTransformer.convertListAtoListB(pois);
     }
@@ -185,8 +195,8 @@ public class WaypointEndpoint {
     public List<TypedWaypoint> getNearTypedWaypoints(
             @NotNull @Valid @QueryParam("location") Coordinates location,
             @QueryParam("distance") Integer distance,
-            @QueryParam("limit") Integer limit
-            ) {
+            @QueryParam("limit") Integer limit) {
+        log.info("GET /waypoints/near?location={}&distance={}&limit={}", location, distance, limit);
         List<Waypoint> waypoints = queryNearWaypoints(null, location, distance, limit);
         return waypointToTypedWaypointTransformer.convertListAtoListB(waypoints);
     }
@@ -206,8 +216,8 @@ public class WaypointEndpoint {
     public List<Poi> getNearPois(
             @NotNull @Valid @QueryParam("location") Coordinates location,
             @QueryParam("distance") Integer distance,
-            @QueryParam("limit") Integer limit
-            ) {
+            @QueryParam("limit") Integer limit) {
+        log.info("GET /waypoints/pois/near?location={}&distance={}&limit={}", location, distance, limit);
         List<Waypoint> waypoints = queryNearWaypoints(Type.POI, location, distance, limit);
         return waypointToPoiTransformer.convertListAtoListB(waypoints);
     }
@@ -227,8 +237,8 @@ public class WaypointEndpoint {
     public List<Walkway> getNearWalways(
             @NotNull @Valid @QueryParam("location") Coordinates location,
             @QueryParam("distance") Integer distance,
-            @QueryParam("limit") Integer limit
-            ) {
+            @QueryParam("limit") Integer limit) {
+        log.info("GET /waypoints/walkways?location={}&distance={}&limit={}", location, distance, limit);
         List<Waypoint> waypoints = queryNearWaypoints(Type.WALKWAY, location, distance, limit);
         return waypointToWalkwayTransformer.convertListAtoListB(waypoints);
     }
@@ -243,6 +253,7 @@ public class WaypointEndpoint {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getWaypoint(@NotNull @PathParam("id") Long id) {
+        log.info("GET /waypoints/{}", id);
         return waypointService.findWaypointById(id)
                 .map(waypoint -> waypointToTypedWaypointTransformer.convertAtoB(waypoint))
                 .map(typedWaypoint -> Response.ok(typedWaypoint).build())
@@ -259,6 +270,7 @@ public class WaypointEndpoint {
     @Path("/{id}")
     @RequireRoleAccess(roleRequired = UserRole.ADMIN)
     public Response deleteWaypoint(@NotNull @PathParam("id") Long id) {
+        log.info("DELETE /waypoints/{}", id);
         Waypoint waypoint = new Waypoint();
         waypoint.setId(id);
         return waypointService.delete(waypoint) ? 
@@ -279,6 +291,7 @@ public class WaypointEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @RequireRoleAccess(roleRequired = UserRole.ADMIN)
     public Response patchWaypoint(@NotNull @PathParam("id") Long id, @NotNull ObjectPatch patch) {
+        log.info("PATCH /waypoints/{} -- body: {}", id, patch);
         Optional<Waypoint> optWaypoint = waypointService.findWaypointById(id);
         Set<com.github.danzx.zekke.domain.Path> paths = optWaypoint.map(Waypoint::getPaths).orElse(emptySet());
         return optWaypoint

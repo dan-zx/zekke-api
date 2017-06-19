@@ -19,12 +19,17 @@ import javax.validation.ConstraintValidator;
 
 import com.github.danzx.zekke.constraint.FloatRange;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Base class to validate floating point values are between min and max included.
  * 
  * @author Daniel Pedraza-Arcega
  */
 abstract class BaseFloatingPointRangeValidator<N extends Number> implements ConstraintValidator<FloatRange, N> {
+
+    private static final Logger log = LoggerFactory.getLogger(BaseFloatingPointRangeValidator.class);
 
     private double min;
     private double max;
@@ -34,7 +39,7 @@ abstract class BaseFloatingPointRangeValidator<N extends Number> implements Cons
      * @param min {@link FloatRange#min()}
      * @param max {@link FloatRange#max()}
      */
-    protected void init(double min, double max){
+    protected void init(double min, double max) {
         this.min = min;
         this.max = max;
     }
@@ -49,14 +54,7 @@ abstract class BaseFloatingPointRangeValidator<N extends Number> implements Cons
      * @return {@code true} if the value is in range (inclusive); {@code false} otherwise.
      */
     protected boolean isInRange(double value) {
-        return min <= value && value <= max;
-    }
-
-    /**
-     * @param value the value to check.
-     * @return {@code true} if the value is in range (inclusive); {@code false} otherwise.
-     */
-    protected boolean isInRange(float value) {
+        log.debug("{} <= {} <= {}", min, value, max);
         return min <= value && value <= max;
     }
 }

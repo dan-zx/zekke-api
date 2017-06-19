@@ -35,6 +35,9 @@ import com.mongodb.client.MongoDatabase;
 
 import org.bson.Document;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.stereotype.Repository;
 
 /**
@@ -44,6 +47,8 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class MongoSequenceManager implements SequenceManager {
+
+    private static final Logger log = LoggerFactory.getLogger(MongoSequenceManager.class);
 
     private final MongoDatabase database;
     private final MongoCollection<Document> sequencesCollection;
@@ -57,6 +62,8 @@ public class MongoSequenceManager implements SequenceManager {
 
     @Override
     public long getCurrentSequenceValue(Sequence sequence) {
+        log.debug("currval: {}", sequence);
+        requireNonNull(sequence);
         Document sequenceDocument = sequencesCollection.find(eq(Fields.Sequence.ID, sequence.id())).first();
         Number sequenceValue = sequenceDocument.get(Fields.Sequence.SEQ, Number.class);
         return sequenceValue.longValue();
@@ -64,12 +71,16 @@ public class MongoSequenceManager implements SequenceManager {
 
     @Override
     public long getNextSequenceValue(Sequence sequence) {
+        log.debug("nextval: {}", sequence);
+        requireNonNull(sequence);
         Document returnDocument = database.runCommand(new Document(EVAL, sequence.nextValueFunctionCall()));
         return returnDocument.get(Fields.Function.RESULT, Number.class).longValue();
     }
 
     @Override
     public void setSequenceValue(Sequence sequence, long newValue) {
+        log.debug("setval: {}->{}", sequence, newValue);
+        requireNonNull(sequence);
         sequencesCollection.updateOne(eq(Fields.Sequence.ID, sequence.id()), new Document(SET, new Document(Fields.Sequence.SEQ, newValue)));
     }
 }

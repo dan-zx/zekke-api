@@ -21,12 +21,17 @@ import java.lang.reflect.Method;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Validates that an object has a getId() method visible and its result is either null or not null.
  * 
  * @author Daniel Pedraza-Arcega
  */
 abstract class BaseIdValidator<A extends Annotation> implements ConstraintValidator<A, Object> {
+
+    private static final Logger log = LoggerFactory.getLogger(BaseIdValidator.class);
 
     private static final String ID_GETTER = "getId";
     private static final String ID_PROPERTY = "id";
@@ -46,6 +51,7 @@ abstract class BaseIdValidator<A extends Annotation> implements ConstraintValida
         try {
             Method getIdMethod = value.getClass().getMethod(ID_GETTER);
             Object id = getIdMethod.invoke(value);
+            log.debug("{ id: {}, shouldBeNull: {} }", id, shouldBeNull);
             boolean isValid = (shouldBeNull && id == null) || (!shouldBeNull && id != null);
             if (!isValid) {
                 context.disableDefaultConstraintViolation();
@@ -55,6 +61,7 @@ abstract class BaseIdValidator<A extends Annotation> implements ConstraintValida
             }
             return isValid;
         } catch (Exception e) {
+            log.error("Cannot find getId() instance method in {}", value.getClass(), e);
             throw new IllegalArgumentException("Object to validate does not have an accessible getId() method", e);
         }
     }

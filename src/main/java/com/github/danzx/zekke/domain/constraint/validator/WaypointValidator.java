@@ -22,6 +22,9 @@ import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.domain.constraint.CheckWaypoint;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Waypoint validator.
  * 
@@ -29,11 +32,14 @@ import com.github.danzx.zekke.domain.constraint.CheckWaypoint;
  */
 public class WaypointValidator implements ConstraintValidator<CheckWaypoint, Waypoint> {
 
+    private static final Logger log = LoggerFactory.getLogger(WaypointValidator.class);
+
     @Override
     public void initialize(CheckWaypoint constraintAnnotation) { }
 
     @Override
     public boolean isValid(Waypoint value, ConstraintValidatorContext context) {
+        log.debug("Waypoint: {}", value);
         if (value == null) return true;
         boolean isValid = true;
         isValid &= Type.POI == value.getType() ? isPoiValid(value, context) : 
@@ -45,6 +51,7 @@ public class WaypointValidator implements ConstraintValidator<CheckWaypoint, Way
 
     private boolean isPoiValid(Waypoint value, ConstraintValidatorContext context) {
         if (!value.getName().isPresent()) {
+            log.trace("POI name is empty");
             context
                 .buildConstraintViolationWithTemplate("{com.github.danzx.zekke.constraint.PoiName.message}")
                 .addPropertyNode("name")
@@ -56,6 +63,7 @@ public class WaypointValidator implements ConstraintValidator<CheckWaypoint, Way
 
     private boolean isWalwayValid(Waypoint value, ConstraintValidatorContext context) {
         if (value.getName().isPresent()) {
+            log.trace("Walkway name is not null");
             context
                 .buildConstraintViolationWithTemplate("{com.github.danzx.zekke.constraint.WalkwayName.message}")
                 .addPropertyNode("name")

@@ -22,6 +22,9 @@ import com.github.danzx.zekke.transformer.Transformer;
 
 import ma.glasnost.orika.MapperFacade;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Waypoint transformer Orika implementation.
  * 
@@ -30,6 +33,8 @@ import ma.glasnost.orika.MapperFacade;
  * @param <T> the type to transform.
  */
 public class WaypointOrikaTransformer<T> implements Transformer<Waypoint, T> {
+
+    private static final Logger log = LoggerFactory.getLogger(WaypointOrikaTransformer.class);
 
     private final MapperFacade mapperFacade;
     private final Class<T> targetClass;
@@ -41,11 +46,13 @@ public class WaypointOrikaTransformer<T> implements Transformer<Waypoint, T> {
 
     @Override
     public T convertAtoB(Waypoint source) {
+        log.debug("Waypoint: {}", source);
         return mapperFacade.map(source, targetClass);
     }
 
     @Override
     public Waypoint convertBtoA(T source) {
+        log.debug("{}: {}", targetClass.getSimpleName(), source);
         return mapperFacade.map(source, Waypoint.class);
     }
 }

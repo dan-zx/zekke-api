@@ -37,6 +37,9 @@ import org.mongodb.morphia.geo.Point;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.Shape;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.stereotype.Repository;
 
 /**
@@ -46,6 +49,8 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> implements WaypointDao {
+
+    private static final Logger log = LoggerFactory.getLogger(WaypointMorphiaCrudDao.class);
 
     private static final int NO_LIMIT = 0;
 
@@ -68,6 +73,7 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
         requireNonNull(waypoint);
         if (waypoint.getId() == null) {
             long id = sequenceManager.getNextSequenceValue(MongoSequence.WAYPOINT_ID);
+            log.debug("New id: {}", id);
             waypoint.setId(id);
         }
         super.saveOrUpdate(waypoint);
@@ -75,6 +81,7 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
 
     @Override
     public List<Waypoint> findOptionallyByTypeAndNameQuery(Type waypointType, String nameQuery) {
+        log.debug("type: {}, name: {}", waypointType, nameQuery);
         Optional<Type> optionalWaypointType = Optional.ofNullable(waypointType);
         Optional<String> optionalNameQuery = Optional.ofNullable(nameQuery);
         Query<Waypoint> query = createQuery();
@@ -86,6 +93,7 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
     @Override
     @SuppressWarnings("deprecation")
     public List<Waypoint> findNear(Coordinates location, Integer maxDistance, Integer limit, Type waypointType) {
+        log.debug("location: {}, maxDistance: {}, limit: {}, type: {}", location, maxDistance, limit, waypointType);
         requireNonNull(location);
         Optional<Integer> optionalMaxDistance = Optional.ofNullable(maxDistance);
         Optional<Integer> optionalLimit = Optional.ofNullable(limit);
@@ -102,6 +110,7 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
 
     @Override
     public List<Waypoint> findWithinBox(BoundingBox bbox, Type waypointType, String nameQuery, boolean onlyIdAndName) {
+        log.debug("bbox: {}, type: {}, nameQuery: {}, onlyIdAndName: {}", bbox, waypointType, nameQuery, onlyIdAndName);
         requireNonNull(bbox);
         Optional<Type> optionalWaypointType = Optional.ofNullable(waypointType);
         Optional<String> optionalNameQuery = Optional.ofNullable(nameQuery);

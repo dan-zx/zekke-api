@@ -29,12 +29,17 @@ import com.github.danzx.zekke.ws.rest.patch.ObjectPatchException;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Converts the target resource to JSON and then applies a Patch.
  * 
  * @author Daniel Pedraza-Arcega
  */
 public class JsonObjectPatch implements ObjectPatch {
+
+    private static final Logger log = LoggerFactory.getLogger(JsonObjectPatch.class);
 
     private final ObjectMapper objectMapper;
     private final JsonPatch patch;
@@ -46,6 +51,7 @@ public class JsonObjectPatch implements ObjectPatch {
 
     @Override
     public <T> T apply(T target) throws ObjectPatchException {
+        log.debug("patch: {}, target: {}", patch, target);
         requireNonNull(target);
         JsonNode source = objectMapper.valueToTree(target);
         JsonNode result;

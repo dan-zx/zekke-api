@@ -108,6 +108,12 @@ public interface WaypointService {
             return builder.waypointType;
         }
 
+        @Override
+        public String toString() {
+            return "{ bbox: " + getBoundingBox() + ", nameQuery: " + getNameQuery()
+                    + ", type: " + getWaypointType() + " }";
+        }
+
         public static class Builder implements Buildable<WaypointsQuery> {
             private BoundingBox boundingBox;
             private String nameQuery;
@@ -156,6 +162,12 @@ public interface WaypointService {
 
         public Type getWaypointType() {
             return builder.waypointType;
+        }
+
+        @Override
+        public String toString() {
+            return "{ location: " + getLocation() + ", maxDistance: " + getMaxDistance()
+                    + ", limit: " + getLimit() + ", type: " + getWaypointType() + " }";
         }
 
         public static class Builder implements Buildable<NearWaypointsQuery> {

@@ -45,13 +45,13 @@ import org.slf4j.LoggerFactory;
 @Provider
 public class ConstraintViolationExceptionMapper extends BaseExceptionMapper<ConstraintViolationException> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConstraintViolationExceptionMapper.class); 
+    private static final Logger log = LoggerFactory.getLogger(ConstraintViolationExceptionMapper.class);
 
     private final MessageSource messageSource = MessageSourceFactory.defaultSource();
 
     @Override
     public Response toResponse(ConstraintViolationException exception) {
-        LOGGER.error("Failed validation", exception);
+        log.error("Failed validation", exception);
         Response.Status status = Response.Status.BAD_REQUEST;
         Locale clientLocale = getClientLocale();
         ErrorMessage.Builder errorMessageBuilder = new ErrorMessage.Builder()

@@ -35,7 +35,7 @@ public class DefaultMessageDecorator implements MessageSource {
 
     public static final String DEFAULT_MISSING_KEY_FORMAT = "???%s???";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultMessageDecorator.class);
+    private static final Logger log = LoggerFactory.getLogger(DefaultMessageDecorator.class);
 
     private final MessageSource messageSource;
     private String missingKeyFormat = DEFAULT_MISSING_KEY_FORMAT;
@@ -49,7 +49,7 @@ public class DefaultMessageDecorator implements MessageSource {
         try {
             return messageSource.getMessage(messageKey, messageArguments);
         } catch (MessageNotFoundException ex) {
-            LOGGER.warn("Can't find message for key: [{}]", messageKey, ex);
+            log.warn("Can't find message for key: [{}]", messageKey, ex);
             return String.format(missingKeyFormat, messageKey);
         }
     }
@@ -59,7 +59,7 @@ public class DefaultMessageDecorator implements MessageSource {
         try {
             return messageSource.getMessage(messageKey, locale, messageArguments);
         } catch (MessageNotFoundException ex) {
-            LOGGER.warn("Can't find message for key: [{}]", messageKey, ex);
+            log.warn("Can't find message for key: [{}]", messageKey, ex);
             return String.format(missingKeyFormat, messageKey);
         }
     }

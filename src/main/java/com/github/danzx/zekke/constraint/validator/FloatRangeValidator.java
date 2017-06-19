@@ -17,6 +17,9 @@ package com.github.danzx.zekke.constraint.validator;
 
 import javax.validation.ConstraintValidatorContext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Validate float values are between min and max included.
  * 
@@ -24,8 +27,11 @@ import javax.validation.ConstraintValidatorContext;
  */
 public class FloatRangeValidator extends BaseFloatingPointRangeValidator<Float> {
 
+    private static final Logger log = LoggerFactory.getLogger(FloatRangeValidator.class);
+
     @Override
     public boolean isValid(Float value, ConstraintValidatorContext context) {
+        log.debug("Value: {}", value);
         if (value == null) return true;
         return isInRange(value);
     }

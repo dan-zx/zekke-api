@@ -47,7 +47,7 @@ import org.springframework.stereotype.Component;
 @ForIntegration
 public class EmbeddedMongo {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EmbeddedMongo.class);
+    private static final Logger log = LoggerFactory.getLogger(EmbeddedMongo.class);
     private static final MongodStarter MONGO_STARTER = MongodStarter.getInstance(mongodConfig());
 
     private final String bindIp;
@@ -85,7 +85,7 @@ public class EmbeddedMongo {
 
     private static IRuntimeConfig mongodConfig() {
         return new RuntimeConfigBuilder()
-            .defaultsWithLogger(Command.MongoD, LOGGER)
+            .defaultsWithLogger(Command.MongoD, log)
             .build();
     }
 }

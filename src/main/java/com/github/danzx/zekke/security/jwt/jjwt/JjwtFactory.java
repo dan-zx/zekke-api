@@ -26,6 +26,9 @@ import com.github.danzx.zekke.security.jwt.SigningKeyHolder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +40,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class JjwtFactory extends BaseJwtFactory {
 
+    private static final Logger log = LoggerFactory.getLogger(JjwtFactory.class);
+
     public @Inject JjwtFactory(@Value("${jwt.expiration}") long expirationTimeInMinutes,
                                @Value("${jwt.issuer}") String issuer,
                                SigningKeyHolder signingKeyHolder) {
@@ -45,6 +50,7 @@ public class JjwtFactory extends BaseJwtFactory {
 
     @Override
     protected String createToken(Instant issueTime, Instant expirationTime, String subject) {
+        log.debug("JWT { issuedAt: {}, expirtation: {}, subject: {}, issuer: {} }", issueTime, expirationTime, subject, getIssuer());
         return Jwts.builder()
                 .setSubject(subject)
                 .signWith(SignatureAlgorithm.HS512, getSigningKeyHolder().getKey())

@@ -33,13 +33,13 @@ import org.slf4j.LoggerFactory;
 @Provider
 public class GenericExceptionMapper extends BaseExceptionMapper<Throwable> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GenericExceptionMapper.class);
+    private static final Logger log = LoggerFactory.getLogger(GenericExceptionMapper.class);
 
     private final MessageSource messageSource = MessageSourceFactory.defaultSource();
 
     @Override
     public Response toResponse(Throwable exception) {
-        LOGGER.error("Unexpected error", exception);
+        log.error("Unexpected error", exception);
         Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;
         ErrorMessage errorMessage = new ErrorMessage.Builder()
                 .statusCode(status.getStatusCode())

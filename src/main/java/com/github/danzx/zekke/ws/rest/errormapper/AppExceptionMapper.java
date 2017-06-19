@@ -32,11 +32,11 @@ import org.slf4j.LoggerFactory;
 @Provider
 public class AppExceptionMapper extends BaseExceptionMapper<AppException> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AppExceptionMapper.class);
+    private static final Logger log = LoggerFactory.getLogger(AppExceptionMapper.class);
 
     @Override
     public Response toResponse(AppException exception) {
-        LOGGER.error("Application failure", exception);
+        log.error("Application failure", exception);
         Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;
         ErrorMessage errorMessage = new ErrorMessage.Builder()
                 .statusCode(status.getStatusCode())

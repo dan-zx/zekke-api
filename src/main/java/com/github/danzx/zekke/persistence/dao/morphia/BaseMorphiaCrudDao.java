@@ -26,6 +26,9 @@ import com.github.danzx.zekke.persistence.internal.mongo.Fields;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Base Morphia CRUD DAO.
  * 
@@ -35,6 +38,8 @@ import org.mongodb.morphia.query.Query;
  * @author Daniel Pedraza-Arcega
  */
 public abstract class BaseMorphiaCrudDao<E extends BaseEntity<ID>, ID extends Serializable> implements CrudDao<E, ID> {
+
+    private static final Logger log = LoggerFactory.getLogger(BaseMorphiaCrudDao.class);
 
     private final Datastore datastore;
     private final Class<E> collectionClass;
@@ -53,6 +58,7 @@ public abstract class BaseMorphiaCrudDao<E extends BaseEntity<ID>, ID extends Se
     /** {@inheritDoc} */
     @Override
     public void saveOrUpdate(E collectionEntity) {
+        log.debug("Save: {}", collectionEntity);
         requireNonNull(collectionEntity);
         datastore.save(collectionEntity);
     }
@@ -60,6 +66,7 @@ public abstract class BaseMorphiaCrudDao<E extends BaseEntity<ID>, ID extends Se
     /** {@inheritDoc} */
     @Override
     public boolean deleteById(ID id) {
+        log.debug("Delete {}, id: {}", collectionClass, id);
         requireNonNull(id);
         int documentsAffected = datastore.delete(collectionClass, id).getN();
         return documentsAffected > 0;
@@ -68,6 +75,7 @@ public abstract class BaseMorphiaCrudDao<E extends BaseEntity<ID>, ID extends Se
     /** {@inheritDoc} */
     @Override
     public Optional<E> findById(ID id) {
+        log.debug("Find {}, id: {}", collectionClass, id);
         requireNonNull(id);
         return Optional.ofNullable(createQuery().field(Fields.Common.ID).equal(id).get());
     }

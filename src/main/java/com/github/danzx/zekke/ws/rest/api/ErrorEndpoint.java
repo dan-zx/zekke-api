@@ -32,6 +32,9 @@ import com.github.danzx.zekke.message.MessageSource;
 import com.github.danzx.zekke.message.impl.MessageSourceFactory;
 import com.github.danzx.zekke.ws.rest.model.ErrorMessage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.stereotype.Component;
 
 /**
@@ -42,6 +45,8 @@ import org.springframework.stereotype.Component;
 @Component
 @Path(V_1 + "/errors")
 public class ErrorEndpoint {
+
+    private static final Logger log = LoggerFactory.getLogger(ErrorEndpoint.class);
 
     private final MessageSource messageSource = MessageSourceFactory.defaultSource();
 
@@ -55,6 +60,7 @@ public class ErrorEndpoint {
     @Path("/404")
     @Produces(MediaType.APPLICATION_JSON)
     public Response resourceNotFound(@NotNull @HeaderParam("Accept-Language") List<Locale> locales) {
+        log.info("GET /errors/404 -- Accept-Languages={}", locales);
         Locale clientLocale = locales.stream().findFirst().orElse(Locale.ROOT);
         Response.Status status = Response.Status.NOT_FOUND;
         ErrorMessage errorMessage = new ErrorMessage.Builder()
