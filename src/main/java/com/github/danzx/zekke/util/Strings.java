@@ -30,6 +30,8 @@ public class Strings {
     public static final String BLANK_SPACE = " ";
     public static final String TAB = "\t";
     public static final String NEW_LINE = "\n";
+    public static final String NULL = "null";
+    public static final String HIDDEN = "<hidden>";
 
     private static final char DOUBLE_QUOTES = '"';
     private static final char UNDERSCORE = '_';
@@ -106,5 +108,13 @@ public class Strings {
      */
     public static String quoted(String s) {
         return s == null ? s : DOUBLE_QUOTES + s + DOUBLE_QUOTES;
+    }
+
+    /**
+     * @param s a string. 
+     * @return if {@code null} "{@value #NULL}"; "{@value #HIDDEN}" otherwise.
+     */
+    public static String hidden(String s) {
+        return s == null ? NULL : HIDDEN;
     }
 }

@@ -45,11 +45,11 @@ import org.mockito.Mock;
 @RunWith(JUnitParamsRunner.class)
 public class WaypointServiceImplTest extends BaseMockitoValidationTest {
 
-    private @Mock WaypointDao dao; 
+    private @Mock WaypointDao dao;
     
-    private @InjectMocks WaypointServiceImpl service; 
+    private @InjectMocks WaypointServiceImpl service;
 
-    @Test 
+    @Test
     public void shouldFailValidationWhenPersistNull() throws Exception {
         Method method = WaypointServiceImpl.class.getMethod("persist", Waypoint.class);
         Object[] parameterValues = { null };
@@ -74,8 +74,8 @@ public class WaypointServiceImplTest extends BaseMockitoValidationTest {
         assertThat(violations).isNotNull().isNotEmpty().hasSize(numberOfViolations);
     }
 
-    @Test 
-    public void shouldForwardPersistCall() { 
+    @Test
+    public void shouldForwardPersistCall() {
         Waypoint walkway = new Waypoint();
         walkway.setType(Type.WALKWAY);
         walkway.setLocation(Coordinates.ofLatLng(12.24, 53.545));
@@ -83,8 +83,8 @@ public class WaypointServiceImplTest extends BaseMockitoValidationTest {
         verify(dao).saveOrUpdate(walkway); 
     }
 
-    @Test 
-    public void shouldForwardPersistCall2() { 
+    @Test
+    public void shouldForwardPersistCall2() {
         Waypoint poi = new Waypoint();
         poi.setType(Type.POI);
         poi.setName("Name");
@@ -93,7 +93,7 @@ public class WaypointServiceImplTest extends BaseMockitoValidationTest {
         verify(dao).saveOrUpdate(poi); 
     } 
  
-    @Test 
+    @Test
     public void shouldFailValidationWhenDeleteNull() throws Exception {
         Method method = WaypointServiceImpl.class.getMethod("delete", Waypoint.class);
         Object[] parameterValues = { null };
@@ -105,7 +105,7 @@ public class WaypointServiceImplTest extends BaseMockitoValidationTest {
         assertThat(violations).isNotNull().isNotEmpty().hasSize(1);
     }
 
-    @Test 
+    @Test
     public void shouldFailValidationWhenDeleteWaypointWithIdNull() throws Exception {
         Method method = WaypointServiceImpl.class.getMethod("delete", Waypoint.class);
         Object[] parameterValues = { new Waypoint() };
@@ -117,23 +117,23 @@ public class WaypointServiceImplTest extends BaseMockitoValidationTest {
         assertThat(violations).isNotNull().isNotEmpty().hasSize(1);
     }
 
-    @Test 
-    public void shouldForwardDeleteCall() { 
-        long id = 2L; 
-        Waypoint w = new Waypoint(); 
-        w.setId(id); 
-        service.delete(w); 
+    @Test
+    public void shouldForwardDeleteCall() {
+        long id = 2L;
+        Waypoint w = new Waypoint();
+        w.setId(id);
+        service.delete(w);
         verify(dao).deleteById(id);
     } 
 
-    @Test 
+    @Test
     public void shouldForwardFindById() {
         long id = 2L;
         service.findWaypointById(id);
         verify(dao).findById(id);
     }
 
-    @Test 
+    @Test
     public void shouldForwardToFindWithinBoxWhenFindWaypointsHasBbox() {
         Coordinates c1 = Coordinates.ofLatLng(12.24, 53.545);
         Coordinates c2 = Coordinates.ofLatLng(21.45, 37.5);
@@ -145,21 +145,21 @@ public class WaypointServiceImplTest extends BaseMockitoValidationTest {
         verify(dao).findWithinBox(bbox, query.getWaypointType(), query.getNameQuery(), false);
     }
 
-    @Test 
+    @Test
     public void shouldForwardToFindOptionallyByTypeAndNameQueryWhenFindWaypointsHasNoBbox() {
         WaypointsQuery query = new WaypointsQuery.Builder().build();
         service.findWaypoints(query);
         verify(dao).findOptionallyByTypeAndNameQuery(query.getWaypointType(), query.getNameQuery());
     }
 
-    @Test 
+    @Test
     public void shouldForwardToFindNearWhenFindNearWaypoints() {
         NearWaypointsQuery query = NearWaypointsQuery.Builder.nearLocation(Coordinates.ofLatLng(12.24, 53.545)).build();
         service.findNearWaypoints(query);
         verify(dao).findNear(query.getLocation(), query.getMaxDistance(), query.getLimit(), query.getWaypointType());
     }
 
-    @Test 
+    @Test
     public void shouldForwardToFindWithinBoxWhenFindPoisForNameCompletion() {
         Coordinates c1 = Coordinates.ofLatLng(12.24, 53.545);
         Coordinates c2 = Coordinates.ofLatLng(21.45, 37.5);

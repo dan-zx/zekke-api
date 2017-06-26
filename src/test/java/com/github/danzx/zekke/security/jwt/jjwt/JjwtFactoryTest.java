@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.danzx.zekke.security.UserRole;
 import com.github.danzx.zekke.security.jwt.SigningKeyHolder;
+
 import org.junit.Test;
 
 public class JjwtFactoryTest {

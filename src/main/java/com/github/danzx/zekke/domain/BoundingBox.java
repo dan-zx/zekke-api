@@ -41,8 +41,8 @@ public class BoundingBox {
      */ 
     public static BoundingBox ofBottomTop(Coordinates bottomCoordinates, Coordinates topCoordinates) { 
         BoundingBox bbox = new BoundingBox();
-        bbox.bottomCoordinates = bottomCoordinates;
-        bbox.topCoordinates = topCoordinates;
+        bbox.setBottomCoordinates(bottomCoordinates);
+        bbox.setTopCoordinates(topCoordinates);
         return bbox;
     }
 

@@ -17,9 +17,12 @@ package com.github.danzx.zekke.util;
 
 import static com.github.danzx.zekke.util.Strings.BLANK_SPACE;
 import static com.github.danzx.zekke.util.Strings.EMPTY;
+import static com.github.danzx.zekke.util.Strings.HIDDEN;
 import static com.github.danzx.zekke.util.Strings.NEW_LINE;
+import static com.github.danzx.zekke.util.Strings.NULL;
 import static com.github.danzx.zekke.util.Strings.TAB;
 import static com.github.danzx.zekke.util.Strings.allCapsToCamelCase;
+import static com.github.danzx.zekke.util.Strings.hidden;
 import static com.github.danzx.zekke.util.Strings.isNullOrBlank;
 import static com.github.danzx.zekke.util.Strings.quoted;
 import static com.github.danzx.zekke.util.Strings.requireNonBlank;
@@ -114,6 +117,16 @@ public class StringsTest {
     @Test
     public void shouldNotQuoteWhenNullIsGiven() {
         assertThat(quoted(null)).isNull();
+    }
+
+    @Test
+    public void shouldHideValue() {
+        assertThat(hidden("lol")).isNotBlank().isEqualTo(HIDDEN);
+    }
+
+    @Test
+    public void shouldNotHideValueWhenNullIsGiven() {
+        assertThat(hidden(null)).isNotBlank().isEqualTo(NULL);
     }
 
     protected Object[] allCapsStrings() {

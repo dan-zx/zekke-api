@@ -26,7 +26,7 @@ public class AccessTokenHolder {
 
     public static AccessTokenHolder of(String token) {
         AccessTokenHolder holder = new AccessTokenHolder();
-        holder.accessToken = token;
+        holder.setAccessToken(token);
         return holder;
     }
 

@@ -53,15 +53,15 @@ public class ErrorEndpoint {
     /**
      * 404 Not Found endpoint
      * 
-     * @param locales the client locales
+     * @param clientLocales "Accept-Language" header.
      * @return a JSON response associated to the error 404 Not Found.
      */
     @GET
     @Path("/404")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response resourceNotFound(@NotNull @HeaderParam("Accept-Language") List<Locale> locales) {
-        log.info("GET /errors/404 -- Accept-Languages={}", locales);
-        Locale clientLocale = locales.stream().findFirst().orElse(Locale.ROOT);
+    public Response resourceNotFound(@NotNull @HeaderParam("Accept-Language") List<Locale> clientLocales) {
+        log.info("GET /errors/404 -- Accept-Languages={}", clientLocales);
+        Locale clientLocale = clientLocales.stream().findFirst().orElse(Locale.ROOT);
         Response.Status status = Response.Status.NOT_FOUND;
         ErrorMessage errorMessage = new ErrorMessage.Builder()
                 .statusCode(status.getStatusCode())
