@@ -42,9 +42,9 @@ import javax.ws.rs.core.Response.Status;
 import com.github.danzx.zekke.constraint.NullId;
 import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Coordinates;
+import com.github.danzx.zekke.domain.User;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
-import com.github.danzx.zekke.security.UserRole;
 import com.github.danzx.zekke.service.WaypointService;
 import com.github.danzx.zekke.service.WaypointService.NearWaypointsQuery;
 import com.github.danzx.zekke.service.WaypointService.WaypointsQuery;
@@ -69,7 +69,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Path(V_1 + "/waypoints")
-@RequireRoleAccess(roleRequired = UserRole.ANONYMOUS)
+@RequireRoleAccess(roleRequired = User.Role.ANONYMOUS)
 public class WaypointEndpoint {
 
     private static final Logger log = LoggerFactory.getLogger(WaypointEndpoint.class);
@@ -151,7 +151,7 @@ public class WaypointEndpoint {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @RequireRoleAccess(roleRequired = UserRole.ADMIN)
+    @RequireRoleAccess(roleRequired = User.Role.ADMIN)
     public TypedWaypoint newWaypoint(@NotNull @NullId @Valid TypedWaypoint typedWaypoint) {
         log.info("POST /waypoints -- body: {}", typedWaypoint);
         Waypoint waypoint = waypointToTypedWaypointTransformer.convertBtoA(typedWaypoint);
@@ -268,7 +268,7 @@ public class WaypointEndpoint {
      */
     @DELETE
     @Path("/{id}")
-    @RequireRoleAccess(roleRequired = UserRole.ADMIN)
+    @RequireRoleAccess(roleRequired = User.Role.ADMIN)
     public Response deleteWaypoint(@NotNull @PathParam("id") Long id) {
         log.info("DELETE /waypoints/{}", id);
         Waypoint waypoint = new Waypoint();
@@ -289,7 +289,7 @@ public class WaypointEndpoint {
     @Path("/{id}")
     @Consumes(MediaTypes.APPLICATION_JSON_PATCH)
     @Produces(MediaType.APPLICATION_JSON)
-    @RequireRoleAccess(roleRequired = UserRole.ADMIN)
+    @RequireRoleAccess(roleRequired = User.Role.ADMIN)
     public Response patchWaypoint(@NotNull @PathParam("id") Long id, @NotNull ObjectPatch patch) {
         log.info("PATCH /waypoints/{} -- body: {}", id, patch);
         Optional<Waypoint> optWaypoint = waypointService.findWaypointById(id);

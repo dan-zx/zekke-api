@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.time.Instant;
 
-import com.github.danzx.zekke.security.UserRole;
+import com.github.danzx.zekke.domain.User;
 
 /**
  * Base JWT Factory.
@@ -41,7 +41,7 @@ public abstract class BaseJwtFactory implements JwtFactory {
     }
 
     @Override
-    public String newToken(UserRole role) {
+    public String newToken(User.Role role) {
         requireNonNull(role);
         Instant issueTime = Instant.now();
         Instant expirationTime = issueTime.plusSeconds(expirationTimeInMinutes * ONE_MINUTE_IN_SECONDS);

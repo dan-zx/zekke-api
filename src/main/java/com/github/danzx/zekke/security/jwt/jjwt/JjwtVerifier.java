@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import javax.inject.Inject;
 
-import com.github.danzx.zekke.security.UserRole;
+import com.github.danzx.zekke.domain.User;
 import com.github.danzx.zekke.security.jwt.BaseJwtVerifier;
 import com.github.danzx.zekke.security.jwt.JwtVerificationException;
 import com.github.danzx.zekke.security.jwt.SigningKeyHolder;
@@ -51,7 +51,7 @@ public class JjwtVerifier extends BaseJwtVerifier {
     }
 
     @Override
-    public void verify(String compactJws, UserRole role) throws JwtVerificationException {
+    public void verify(String compactJws, User.Role role) throws JwtVerificationException {
         log.debug("JWT: {}, expectedRole: {}", compactJws, role);
         requireNonNull(compactJws);
         requireNonNull(role);

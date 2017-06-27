@@ -30,9 +30,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
+import com.github.danzx.zekke.domain.User;
 import com.github.danzx.zekke.message.MessageSource;
 import com.github.danzx.zekke.message.impl.MessageSourceFactory;
-import com.github.danzx.zekke.security.UserRole;
 import com.github.danzx.zekke.security.jwt.JwtVerificationException;
 import com.github.danzx.zekke.security.jwt.JwtVerifier;
 import com.github.danzx.zekke.ws.rest.model.ErrorMessage;
@@ -84,7 +84,7 @@ public class JwtAuthenticationFilter implements ContainerRequestFilter {
             return;
         }
 
-        UserRole requiredRole = getRequiredRoleToAccessResource();
+        User.Role requiredRole = getRequiredRoleToAccessResource();
         try {
             jwtVerifier.verify(token, requiredRole);
         } catch (JwtVerificationException ex) {
@@ -103,10 +103,10 @@ public class JwtAuthenticationFilter implements ContainerRequestFilter {
         }
     }
 
-    private UserRole getRequiredRoleToAccessResource() {
+    private User.Role getRequiredRoleToAccessResource() {
         Class<?> resourceClass = resourceInfo.getResourceClass();
         RequireRoleAccess classAnnotation = resourceClass.getAnnotation(RequireRoleAccess.class);
-        UserRole userRole = null;
+        User.Role userRole = null;
         if (classAnnotation != null) userRole = classAnnotation.roleRequired();
         Method resourceMethod = resourceInfo.getResourceMethod();
         RequireRoleAccess methodAnnotation = resourceMethod.getAnnotation(RequireRoleAccess.class);

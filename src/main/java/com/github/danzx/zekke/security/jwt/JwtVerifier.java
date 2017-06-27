@@ -15,7 +15,7 @@
  */
 package com.github.danzx.zekke.security.jwt;
 
-import com.github.danzx.zekke.security.UserRole;
+import com.github.danzx.zekke.domain.User;
 
 /**
  * JWT verifier general methods.
@@ -31,6 +31,6 @@ public interface JwtVerifier {
      * @param role the expected role of the user.
      * @throws JwtVerificationException when the token is not valid.
      */
-    void verify(String compactJws, UserRole role) throws JwtVerificationException;
+    void verify(String compactJws, User.Role role) throws JwtVerificationException;
 
 }

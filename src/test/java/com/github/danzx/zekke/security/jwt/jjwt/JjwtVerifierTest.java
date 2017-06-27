@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.fail;
 
 import java.time.Instant;
 
-import com.github.danzx.zekke.security.UserRole;
+import com.github.danzx.zekke.domain.User;
 import com.github.danzx.zekke.security.jwt.JwtVerificationException;
 import com.github.danzx.zekke.security.jwt.SigningKeyHolder;
 
@@ -41,7 +41,7 @@ public class JjwtVerifierTest {
         String issuer = "testIssuer";
         long expirationTimeInMinutes = 1L;
         JjwtFactory jwtFactory = new JjwtFactory(expirationTimeInMinutes, issuer, KEY_HOLDER_1);
-        UserRole role = UserRole.ADMIN;
+        User.Role role = User.Role.ADMIN;
         String token = jwtFactory.newToken(role);
         JjwtVerifier jwtVerifier = new JjwtVerifier(issuer, KEY_HOLDER_1);
         try {
@@ -59,7 +59,7 @@ public class JjwtVerifierTest {
                                                                SigningKeyHolder verifierKeyHolder,
                                                                Instant expirationTime,
                                                                String issuerSubject,
-                                                               UserRole verificationSubject) {
+                                                               User.Role verificationSubject) {
         JjwtFactory jwtFactory = new JjwtFactory(1L, factoryIssuer, factoryKeyHolder);
         String token = jwtFactory.createToken(Instant.now(), expirationTime, issuerSubject);
         JjwtVerifier jwtVerifier = new JjwtVerifier(verifierIssuer, verifierKeyHolder);
@@ -68,14 +68,14 @@ public class JjwtVerifierTest {
 
     protected Object[][] verificationParams() {
         return new Object[][] {
-            {"testIssuer", "anotherIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(30L), UserRole.ADMIN.name(), UserRole.ADMIN},
-            {"testIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_2, Instant.now().plusSeconds(30L), UserRole.ADMIN.name(), UserRole.ADMIN},
-            {"testIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(-60L), UserRole.ADMIN.name(), UserRole.ADMIN},
-            {"testIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(30L), UserRole.ADMIN.name(), UserRole.ANONYMOUS},
-            {"anotherIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(30L), UserRole.ADMIN.name(), UserRole.ADMIN},
-            {"testIssuer", "testIssuer", KEY_HOLDER_2, KEY_HOLDER_1, Instant.now().plusSeconds(30L), UserRole.ADMIN.name(), UserRole.ADMIN},
-            {"testIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(30L), "notARoleSubject", UserRole.ADMIN},
-            {"testIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(30L), UserRole.ANONYMOUS.name(), UserRole.ADMIN}
+            {"testIssuer", "anotherIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(30L), User.Role.ADMIN.name(), User.Role.ADMIN},
+            {"testIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_2, Instant.now().plusSeconds(30L), User.Role.ADMIN.name(), User.Role.ADMIN},
+            {"testIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(-60L), User.Role.ADMIN.name(), User.Role.ADMIN},
+            {"testIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(30L), User.Role.ADMIN.name(), User.Role.ANONYMOUS},
+            {"anotherIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(30L), User.Role.ADMIN.name(), User.Role.ADMIN},
+            {"testIssuer", "testIssuer", KEY_HOLDER_2, KEY_HOLDER_1, Instant.now().plusSeconds(30L), User.Role.ADMIN.name(), User.Role.ADMIN},
+            {"testIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(30L), "notARoleSubject", User.Role.ADMIN},
+            {"testIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(30L), User.Role.ANONYMOUS.name(), User.Role.ADMIN}
         };
     }
 }

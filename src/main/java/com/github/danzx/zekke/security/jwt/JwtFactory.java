@@ -15,7 +15,7 @@
  */
 package com.github.danzx.zekke.security.jwt;
 
-import com.github.danzx.zekke.security.UserRole;
+import com.github.danzx.zekke.domain.User;
 
 /**
  * JWT factories general methods.
@@ -30,5 +30,5 @@ public interface JwtFactory {
      * @param role the subject.
      * @return a compact JWT.
      */
-    String newToken(UserRole role);
+    String newToken(User.Role role);
 }

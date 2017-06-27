@@ -17,7 +17,7 @@ package com.github.danzx.zekke.security.jwt.jjwt;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.github.danzx.zekke.security.UserRole;
+import com.github.danzx.zekke.domain.User;
 import com.github.danzx.zekke.security.jwt.SigningKeyHolder;
 
 import org.junit.Test;
@@ -32,7 +32,7 @@ public class JjwtFactoryTest {
         String issuer = "testIssuer";
         long expirationTimeInMinutes = 1L;
         JjwtFactory jwtFactory = new JjwtFactory(expirationTimeInMinutes, issuer, keyHolder);
-        String token = jwtFactory.newToken(UserRole.ANONYMOUS);
+        String token = jwtFactory.newToken(User.Role.ANONYMOUS);
         assertThat(token).isNotNull().isNotBlank().matches(JWT_PATTERN);
     }
 }

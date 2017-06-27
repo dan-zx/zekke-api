@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 
 import javax.ws.rs.NameBinding;
 
-import com.github.danzx.zekke.security.UserRole;
+import com.github.danzx.zekke.domain.User;
 
 /**
  * Annotation to use in protected endpoint that require certain roles.
@@ -38,5 +38,5 @@ import com.github.danzx.zekke.security.UserRole;
 @Target({TYPE, METHOD})
 public @interface RequireRoleAccess {
 
-    UserRole roleRequired() default UserRole.ANONYMOUS;
+    User.Role roleRequired() default User.Role.ANONYMOUS;
 }

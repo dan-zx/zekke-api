@@ -25,7 +25,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import com.github.danzx.zekke.security.UserRole;
+import com.github.danzx.zekke.domain.User;
 import com.github.danzx.zekke.security.jwt.JwtFactory;
 import com.github.danzx.zekke.ws.rest.model.AccessTokenHolder;
 
@@ -61,7 +61,7 @@ public class JwtAuthenticationEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     public AccessTokenHolder authenticateAnonymously() {
         log.info("GET /authentications/jwt/anonymous");
-        String jwt = jwtFactory.newToken(UserRole.ANONYMOUS);
+        String jwt = jwtFactory.newToken(User.Role.ANONYMOUS);
         return AccessTokenHolder.of(jwt);
     }
 }

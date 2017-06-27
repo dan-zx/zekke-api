@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** REST API Security objects. */
+/** REST Security objects. */
 package com.github.danzx.zekke.ws.rest.security;

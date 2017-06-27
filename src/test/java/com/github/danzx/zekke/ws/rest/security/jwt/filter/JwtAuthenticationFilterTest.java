@@ -15,25 +15,29 @@
  */
 package com.github.danzx.zekke.ws.rest.security.jwt.filter;
 
-import static org.assertj.core.api.Assertions.*;
 import static java.util.Collections.emptyList;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.HttpHeaders;
 
-import com.github.danzx.zekke.security.UserRole;
+import com.github.danzx.zekke.domain.User;
 import com.github.danzx.zekke.security.jwt.SigningKeyHolder;
 import com.github.danzx.zekke.security.jwt.jjwt.JjwtFactory;
 import com.github.danzx.zekke.security.jwt.jjwt.JjwtVerifier;
 import com.github.danzx.zekke.test.mockito.BaseMockitoTest;
 import com.github.danzx.zekke.ws.rest.security.RequireRoleAccess;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
@@ -58,7 +62,7 @@ public class JwtAuthenticationFilterTest extends BaseMockitoTest {
 
     @Test
     public void shouldNotAbortRequestWithAnnotationAtClassLevel() throws Exception {
-        String token = TOKEN_FACTORY.newToken(UserRole.ANONYMOUS);
+        String token = TOKEN_FACTORY.newToken(User.Role.ANONYMOUS);
         String headerInfo = "Bearer " + token;
 
         when(resourceInfo.getResourceClass()).thenAnswer(new Answer<Class<?>>() {
@@ -76,7 +80,7 @@ public class JwtAuthenticationFilterTest extends BaseMockitoTest {
 
     @Test
     public void shouldNotAbortRequestWithAnnotationAtClassLevelAndAnnotatedMethod() throws Exception {
-        String token = TOKEN_FACTORY.newToken(UserRole.ADMIN);
+        String token = TOKEN_FACTORY.newToken(User.Role.ADMIN);
         String headerInfo = "Bearer " + token;
 
         when(resourceInfo.getResourceClass()).thenAnswer(new Answer<Class<?>>() {
@@ -94,7 +98,7 @@ public class JwtAuthenticationFilterTest extends BaseMockitoTest {
 
     @Test
     public void shouldFilterThrowRuntimeExceptionWhenUsingNotAnnotatedClass() throws Exception {
-        String token = TOKEN_FACTORY.newToken(UserRole.ANONYMOUS);
+        String token = TOKEN_FACTORY.newToken(User.Role.ANONYMOUS);
         String headerInfo = "Bearer " + token;
 
         when(resourceInfo.getResourceClass()).thenAnswer(new Answer<Class<?>>() {
@@ -120,7 +124,7 @@ public class JwtAuthenticationFilterTest extends BaseMockitoTest {
 
     @Test
     public void shouldAbortRequestIfTokenIsInvalid() throws Exception {
-        String token = TOKEN_FACTORY.newToken(UserRole.ANONYMOUS);
+        String token = TOKEN_FACTORY.newToken(User.Role.ANONYMOUS);
         String headerInfo = "Bearer " + token;
 
         when(resourceInfo.getResourceClass()).thenAnswer(new Answer<Class<?>>() {
@@ -144,7 +148,7 @@ public class JwtAuthenticationFilterTest extends BaseMockitoTest {
     @RequireRoleAccess
     private static class AnnotatedClassWithAnnotatedMethod { 
         
-        @RequireRoleAccess(roleRequired = UserRole.ADMIN)
+        @RequireRoleAccess(roleRequired = User.Role.ADMIN)
         public void foo() { }
     }
 

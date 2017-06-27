@@ -17,7 +17,7 @@ package com.github.danzx.zekke.security.jwt;
 
 import static java.util.Objects.requireNonNull;
 
-import com.github.danzx.zekke.security.UserRole;
+import com.github.danzx.zekke.domain.User;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,11 +48,11 @@ public abstract class BaseJwtVerifier implements JwtVerifier {
         }
     }
 
-    protected void verifyUserPrivileges(UserRole expectedRole, String subject) throws JwtVerificationException {
+    protected void verifyUserPrivileges(User.Role expectedRole, String subject) throws JwtVerificationException {
         log.debug("{} == {}", expectedRole, subject);
-        UserRole subjectRole;
+        User.Role subjectRole;
         try {
-            subjectRole = UserRole.valueOf(subject);
+            subjectRole = User.Role.valueOf(subject);
         } catch (IllegalArgumentException ex) {
             throw new JwtVerificationException.Builder()
                 .messageKey("unknown.role.error")
