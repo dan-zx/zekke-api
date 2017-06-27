@@ -33,6 +33,7 @@ import com.github.danzx.zekke.security.jwt.SigningKeyHolder;
 import com.github.danzx.zekke.security.jwt.jjwt.JjwtFactory;
 import com.github.danzx.zekke.security.jwt.jjwt.JjwtVerifier;
 import com.github.danzx.zekke.test.mockito.BaseMockitoTest;
+import com.github.danzx.zekke.ws.rest.security.BearerAuthorizationHeaderExtractor;
 import com.github.danzx.zekke.ws.rest.security.RequireRoleAccess;
 
 import org.junit.Before;
@@ -45,11 +46,17 @@ import org.mockito.stubbing.Answer;
 
 public class JwtAuthenticationFilterTest extends BaseMockitoTest {
 
-    private static final SigningKeyHolder KEY_HOLDER = new SigningKeyHolder("keys/test1.key");
-    private static final String ISSUER = "testIssuer";
-    private static final JjwtVerifier VERIFIER = new JjwtVerifier(ISSUER, KEY_HOLDER);
-    private static final JjwtFactory TOKEN_FACTORY = new JjwtFactory(1L, ISSUER, KEY_HOLDER);
-    
+    private static final JjwtVerifier VERIFIER;
+    private static final JjwtFactory TOKEN_FACTORY;
+    private static final BearerAuthorizationHeaderExtractor AUTH_HEADER_EXTRACTOR = new BearerAuthorizationHeaderExtractor();
+
+    static {
+        SigningKeyHolder keyHolder = new SigningKeyHolder("keys/test1.key");
+        String issuer = "testIssuer";
+        VERIFIER = new JjwtVerifier(issuer, keyHolder);
+        TOKEN_FACTORY = new JjwtFactory(1L, issuer, keyHolder);
+    }
+
     private @Mock ContainerRequestContext requestContext;
     private @Mock ResourceInfo resourceInfo;
     
@@ -58,6 +65,7 @@ public class JwtAuthenticationFilterTest extends BaseMockitoTest {
     @Before
     public void setUp() {
         filter.setJwtVerifier(VERIFIER);
+        filter.setAuthorizationHeaderExtractor(AUTH_HEADER_EXTRACTOR);
     }
 
     @Test

@@ -37,6 +37,7 @@ import com.github.danzx.zekke.security.jwt.JwtVerificationException;
 import com.github.danzx.zekke.security.jwt.JwtVerifier;
 import com.github.danzx.zekke.ws.rest.model.ErrorMessage;
 import com.github.danzx.zekke.ws.rest.model.ErrorMessage.Type;
+import com.github.danzx.zekke.ws.rest.security.BearerAuthorizationHeaderExtractor;
 import com.github.danzx.zekke.ws.rest.security.RequireRoleAccess;
 
 import org.slf4j.Logger;
@@ -56,6 +57,7 @@ public class JwtAuthenticationFilter implements ContainerRequestFilter {
 
     private @Context ResourceInfo resourceInfo;
     private @Context JwtVerifier jwtVerifier;
+    private @Context BearerAuthorizationHeaderExtractor authorizationHeaderExtractor;
 
     private final MessageSource messageSource = MessageSourceFactory.defaultSource();
 
@@ -67,7 +69,7 @@ public class JwtAuthenticationFilter implements ContainerRequestFilter {
         log.debug("{}={}", HttpHeaders.AUTHORIZATION, headerInfo);
         String token;
         try {
-            token = JwtHeaderExtractor.getToken(headerInfo);
+            token = authorizationHeaderExtractor.getToken(headerInfo);
         } catch (IllegalArgumentException ex) {
             log.error("Invalid authorization header", ex);
             Response.Status status = Response.Status.UNAUTHORIZED;
@@ -121,5 +123,9 @@ public class JwtAuthenticationFilter implements ContainerRequestFilter {
 
     public void setJwtVerifier(JwtVerifier jwtVerifier) {
         this.jwtVerifier = jwtVerifier;
+    }
+
+    public void setAuthorizationHeaderExtractor(BearerAuthorizationHeaderExtractor authorizationHeaderExtractor) {
+        this.authorizationHeaderExtractor = authorizationHeaderExtractor;
     }
 }
