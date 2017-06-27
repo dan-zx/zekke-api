@@ -17,26 +17,36 @@ package com.github.danzx.zekke.ws.rest.security;
 
 import static java.util.Objects.requireNonNull;
 
-import com.github.danzx.zekke.util.Strings;
+import static com.github.danzx.zekke.util.Strings.hidden;
 
 /**
- * Base Authorization Header extractor class.
+ * Login credentials object.
  * 
  * @author Daniel Pedraza-Arcega
  */
-abstract class AuthorizationHeaderExtractor {
+public class Credentials {
 
-    protected enum Mechanism { BASIC, BEARER };
-    
-    private final String prefix;
+    private String userId;
+    private String password;
 
-    protected AuthorizationHeaderExtractor(Mechanism mechanism) {
-        requireNonNull(mechanism);
-        char firstChar = mechanism.name().charAt(0);
-        prefix = firstChar + mechanism.name().toLowerCase().substring(1, mechanism.name().length()) + Strings.BLANK_SPACE;
+    public String getUserId() {
+        return userId;
     }
 
-    protected String getPrefix() {
-        return prefix;
+    public void setUserId(String userId) {
+        this.userId = requireNonNull(userId);
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = requireNonNull(password);
+    }
+
+    @Override
+    public String toString() {
+        return "{ userId:" + userId + ", password=" + hidden(password) + " }";
     }
 }
