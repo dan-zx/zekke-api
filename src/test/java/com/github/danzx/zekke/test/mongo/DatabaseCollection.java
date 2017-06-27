@@ -32,7 +32,7 @@ import org.json.JSONObject;
 
 public enum DatabaseCollection {
 
-    WAYPOINTS, SEQUENCES;
+    WAYPOINTS, USERS, SEQUENCES;
 
     private static final String COLLECTION_FILE_PATH_FORMAT = "/data/mongo/collections/%s.json";
     private static final Cache<String, List<Document>> COLLECTION_CACHE = CacheBuilder.newBuilder().build();

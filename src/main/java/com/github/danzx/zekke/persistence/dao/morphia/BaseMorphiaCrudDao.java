@@ -1,15 +1,17 @@
 /*
  * Copyright 2017 Daniel Pedraza-Arcega
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.github.danzx.zekke.persistence.dao.morphia;
 
@@ -37,21 +39,20 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Daniel Pedraza-Arcega
  */
-public abstract class BaseMorphiaCrudDao<E extends BaseEntity<ID>, ID extends Serializable> implements CrudDao<E, ID> {
+abstract class BaseMorphiaCrudDao<E extends BaseEntity<ID>, ID extends Serializable> extends MorphiaDaoSupport implements CrudDao<E, ID> {
 
     private static final Logger log = LoggerFactory.getLogger(BaseMorphiaCrudDao.class);
 
-    private final Datastore datastore;
     private final Class<E> collectionClass;
 
     /**
      * Constructor.
      * 
-     * @param datastore a non null Datastore
+     * @param datastore a non null datastore.
      * @param collectionClass a non null class matching the type of this DAO.
      */
     protected BaseMorphiaCrudDao(Datastore datastore, Class<E> collectionClass) {
-        this.datastore = requireNonNull(datastore);
+        super(datastore);
         this.collectionClass = requireNonNull(collectionClass);
     }
 
@@ -60,7 +61,7 @@ public abstract class BaseMorphiaCrudDao<E extends BaseEntity<ID>, ID extends Se
     public void saveOrUpdate(E collectionEntity) {
         log.debug("Save: {}", collectionEntity);
         requireNonNull(collectionEntity);
-        datastore.save(collectionEntity);
+        getDatastore().save(collectionEntity);
     }
 
     /** {@inheritDoc} */
@@ -68,7 +69,7 @@ public abstract class BaseMorphiaCrudDao<E extends BaseEntity<ID>, ID extends Se
     public boolean deleteById(ID id) {
         log.debug("Delete {}, id: {}", collectionClass, id);
         requireNonNull(id);
-        int documentsAffected = datastore.delete(collectionClass, id).getN();
+        int documentsAffected = getDatastore().delete(collectionClass, id).getN();
         return documentsAffected > 0;
     }
 
@@ -88,11 +89,7 @@ public abstract class BaseMorphiaCrudDao<E extends BaseEntity<ID>, ID extends Se
 
     /** @return a new query. */
     protected Query<E> createQuery() {
-        return datastore.createQuery(collectionClass);
-    }
-
-    protected Datastore getDatastore() {
-        return datastore;
+        return getDatastore().createQuery(collectionClass);
     }
 
     protected Class<E> getCollectionClass() {

@@ -1,0 +1,12 @@
+[
+   {
+      "_id":1,
+      "role":"ANONYMOUS",
+      "password":null
+   },
+   {
+      "_id":2,
+      "role":"ADMIN",
+      "password":"n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg="
+   }
+]
