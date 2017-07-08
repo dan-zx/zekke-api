@@ -17,10 +17,8 @@ package com.github.danzx.zekke.domain;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
@@ -32,7 +30,6 @@ import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Field;
 import org.mongodb.morphia.annotations.Index;
 import org.mongodb.morphia.annotations.Indexes;
-import org.mongodb.morphia.annotations.PostLoad;
 import org.mongodb.morphia.geo.Point;
 import org.mongodb.morphia.utils.IndexType;
 
@@ -53,7 +50,6 @@ public class Waypoint extends BaseEntity<Long> {
     private String name;
     @NotNull private Type type;
     @NotNull @Embedded private Point location;
-    @NotNull @Embedded private Set<Path> paths = new HashSet<>();
 
     public Optional<String> getName() {
         return Optional.ofNullable(name);
@@ -78,19 +74,6 @@ public class Waypoint extends BaseEntity<Long> {
     public void setLocation(Coordinates location) {
         requireNonNull(location);
         this.location = location.toGeoJsonPoint();
-    }
-
-    public Set<Path> getPaths() {
-        return paths;
-    }
-
-    public void setPaths(Set<Path> paths) {
-        this.paths = paths == null ? new HashSet<>() : paths;
-    }
-
-    @PostLoad
-    protected void postLoad() {
-        paths.stream().forEach(path -> path.setFromWaypoint(getId()));
     }
 
     @Override
@@ -123,6 +106,6 @@ public class Waypoint extends BaseEntity<Long> {
     @Override
     public String toString() {
         return "{ _id:" + getId() + ", name:" + getName().map(Strings::quoted).orElse(null) + 
-                ", location:" + location + ", type:" + type + ", paths:" + paths + " }";
+                ", location:" + location + ", type:" + type + " }";
     }
 }

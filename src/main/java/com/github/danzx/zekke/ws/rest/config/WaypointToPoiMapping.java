@@ -41,7 +41,7 @@ public class WaypointToPoiMapping implements OrikaMapperFactoryConfigurer {
                 public void mapAtoB(Waypoint a, Poi b, MappingContext context) {
                     a.getName().ifPresent(name -> b.setName(name));
                 }
-    
+
                 @Override
                 public void mapBtoA(Poi b, Waypoint a, MappingContext context) {
                     a.setName(b.getName());
@@ -51,5 +51,4 @@ public class WaypointToPoiMapping implements OrikaMapperFactoryConfigurer {
             .byDefault()
             .register();
     }
-
 }

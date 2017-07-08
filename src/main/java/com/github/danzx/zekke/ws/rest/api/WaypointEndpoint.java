@@ -15,14 +15,12 @@
  */
 package com.github.danzx.zekke.ws.rest.api;
 
-import static java.util.Collections.emptySet;
 import static java.util.Objects.requireNonNull;
 
 import static com.github.danzx.zekke.ws.rest.ApiVersions.V_1;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -293,14 +291,12 @@ public class WaypointEndpoint {
     public Response patchWaypoint(@NotNull @PathParam("id") Long id, @NotNull ObjectPatch patch) {
         log.info("PATCH /waypoints/{} -- body: {}", id, patch);
         Optional<Waypoint> optWaypoint = waypointService.findWaypointById(id);
-        Set<com.github.danzx.zekke.domain.Path> paths = optWaypoint.map(Waypoint::getPaths).orElse(emptySet());
         return optWaypoint
             .map(waypointToTypedWaypointTransformer::convertAtoB)
             .map(patch::apply)
             .map(typedWaypoint -> {
                     typedWaypoint.setId(id);
                     Waypoint waypoint = waypointToTypedWaypointTransformer.convertBtoA(typedWaypoint);
-                    waypoint.setPaths(paths);
                     waypointService.persist(waypoint);
                     return typedWaypoint;
                 })

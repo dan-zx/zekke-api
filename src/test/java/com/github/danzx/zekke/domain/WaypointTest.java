@@ -28,14 +28,6 @@ public class WaypointTest {
     private static final Waypoint TEST_WAYPOINT = newTestWaypoint();
 
     @Test
-    public void shouldPathBeNotNullEvenIfSetToNull() {
-        Waypoint waypoint = new Waypoint();
-        assertThat(waypoint.getPaths()).isNotNull();
-        waypoint.setPaths(null);
-        assertThat(waypoint.getPaths()).isNotNull();
-    }
-
-    @Test
     public void shouldNameBeNotNullEvenIfSetToNull() {
         Waypoint waypoint = new Waypoint();
         assertThat(waypoint.getName()).isNotNull();

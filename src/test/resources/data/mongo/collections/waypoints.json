@@ -3,12 +3,6 @@
       "_id":1,
       "name":"Ciudad de Mexico",
       "type":"POI",
-      "paths":[
-         {
-            "to_waypoint":7,
-            "distance":94431.859
-         }
-      ],
       "location":{
          "coordinates":[
             -99.052734,
@@ -21,16 +15,6 @@
       "_id":2,
       "name":"Queretaro",
       "type":"POI",
-      "paths":[
-         {
-            "to_waypoint":6,
-            "distance":98951.731
-         },
-         {
-            "to_waypoint":7,
-            "distance":95695.093
-         }
-      ],
       "location":{
          "coordinates":[
             -100.371094,
@@ -42,20 +26,6 @@
    {
       "_id":3,
       "type":"WALKWAY",
-      "paths":[
-         {
-            "to_waypoint":6,
-            "distance":110561.394
-         },
-         {
-            "to_waypoint":7,
-            "distance":144887.222
-         },
-         {
-            "to_waypoint":4,
-            "distance":249563.935
-         }
-      ],
       "location":{
          "coordinates":[
             -101.151123,
@@ -68,16 +38,6 @@
       "_id":4,
       "name":"Guadalajara",
       "type":"POI",
-      "paths":[
-         {
-            "to_waypoint":5,
-            "distance":181890.199
-         },
-         {
-            "to_waypoint":3,
-            "distance":249563.935
-         }
-      ],
       "location":{
          "coordinates":[
             -103.337402,
@@ -90,16 +50,6 @@
       "_id":5,
       "name":"Leon",
       "type":"POI",
-      "paths":[
-         {
-            "to_waypoint":4,
-            "distance":181890.199
-         },
-         {
-            "to_waypoint":6,
-            "distance":64956.585
-         }
-      ],
       "location":{
          "coordinates":[
             -101.667480,
@@ -111,20 +61,6 @@
    {
       "_id":6,
       "type":"WALKWAY",
-      "paths":[
-         {
-            "to_waypoint":5,
-            "distance":64956.585
-         },
-         {
-            "to_waypoint":2,
-            "distance":98951.731
-         },
-         {
-            "to_waypoint":3,
-            "distance":110561.394
-         }
-      ],
       "location":{
          "coordinates":[
             -101.359863,
@@ -136,20 +72,6 @@
    {
       "_id":7,
       "type":"WALKWAY",
-      "paths":[
-         {
-            "to_waypoint":2,
-            "distance":95695.093
-         },
-         {
-            "to_waypoint":1,
-            "distance":94431.859
-         },
-         {
-            "to_waypoint":3,
-            "distance":144887.222
-         }
-      ],
       "location":{
          "coordinates":[
             -99.788818,

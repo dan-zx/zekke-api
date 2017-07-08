@@ -39,7 +39,7 @@ public class WaypointToTypedWaypointMapping implements OrikaMapperFactoryConfigu
                 public void mapAtoB(Waypoint a, TypedWaypoint b, MappingContext context) {
                     a.getName().ifPresent(name -> b.setName(name));
                 }
-    
+
                 @Override
                 public void mapBtoA(TypedWaypoint b, Waypoint a, MappingContext context) {
                     a.setName(b.getName());
@@ -48,5 +48,4 @@ public class WaypointToTypedWaypointMapping implements OrikaMapperFactoryConfigu
             .byDefault()
             .register();
     }
-
 }
