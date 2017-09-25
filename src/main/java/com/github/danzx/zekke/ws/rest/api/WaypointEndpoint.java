@@ -135,7 +135,7 @@ public class WaypointEndpoint {
     @Path("/walkways")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Walkway> getWalkways(@Valid @QueryParam("bbox") BoundingBox bbox) {
-        log.info("GET /waypoints/walkways?bbox={}&query={}", bbox);
+        log.info("GET /waypoints/walkways?bbox={}", bbox);
         List<Waypoint> waypoints = queryWaypoints(Type.WALKWAY, bbox, null);
         return waypointToWalkwayTransformer.convertListAtoListB(waypoints);
     }
