@@ -51,6 +51,7 @@ import com.github.danzx.zekke.ws.rest.config.ObjectMapperConfig;
 import com.github.danzx.zekke.ws.rest.config.WaypointToPoiMapping;
 import com.github.danzx.zekke.ws.rest.config.WaypointToTypedWaypointMapping;
 import com.github.danzx.zekke.ws.rest.config.WaypointToWalkwayMapping;
+import com.github.danzx.zekke.ws.rest.model.ErrorMessage;
 import com.github.danzx.zekke.ws.rest.model.Poi;
 import com.github.danzx.zekke.ws.rest.model.TypedWaypoint;
 import com.github.danzx.zekke.ws.rest.model.Walkway;
@@ -63,9 +64,6 @@ import net.rakugakibox.spring.boot.orika.OrikaAutoConfiguration;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import org.springframework.test.context.ContextConfiguration;
 
@@ -155,13 +153,10 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
         payload.setName("A Name");
         payload.setType(Type.POI);
         payload.setLocation(Coordinates.ofLatLng(12.43, 43.5));
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                Waypoint waypoint = invocation.getArgumentAt(0, Waypoint.class);
-                waypoint.setId(newId);
-                return null;
-            }
+        doAnswer(invocation -> {
+            Waypoint waypoint = invocation.getArgumentAt(0, Waypoint.class);
+            waypoint.setId(newId);
+            return null;
         }).when(mockWaypointService).persist(any());
         TypedWaypoint response = endpoint.newWaypoint(payload);
 
@@ -342,14 +337,14 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
 
     @Test
     public void shouldGetWaypointFailValidationWhenIdIsNull() throws Exception {
-        Method method = WaypointEndpoint.class.getMethod("getWaypoint", Long.class);
-        Object[] parameterValues = { null };
+        Method method = WaypointEndpoint.class.getMethod("getWaypoint", Long.class, List.class);
+        Object[] parameterValues = { null, null };
         Set<ConstraintViolation<WaypointEndpoint>> violations = validator().forExecutables().validateParameters(
                 endpoint,
                 method,
                 parameterValues
         );
-        assertThat(violations).isNotNull().isNotEmpty().hasSize(1);
+        assertThat(violations).isNotNull().isNotEmpty().hasSize(2);
     }
 
     @Test
@@ -367,7 +362,7 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
         waypoint.setType(responseBody.getType());
         
         when(mockWaypointService.findWaypointById(responseBody.getId())).thenReturn(Optional.of(waypoint));
-        Response response = endpoint.getWaypoint(responseBody.getId());
+        Response response = endpoint.getWaypoint(responseBody.getId(), emptyList());
 
         assertThat(response).isNotNull()
             .extracting(Response::getStatusInfo, Response::hasEntity)
@@ -381,48 +376,22 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
     @Test
     public void shouldGetWaypointRespondWithNotFoundWhenNoData() {
         when(mockWaypointService.findWaypointById(5L)).thenReturn(Optional.empty());
-        Response response = endpoint.getWaypoint(5L);
+        Response response = endpoint.getWaypoint(5L, emptyList());
+        Response.Status status = Response.Status.NOT_FOUND;
+        ErrorMessage errorMessage = new ErrorMessage.Builder()
+                .statusCode(status.getStatusCode())
+                .type(ErrorMessage.Type.NOT_FOUND)
+                .detailMessage("Resource not found")
+                .build();
 
         assertThat(response).isNotNull()
             .extracting(Response::getStatusInfo, Response::hasEntity, Response::getEntity)
-            .containsOnly(Status.NOT_FOUND, false, null);
+            .containsOnly(status, true, errorMessage);
     }
 
     @Test
     public void shouldDeleteWaypointFailValidationWhenIdIsNull() throws Exception {
-        Method method = WaypointEndpoint.class.getMethod("deleteWaypoint", Long.class);
-        Object[] parameterValues = { null };
-        Set<ConstraintViolation<WaypointEndpoint>> violations = validator().forExecutables().validateParameters(
-                endpoint,
-                method,
-                parameterValues
-        );
-        assertThat(violations).isNotNull().isNotEmpty().hasSize(1);
-    }
-
-    @Test
-    public void shouldDeleteWaypointRespondWithNoContent() {
-        when(mockWaypointService.delete(any())).thenReturn(true);
-        Response response = endpoint.deleteWaypoint(5L);
-
-        assertThat(response).isNotNull()
-            .extracting(Response::getStatusInfo, Response::hasEntity, Response::getEntity)
-            .containsOnly(Status.NO_CONTENT, false, null);
-    }
-
-    @Test
-    public void shouldDeleteWaypointRespondWithNotFoundWhenNoData() {
-        when(mockWaypointService.delete(any())).thenReturn(false);
-        Response response = endpoint.deleteWaypoint(5L);
-
-        assertThat(response).isNotNull()
-            .extracting(Response::getStatusInfo, Response::hasEntity, Response::getEntity)
-            .containsOnly(Status.NOT_FOUND, false, null);
-    }
-
-    @Test
-    public void shouldPatchWaypointFailValidationWhenIdAndOrObjectPatchIsNull() throws Exception {
-        Method method = WaypointEndpoint.class.getMethod("patchWaypoint", Long.class, ObjectPatch.class);
+        Method method = WaypointEndpoint.class.getMethod("deleteWaypoint", Long.class, List.class);
         Object[] parameterValues = { null, null };
         Set<ConstraintViolation<WaypointEndpoint>> violations = validator().forExecutables().validateParameters(
                 endpoint,
@@ -433,16 +402,60 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
     }
 
     @Test
+    public void shouldDeleteWaypointRespondWithNoContent() {
+        when(mockWaypointService.delete(any())).thenReturn(true);
+        Response response = endpoint.deleteWaypoint(5L, emptyList());
+
+        assertThat(response).isNotNull()
+            .extracting(Response::getStatusInfo, Response::hasEntity, Response::getEntity)
+            .containsOnly(Status.NO_CONTENT, false, null);
+    }
+
+    @Test
+    public void shouldDeleteWaypointRespondWithNotFoundWhenNoData() {
+        when(mockWaypointService.delete(any())).thenReturn(false);
+        Response response = endpoint.deleteWaypoint(5L, emptyList());
+        Response.Status status = Response.Status.NOT_FOUND;
+        ErrorMessage errorMessage = new ErrorMessage.Builder()
+                .statusCode(status.getStatusCode())
+                .type(ErrorMessage.Type.NOT_FOUND)
+                .detailMessage("Resource not found")
+                .build();
+
+        assertThat(response).isNotNull()
+            .extracting(Response::getStatusInfo, Response::hasEntity, Response::getEntity)
+            .containsOnly(status, true, errorMessage);
+    }
+
+    @Test
+    public void shouldPatchWaypointFailValidationWhenIdAndOrObjectPatchIsNull() throws Exception {
+        Method method = WaypointEndpoint.class.getMethod("patchWaypoint", Long.class, ObjectPatch.class, List.class);
+        Object[] parameterValues = { null, null, null };
+        Set<ConstraintViolation<WaypointEndpoint>> violations = validator().forExecutables().validateParameters(
+                endpoint,
+                method,
+                parameterValues
+        );
+        assertThat(violations).isNotNull().isNotEmpty().hasSize(3);
+    }
+
+    @Test
     public void shouldPatchWaypointRespondWithNotFoundWhenNoDataIsFound() throws Exception {
         when(mockWaypointService.findWaypointById(anyLong())).thenReturn(Optional.empty());
 
-        Response response = endpoint.patchWaypoint(1L, dummyPatch());
+        Response response = endpoint.patchWaypoint(1L, dummyPatch(), emptyList());
+        Response.Status status = Response.Status.NOT_FOUND;
+        ErrorMessage errorMessage = new ErrorMessage.Builder()
+                .statusCode(status.getStatusCode())
+                .type(ErrorMessage.Type.NOT_FOUND)
+                .detailMessage("Resource not found")
+                .build();
 
         verify(mockWaypointService, never()).persist(any());
 
         assertThat(response).isNotNull()
             .extracting(Response::getStatusInfo, Response::hasEntity, Response::getEntity)
-            .containsOnly(Status.NOT_FOUND, false, null);
+            .containsOnly(status, true, errorMessage);
     }
 
     @Test
@@ -462,7 +475,7 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
 
         when(mockWaypointService.findWaypointById(id)).thenReturn(Optional.of(waypoint));
 
-        Response response = endpoint.patchWaypoint(id, dummyPatch());
+        Response response = endpoint.patchWaypoint(id, dummyPatch(), emptyList());
 
         verify(mockWaypointService).persist(waypoint);
 

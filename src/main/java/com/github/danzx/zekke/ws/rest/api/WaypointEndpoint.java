@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import static com.github.danzx.zekke.ws.rest.ApiVersions.V_1;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -28,6 +29,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -35,7 +37,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import com.github.danzx.zekke.constraint.NullId;
 import com.github.danzx.zekke.domain.BoundingBox;
@@ -43,12 +44,15 @@ import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.User;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
+import com.github.danzx.zekke.message.MessageSource;
+import com.github.danzx.zekke.message.impl.MessageSourceFactory;
 import com.github.danzx.zekke.service.WaypointService;
 import com.github.danzx.zekke.service.WaypointService.NearWaypointsQuery;
 import com.github.danzx.zekke.service.WaypointService.WaypointsQuery;
 import com.github.danzx.zekke.transformer.Transformer;
 import com.github.danzx.zekke.ws.rest.MediaTypes;
 import com.github.danzx.zekke.ws.rest.PATCH;
+import com.github.danzx.zekke.ws.rest.model.ErrorMessage;
 import com.github.danzx.zekke.ws.rest.model.Poi;
 import com.github.danzx.zekke.ws.rest.model.TypedWaypoint;
 import com.github.danzx.zekke.ws.rest.model.Walkway;
@@ -71,6 +75,8 @@ import org.springframework.stereotype.Component;
 public class WaypointEndpoint {
 
     private static final Logger log = LoggerFactory.getLogger(WaypointEndpoint.class);
+
+    private final MessageSource messageSource = MessageSourceFactory.defaultSource();
 
     private final WaypointService waypointService;
     private final Transformer<Waypoint, Poi> waypointToPoiTransformer;
@@ -168,7 +174,7 @@ public class WaypointEndpoint {
      * @return a list of POIs with only its name and id or an empty list.
      */
     @GET
-    @Path("/pois/suggestnames")
+    @Path("/pois/names")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Poi> getPoiSuggestions(
             @Valid @QueryParam("bbox") BoundingBox bbox, 
@@ -245,35 +251,41 @@ public class WaypointEndpoint {
      * Finds a TypedWaypoint by it's id.
      * 
      * @param id an id.
+     * @param clientLocales "Accept-Language" header.
      * @return a TypedWaypoint or 404 Not Found.
      */
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getWaypoint(@NotNull @PathParam("id") Long id) {
-        log.info("GET /waypoints/{}", id);
+    public Response getWaypoint(
+            @NotNull @PathParam("id") Long id,
+            @NotNull @HeaderParam("Accept-Language") List<Locale> clientLocales) {
+        log.info("GET /waypoints/{} -- Accept-Languages={}", id, clientLocales);
         return waypointService.findWaypointById(id)
                 .map(waypoint -> waypointToTypedWaypointTransformer.convertAtoB(waypoint))
                 .map(typedWaypoint -> Response.ok(typedWaypoint).build())
-                .orElse(Response.status(Status.NOT_FOUND).build());
+                .orElseGet(() -> notFoundResponse(clientLocales.stream().findFirst().orElse(Locale.ROOT)));
     }
 
     /**
      * Deletes a waypoint by it's id. Requires an admin use this endpoint.
      * 
      * @param id an id.
+     * @param clientLocales "Accept-Language" header.
      * @return a 204 No Content or 404 Not Found.
      */
     @DELETE
     @Path("/{id}")
     @RequireRoleAccess(roleRequired = User.Role.ADMIN)
-    public Response deleteWaypoint(@NotNull @PathParam("id") Long id) {
-        log.info("DELETE /waypoints/{}", id);
+    public Response deleteWaypoint(
+            @NotNull @PathParam("id") Long id,
+            @NotNull @HeaderParam("Accept-Language") List<Locale> clientLocales) {
+        log.info("DELETE /waypoints/{} -- Accept-Languages={}", id, clientLocales);
         Waypoint waypoint = new Waypoint();
         waypoint.setId(id);
         return waypointService.delete(waypoint) ? 
-                Response.noContent().build() : 
-                Response.status(Status.NOT_FOUND).build();
+                Response.noContent().build() :
+                notFoundResponse(clientLocales.stream().findFirst().orElse(Locale.ROOT));
     }
 
     /**
@@ -281,6 +293,7 @@ public class WaypointEndpoint {
      * 
      * @param id an id.
      * @param patch the update.
+     * @param clientLocales "Accept-Language" header.
      * @return a 200 OK with the updated waypoint or 404 Not Found.
      */
     @PATCH
@@ -288,8 +301,11 @@ public class WaypointEndpoint {
     @Consumes(MediaTypes.APPLICATION_JSON_PATCH)
     @Produces(MediaType.APPLICATION_JSON)
     @RequireRoleAccess(roleRequired = User.Role.ADMIN)
-    public Response patchWaypoint(@NotNull @PathParam("id") Long id, @NotNull ObjectPatch patch) {
-        log.info("PATCH /waypoints/{} -- body: {}", id, patch);
+    public Response patchWaypoint(
+            @NotNull @PathParam("id") Long id,
+            @NotNull ObjectPatch patch,
+            @NotNull @HeaderParam("Accept-Language") List<Locale> clientLocales) {
+        log.info("PATCH /waypoints/{} -- body: {} -- Accept-Languages={}", id, patch, clientLocales);
         Optional<Waypoint> optWaypoint = waypointService.findWaypointById(id);
         return optWaypoint
             .map(waypointToTypedWaypointTransformer::convertAtoB)
@@ -301,7 +317,7 @@ public class WaypointEndpoint {
                     return typedWaypoint;
                 })
             .map(typedWaypoint -> Response.ok(typedWaypoint).build())
-            .orElse(Response.status(Status.NOT_FOUND).build());
+            .orElseGet(() -> notFoundResponse(clientLocales.stream().findFirst().orElse(Locale.ROOT)));
     }
 
     private List<Waypoint> queryWaypoints(Type waypointType, BoundingBox bbox,String queryStr) {
@@ -321,5 +337,18 @@ public class WaypointEndpoint {
                 .maximumSearchDistance(distance)
                 .build();
         return waypointService.findNearWaypoints(query);
+    }
+
+    private Response notFoundResponse(Locale clientLocale) {
+        Response.Status status = Response.Status.NOT_FOUND;
+        ErrorMessage errorMessage = new ErrorMessage.Builder()
+                .statusCode(status.getStatusCode())
+                .type(ErrorMessage.Type.NOT_FOUND)
+                .detailMessage(messageSource.getMessage("resource.not.found.error", clientLocale))
+                .build();
+        return Response.status(status)
+                .type(MediaType.APPLICATION_JSON)
+                .entity(errorMessage)
+                .build();
     }
 }
