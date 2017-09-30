@@ -15,6 +15,7 @@ package com.github.danzx.zekke.ws.rest.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import com.github.danzx.zekke.base.Buildable;
 
@@ -25,7 +26,7 @@ import com.github.danzx.zekke.base.Buildable;
  */
 public class ErrorMessage {
 
-    public enum Type { PARAM_VALIDATION, RESOURCE_NOT_FOUND, SERVER_ERROR, AUTHORIZATION, OTHER }
+    public enum Type { PARAM_VALIDATION, NOT_FOUND, SERVER_ERROR, AUTHORIZATION, OTHER }
 
     private final int statusCode;
     private final String errorDetail;
@@ -53,6 +54,33 @@ public class ErrorMessage {
 
     public Map<String, String> getParamErrors() {
         return paramErrors;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        return isErrorMessageEqualTo((ErrorMessage) obj);
+    }
+
+    /**
+     * Use this method to complete your equals method.
+     *
+     * @see java.lang.Object#equals(java.lang.Object)
+     * @param other the reference object with which to compare.
+     * @return {@code true} if this object is the same as the argument; {@code false} otherwise.
+     */
+    protected boolean isErrorMessageEqualTo(ErrorMessage other) {
+        return Objects.equals(statusCode, other.statusCode) &&
+                Objects.equals(errorDetail, other.errorDetail) &&
+                Objects.equals(errorType, other.errorType) &&
+                Objects.equals(paramErrors, other.paramErrors);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(statusCode, errorDetail, errorType, paramErrors);
     }
 
     @Override

@@ -65,7 +65,7 @@ public class ErrorEndpoint {
         Response.Status status = Response.Status.NOT_FOUND;
         ErrorMessage errorMessage = new ErrorMessage.Builder()
                 .statusCode(status.getStatusCode())
-                .type(ErrorMessage.Type.RESOURCE_NOT_FOUND)
+                .type(ErrorMessage.Type.NOT_FOUND)
                 .detailMessage(messageSource.getMessage("resource.not.found.error", clientLocale))
                 .build();
         return Response.status(status)

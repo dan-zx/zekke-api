@@ -51,6 +51,6 @@ public class ResourceNotFoundExceptionMapperTest extends BaseMockitoTest {
         ErrorMessage entity = (ErrorMessage) response.getEntity();
         assertThat(entity)
             .extracting(ErrorMessage::getStatusCode, ErrorMessage::getErrorType, ErrorMessage::getErrorDetail, ErrorMessage::getParamErrors)
-            .containsOnly(404, ErrorMessage.Type.RESOURCE_NOT_FOUND, "Resource not found", null);
+            .containsOnly(404, ErrorMessage.Type.NOT_FOUND, "Resource not found", null);
     }
 }
