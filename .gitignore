@@ -21,6 +21,8 @@ src/main/webapp/META-INF/context.xml
 
 # Idea project files
 .idea/
+out/
+/*.iml
 
 # macOS files
 .DS_Store
