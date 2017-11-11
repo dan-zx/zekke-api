@@ -66,8 +66,8 @@ public class WaypointServiceImpl implements WaypointService {
     public List<Waypoint> findWaypoints(WaypointsQuery query) {
         log.debug("findWaypoints: {}", query);
         return Optional.ofNullable(query.getBoundingBox())
-            .map(bbox -> dao.findWithinBox(bbox, query.getWaypointType(), query.getNameQuery(), false))
-            .orElse(dao.findOptionallyByTypeAndNameQuery(query.getWaypointType(), query.getNameQuery()));
+            .map(bbox -> dao.findWithinBox(bbox, query.getWaypointType(), query.getNameQuery(), false, query.getLimit()))
+            .orElse(dao.findOptionallyByTypeAndNameQuery(query.getWaypointType(), query.getNameQuery(), query.getLimit()));
     }
 
     @Override
@@ -77,9 +77,9 @@ public class WaypointServiceImpl implements WaypointService {
     }
 
     @Override
-    public List<Waypoint> findPoisForNameCompletion(BoundingBox bbox, String nameQuery) {
-        log.debug("findPoisForNameCompletion: { bbox: {}, nameQuery: {} }", bbox, nameQuery);
-        return dao.findWithinBox(bbox, Type.POI, nameQuery, true);
+    public List<Waypoint> findPoisForNameCompletion(BoundingBox bbox, String nameQuery, Integer limit) {
+        log.debug("findPoisForNameCompletion: { bbox: {}, nameQuery: {}, limit: {} }", bbox, nameQuery, limit);
+        return dao.findWithinBox(bbox, Type.POI, nameQuery, true, limit);
     }
 
     @Override

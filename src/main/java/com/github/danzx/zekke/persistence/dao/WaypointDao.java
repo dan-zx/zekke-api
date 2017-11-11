@@ -38,9 +38,11 @@ public interface WaypointDao extends CrudDao<Waypoint, Long> {
      * @param waypointType the desired waypoint type.
      * @param nameQuery a partial POI name. If specified the paramater waypointType will be ignored
      *        and use POI instead
+     * @param limit limits the results to the given number, if not present it will return all
+     *        results.
      * @return a list of waypoints or an empty list.
      */
-    List<Waypoint> findOptionallyByTypeAndNameQuery(Type waypointType, String nameQuery);
+    List<Waypoint> findOptionallyByTypeAndNameQuery(Type waypointType, String nameQuery, Integer limit);
 
     /**
      * Finds the nearest waypoints to given location.
@@ -66,7 +68,9 @@ public interface WaypointDao extends CrudDao<Waypoint, Long> {
      * @param nameQuery a partial POI name. If specified the paramater waypointType will be ignored
      *        and use POI instead
      * @param onlyIdAndName if only retrieve the id and the name of the waypoints.
+     * @param limit limits the results to the given number, if not present it will return all
+     *        results.
      * @return a list of waypoints or an empty list.
      */
-    List<Waypoint> findWithinBox(BoundingBox bbox, Type waypointType, String nameQuery, boolean onlyIdAndName);
+    List<Waypoint> findWithinBox(BoundingBox bbox, Type waypointType, String nameQuery, boolean onlyIdAndName, Integer limit);
 }

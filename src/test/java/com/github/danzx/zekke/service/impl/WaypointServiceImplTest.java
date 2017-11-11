@@ -142,14 +142,14 @@ public class WaypointServiceImplTest extends BaseMockitoValidationTest {
                 .withinBoundingBox(bbox)
                 .build();
         service.findWaypoints(query);
-        verify(dao).findWithinBox(bbox, query.getWaypointType(), query.getNameQuery(), false);
+        verify(dao).findWithinBox(bbox, query.getWaypointType(), query.getNameQuery(), false, null);
     }
 
     @Test
     public void shouldForwardToFindOptionallyByTypeAndNameQueryWhenFindWaypointsHasNoBbox() {
         WaypointsQuery query = new WaypointsQuery.Builder().build();
         service.findWaypoints(query);
-        verify(dao).findOptionallyByTypeAndNameQuery(query.getWaypointType(), query.getNameQuery());
+        verify(dao).findOptionallyByTypeAndNameQuery(query.getWaypointType(), query.getNameQuery(), null);
     }
 
     @Test
@@ -164,8 +164,8 @@ public class WaypointServiceImplTest extends BaseMockitoValidationTest {
         Coordinates c1 = Coordinates.ofLatLng(12.24, 53.545);
         Coordinates c2 = Coordinates.ofLatLng(21.45, 37.5);
         BoundingBox bbox = BoundingBox.ofBottomTop(c1, c2);
-        service.findPoisForNameCompletion(bbox, null);
-        verify(dao).findWithinBox(bbox, Type.POI, null, true);
+        service.findPoisForNameCompletion(bbox, null, null);
+        verify(dao).findWithinBox(bbox, Type.POI, null, true, null);
     }
 
     protected Object[][] invalidWaypointsToPersist() {

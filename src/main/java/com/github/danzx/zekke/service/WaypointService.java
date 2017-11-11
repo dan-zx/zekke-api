@@ -77,9 +77,11 @@ public interface WaypointService {
      * 
      * @param bbox the a rectangle bound.
      * @param nameQuery a name query.
+     * @param limit limits the results to the given number, if not present it will return all
+     *        results.
      * @return a list of waypoints or an empty list.
      */
-    List<Waypoint> findPoisForNameCompletion(@NotNull @Valid BoundingBox bbox, String nameQuery);
+    List<Waypoint> findPoisForNameCompletion(@NotNull @Valid BoundingBox bbox, String nameQuery, Integer limit);
 
     /**
      * Deletes the given waypoint from the underlying datastore.
@@ -108,16 +110,21 @@ public interface WaypointService {
             return builder.waypointType;
         }
 
+        public Integer getLimit() {
+            return builder.limit;
+        }
+
         @Override
         public String toString() {
             return "{ bbox: " + getBoundingBox() + ", nameQuery: " + getNameQuery()
-                    + ", type: " + getWaypointType() + " }";
+                    + ", type: " + getWaypointType() + ", limit: " + getLimit() + " }";
         }
 
         public static class Builder implements Buildable<WaypointsQuery> {
             private BoundingBox boundingBox;
             private String nameQuery;
             private Type waypointType;
+            private Integer limit;
 
             public Builder withinBoundingBox(BoundingBox bbox) {
                 boundingBox = bbox;
@@ -131,6 +138,11 @@ public interface WaypointService {
 
             public Builder ofType(Type waypointType) {
                 this.waypointType = waypointType;
+                return this;
+            }
+
+            public Builder limitResulsTo(Integer limit) {
+                this.limit = limit;
                 return this;
             }
 

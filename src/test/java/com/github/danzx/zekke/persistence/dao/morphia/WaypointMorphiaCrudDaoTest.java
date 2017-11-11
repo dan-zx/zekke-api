@@ -129,7 +129,7 @@ public class WaypointMorphiaCrudDaoTest extends BaseSpringMongoTest {
         List<Waypoint> waypoints = DATA.values().stream()
                 .filter(waypoint -> waypoint.getType() == filter)
                 .collect(toList());
-        assertThat(waypointDao.findOptionallyByTypeAndNameQuery(filter, null)).isNotNull().isNotEmpty().hasSameSizeAs(waypoints).containsOnlyElementsOf(waypoints);
+        assertThat(waypointDao.findOptionallyByTypeAndNameQuery(filter, null, null)).isNotNull().isNotEmpty().hasSameSizeAs(waypoints).containsOnlyElementsOf(waypoints);
     }
 
     @Test
@@ -139,13 +139,19 @@ public class WaypointMorphiaCrudDaoTest extends BaseSpringMongoTest {
                 .filter(waypoint -> waypoint.getType() == Type.POI)
                 .filter(waypoint -> waypoint.getName().map(name -> name.contains(filter)).orElse(false))
                 .collect(toList());
-        assertThat(waypointDao.findOptionallyByTypeAndNameQuery(Type.POI, filter)).isNotNull().isNotEmpty().hasSameSizeAs(waypoints).containsOnlyElementsOf(waypoints);
+        assertThat(waypointDao.findOptionallyByTypeAndNameQuery(Type.POI, filter, null)).isNotNull().isNotEmpty().hasSameSizeAs(waypoints).containsOnlyElementsOf(waypoints);
     }
 
     @Test
     public void shouldFilterNothing() {
         Collection<Waypoint> waypoints = DATA.values();
-        assertThat(waypointDao.findOptionallyByTypeAndNameQuery(null, null)).isNotNull().isNotEmpty().hasSameSizeAs(waypoints).containsOnlyElementsOf(waypoints);
+        assertThat(waypointDao.findOptionallyByTypeAndNameQuery(null, null, null)).isNotNull().isNotEmpty().hasSameSizeAs(waypoints).containsOnlyElementsOf(waypoints);
+    }
+
+    @Test
+    public void shouldFilterNothingLimitingTo2Results() {
+        List<Waypoint> waypoints = Arrays.asList(DATA.get(1L), DATA.get(2L));
+        assertThat(waypointDao.findOptionallyByTypeAndNameQuery(null, null, 2)).isNotNull().isNotEmpty().hasSameSizeAs(waypoints).containsOnlyElementsOf(waypoints);
     }
 
     @Test
@@ -174,61 +180,61 @@ public class WaypointMorphiaCrudDaoTest extends BaseSpringMongoTest {
 
     @Test
     public void shouldFindWithinBox() {
-        List<Waypoint> actualPois = waypointDao.findWithinBox(BoundingBox.ofBottomTop(Coordinates.ofLatLng(19.437943, -104.018555), Coordinates.ofLatLng(21.373642, -100.832520)), null, null, false);
+        List<Waypoint> actualPois = waypointDao.findWithinBox(BoundingBox.ofBottomTop(Coordinates.ofLatLng(19.437943, -104.018555), Coordinates.ofLatLng(21.373642, -100.832520)), null, null, false, null);
         listShouldContainGivenWaypoints(actualPois, DATA.get(GDL_ID), DATA.get(LEON_ID), DATA.get(3L), DATA.get(6L));
     }
 
     @Test
     public void shouldFindWithinBoxFindNothing() {
-        List<Waypoint> actualPois = waypointDao.findWithinBox(BoundingBox.ofBottomTop(Coordinates.ofLatLng(20.794313, -99.052734), Coordinates.ofLatLng(21.347903, -98.591309)), null, null, false);
+        List<Waypoint> actualPois = waypointDao.findWithinBox(BoundingBox.ofBottomTop(Coordinates.ofLatLng(20.794313, -99.052734), Coordinates.ofLatLng(21.347903, -98.591309)), null, null, false, null);
         listShouldContainGivenWaypoints(actualPois);
     }
 
     @Test
     public void shouldFindWithinBoxByType() {
-        List<Waypoint> actualPois = waypointDao.findWithinBox(BoundingBox.ofBottomTop(Coordinates.ofLatLng(19.437943, -104.018555), Coordinates.ofLatLng(21.373642, -100.832520)), Type.WALKWAY, null, false);
+        List<Waypoint> actualPois = waypointDao.findWithinBox(BoundingBox.ofBottomTop(Coordinates.ofLatLng(19.437943, -104.018555), Coordinates.ofLatLng(21.373642, -100.832520)), Type.WALKWAY, null, false, null);
         listShouldContainGivenWaypoints(actualPois, DATA.get(3L), DATA.get(6L));
     }
 
     @Test
     public void shouldFindWithinBoxByTypeFindNothing() {
-        List<Waypoint> actualPois = waypointDao.findWithinBox(BoundingBox.ofBottomTop(Coordinates.ofLatLng(20.794313, -99.052734), Coordinates.ofLatLng(21.347903, -98.591309)), Type.WALKWAY, null, false);
+        List<Waypoint> actualPois = waypointDao.findWithinBox(BoundingBox.ofBottomTop(Coordinates.ofLatLng(20.794313, -99.052734), Coordinates.ofLatLng(21.347903, -98.591309)), Type.WALKWAY, null, false, null);
         listShouldContainGivenWaypoints(actualPois);
     }
 
     @Test
     public void shouldFindPoisWithinBox() {
-        List<Waypoint> actualPois = waypointDao.findWithinBox(BoundingBox.ofBottomTop(Coordinates.ofLatLng(20.465294, -103.491211), Coordinates.ofLatLng(21.204578, -101.491699)), Type.POI, null, false);
+        List<Waypoint> actualPois = waypointDao.findWithinBox(BoundingBox.ofBottomTop(Coordinates.ofLatLng(20.465294, -103.491211), Coordinates.ofLatLng(21.204578, -101.491699)), Type.POI, null, false, null);
         listShouldContainGivenWaypoints(actualPois, DATA.get(GDL_ID), DATA.get(LEON_ID));
     }
 
     @Test
     public void shouldFindPoisWithinBoxAndQueryName() {
-        List<Waypoint> actualPois = waypointDao.findWithinBox(BoundingBox.ofBottomTop(Coordinates.ofLatLng(20.465294, -103.491211), Coordinates.ofLatLng(21.204578, -101.491699)), Type.POI, "ara", false);
+        List<Waypoint> actualPois = waypointDao.findWithinBox(BoundingBox.ofBottomTop(Coordinates.ofLatLng(20.465294, -103.491211), Coordinates.ofLatLng(21.204578, -101.491699)), Type.POI, "ara", false, null);
         listShouldContainGivenWaypoints(actualPois, DATA.get(GDL_ID));
     }
 
     @Test
     public void shouldFindPoisWithinBoxFindNothing() {
-        List<Waypoint> actualPois = waypointDao.findWithinBox(BoundingBox.ofBottomTop(Coordinates.ofLatLng(20.794313, -99.052734), Coordinates.ofLatLng(21.347903, -98.591309)), Type.POI, null, false);
+        List<Waypoint> actualPois = waypointDao.findWithinBox(BoundingBox.ofBottomTop(Coordinates.ofLatLng(20.794313, -99.052734), Coordinates.ofLatLng(21.347903, -98.591309)), Type.POI, null, false, null);
         listShouldContainGivenWaypoints(actualPois);
     }
 
     @Test
     public void shouldFindBasicPoisWithinBox() {
-        List<Waypoint> actualPois = waypointDao.findWithinBox(BoundingBox.ofBottomTop(Coordinates.ofLatLng(20.465294, -103.491211), Coordinates.ofLatLng(21.204578, -101.491699)), Type.POI, null, true);
+        List<Waypoint> actualPois = waypointDao.findWithinBox(BoundingBox.ofBottomTop(Coordinates.ofLatLng(20.465294, -103.491211), Coordinates.ofLatLng(21.204578, -101.491699)), Type.POI, null, true, null);
         listShouldContainGivenWaypointsWithOnlyIdAndName(actualPois, DATA.get(GDL_ID), DATA.get(LEON_ID));
     }
 
     @Test
     public void shouldFindBasicPoisWithinBoxAndQueryName() {
-        List<Waypoint> actualPois = waypointDao.findWithinBox(BoundingBox.ofBottomTop(Coordinates.ofLatLng(20.465294, -103.491211), Coordinates.ofLatLng(21.204578, -101.491699)), Type.POI, "ara", true);
+        List<Waypoint> actualPois = waypointDao.findWithinBox(BoundingBox.ofBottomTop(Coordinates.ofLatLng(20.465294, -103.491211), Coordinates.ofLatLng(21.204578, -101.491699)), Type.POI, "ara", true, null);
         listShouldContainGivenWaypointsWithOnlyIdAndName(actualPois, DATA.get(GDL_ID));
     }
 
     @Test
     public void shouldFindBasicPoisWithinBoxFindNothing() {
-        List<Waypoint> actualPois = waypointDao.findWithinBox(BoundingBox.ofBottomTop(Coordinates.ofLatLng(20.794313, -99.052734), Coordinates.ofLatLng(21.347903, -98.591309)), Type.POI, "ara", false);
+        List<Waypoint> actualPois = waypointDao.findWithinBox(BoundingBox.ofBottomTop(Coordinates.ofLatLng(20.794313, -99.052734), Coordinates.ofLatLng(21.347903, -98.591309)), Type.POI, "ara", false, null);
         assertThat(actualPois).isNotNull().isEmpty();
     }
 

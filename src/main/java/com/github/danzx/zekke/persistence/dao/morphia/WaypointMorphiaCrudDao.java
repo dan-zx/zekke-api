@@ -52,8 +52,6 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
 
     private static final Logger log = LoggerFactory.getLogger(WaypointMorphiaCrudDao.class);
 
-    private static final int NO_LIMIT = 0;
-
     private final MongoSequenceManager sequenceManager;
     private final Transformer<Coordinates, Point> coordinatesTransformer;
     private final Transformer<BoundingBox, Shape> boundingBoxTransformer;
@@ -80,13 +78,16 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
     }
 
     @Override
-    public List<Waypoint> findOptionallyByTypeAndNameQuery(Type waypointType, String nameQuery) {
-        log.debug("type: {}, name: {}", waypointType, nameQuery);
+    @SuppressWarnings("deprecation")
+    public List<Waypoint> findOptionallyByTypeAndNameQuery(Type waypointType, String nameQuery, Integer limit) {
+        log.debug("type: {}, name: {}, limit: {}", waypointType, nameQuery, limit);
         Optional<Type> optionalWaypointType = Optional.ofNullable(waypointType);
         Optional<String> optionalNameQuery = Optional.ofNullable(nameQuery);
+        Optional<Integer> optionalLimit = Optional.ofNullable(limit);
         Query<Waypoint> query = createQuery();
         optionalWaypointType.ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));
         optionalNameQuery.ifPresent(name -> query.criteria(Fields.Waypoint.NAME).containsIgnoreCase(name));
+        optionalLimit.ifPresent(query::limit);
         return query.asList();
     }
 
@@ -101,19 +102,21 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
         Query<Waypoint> query = createQuery()
                 .field(Fields.Waypoint.LOCATION)
                 // A NullPointerException is thrown here but it seems to be working anyways WTF?
-                .near(coordinatesTransformer.convertAtoB(location), optionalMaxDistance.orElse(DEFAULT_MAX_DISTANCE))
-                // Deprecated but I don't now what other options can be used.
-                .limit(optionalLimit.orElse(NO_LIMIT));
+                .near(coordinatesTransformer.convertAtoB(location), optionalMaxDistance.orElse(DEFAULT_MAX_DISTANCE));
+        // Deprecated but I don't now what other options can be used.
+        optionalLimit.ifPresent(query::limit);
         optionalWaypointType.ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));
         return query.asList();
     }
 
     @Override
-    public List<Waypoint> findWithinBox(BoundingBox bbox, Type waypointType, String nameQuery, boolean onlyIdAndName) {
-        log.debug("bbox: {}, type: {}, nameQuery: {}, onlyIdAndName: {}", bbox, waypointType, nameQuery, onlyIdAndName);
+    @SuppressWarnings("deprecation")
+    public List<Waypoint> findWithinBox(BoundingBox bbox, Type waypointType, String nameQuery, boolean onlyIdAndName, Integer limit) {
+        log.debug("bbox: {}, type: {}, nameQuery: {}, onlyIdAndName: {}, limit: {}", bbox, waypointType, nameQuery, onlyIdAndName, limit);
         requireNonNull(bbox);
         Optional<Type> optionalWaypointType = Optional.ofNullable(waypointType);
         Optional<String> optionalNameQuery = Optional.ofNullable(nameQuery);
+        Optional<Integer> optionalLimit = Optional.ofNullable(limit);
         Query<Waypoint> query = createQuery();
         query.criteria(Fields.Waypoint.LOCATION).within(boundingBoxTransformer.convertAtoB(bbox));
         if (optionalNameQuery.isPresent()) {
@@ -123,6 +126,7 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
             );
         } else optionalWaypointType.ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));
         if (onlyIdAndName) query.project(Fields.Waypoint.NAME, true);
+        optionalLimit.ifPresent(query::limit);
         return query.asList();
     }
 }

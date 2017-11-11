@@ -99,13 +99,16 @@ public class WaypointEndpoint {
      * @param bbox If present, finds all the waypoints within a rectangle specified by a latitude
      *        and longitude pair being the first the bottom left coordinates and the second the
      *        upper right coordinates. Example: '12.23,32.681;15.234,37.65'
+     * @param limit Limits the results to the given number.
      * @return a list of TypedWaypoint or an empty list.
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<TypedWaypoint> getTypedWaypoints(@Valid @QueryParam("bbox") BoundingBox bbox) {
-        log.info("GET /waypoints?bbox={}", bbox);
-        List<Waypoint> waypoints = queryWaypoints(null, bbox, null);
+    public List<TypedWaypoint> getTypedWaypoints(
+            @Valid @QueryParam("bbox") BoundingBox bbox,
+            @QueryParam("limit") Integer limit) {
+        log.info("GET /waypoints?bbox={}&limit={}", bbox, limit);
+        List<Waypoint> waypoints = queryWaypoints(null, bbox, null, limit);
         return waypointToTypedWaypointTransformer.convertListAtoListB(waypoints);
     }
 
@@ -116,6 +119,7 @@ public class WaypointEndpoint {
      *        and longitude pair being the first the bottom left coordinates and the second the
      *        upper right coordinates. Example: '12.23,32.681;15.234,37.65'
      * @param queryStr If present, filter by POI names that contain this string.
+     * @param limit Limits the results to the given number.
      * @return a list of POIs or an empty list.
      */
     @GET
@@ -123,9 +127,10 @@ public class WaypointEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     public List<Poi> getPois(
             @Valid @QueryParam("bbox") BoundingBox bbox,
-            @QueryParam("query") String queryStr) {
-        log.info("GET /waypoints/pois?bbox={}&query={}", bbox, queryStr);
-        List<Waypoint> waypoints = queryWaypoints(Type.POI, bbox, queryStr);
+            @QueryParam("query") String queryStr,
+            @QueryParam("limit") Integer limit) {
+        log.info("GET /waypoints/pois?bbox={}&query={}&limit={}", bbox, queryStr, limit);
+        List<Waypoint> waypoints = queryWaypoints(Type.POI, bbox, queryStr, limit);
         return waypointToPoiTransformer.convertListAtoListB(waypoints);
     }
 
@@ -135,14 +140,17 @@ public class WaypointEndpoint {
      * @param bbox If present, finds all the waypoints within a rectangle specified by a latitude
      *        and longitude pair being the first the bottom left coordinates and the second the
      *        upper right coordinates. Example: '12.23,32.681;15.234,37.65'
+     * @param limit Limits the results to the given number.
      * @return a list of walkways or an empty list.
      */
     @GET
     @Path("/walkways")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Walkway> getWalkways(@Valid @QueryParam("bbox") BoundingBox bbox) {
-        log.info("GET /waypoints/walkways?bbox={}", bbox);
-        List<Waypoint> waypoints = queryWaypoints(Type.WALKWAY, bbox, null);
+    public List<Walkway> getWalkways(
+            @Valid @QueryParam("bbox") BoundingBox bbox,
+            @QueryParam("limit") Integer limit) {
+        log.info("GET /waypoints/walkways?bbox={}&limit={}", bbox, limit);
+        List<Waypoint> waypoints = queryWaypoints(Type.WALKWAY, bbox, null, limit);
         return waypointToWalkwayTransformer.convertListAtoListB(waypoints);
     }
 
@@ -171,6 +179,7 @@ public class WaypointEndpoint {
      *        and longitude pair being the first the bottom left coordinates and the second the
      *        upper right coordinates. Example: '12.23,32.681;15.234,37.65'
      * @param queryStr If present, filter by POI names that contain this string.
+     * @param limit Limits the results to the given number.
      * @return a list of POIs with only its name and id or an empty list.
      */
     @GET
@@ -178,9 +187,10 @@ public class WaypointEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     public List<Poi> getPoiSuggestions(
             @Valid @QueryParam("bbox") BoundingBox bbox, 
-            @QueryParam("query") String queryStr) {
-        log.info("GET /waypoints/pois/suggestnames?bbox={}&query={}", bbox);
-        List<Waypoint> pois = waypointService.findPoisForNameCompletion(bbox, queryStr);
+            @QueryParam("query") String queryStr,
+            @QueryParam("limit") Integer limit) {
+        log.info("GET /waypoints/pois/suggestnames?bbox={}&query={}&limit={}", bbox);
+        List<Waypoint> pois = waypointService.findPoisForNameCompletion(bbox, queryStr, limit);
         return waypointToPoiTransformer.convertListAtoListB(pois);
     }
 
@@ -320,11 +330,12 @@ public class WaypointEndpoint {
             .orElseGet(() -> notFoundResponse(clientLocales.stream().findFirst().orElse(Locale.ROOT)));
     }
 
-    private List<Waypoint> queryWaypoints(Type waypointType, BoundingBox bbox,String queryStr) {
+    private List<Waypoint> queryWaypoints(Type waypointType, BoundingBox bbox, String queryStr, Integer limit) {
         WaypointsQuery query = new WaypointsQuery.Builder()
                 .withinBoundingBox(bbox)
                 .ofType(waypointType)
                 .withNameContaining(queryStr)
+                .limitResulsTo(limit)
                 .build();
         return waypointService.findWaypoints(query);
     }

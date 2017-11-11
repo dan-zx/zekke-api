@@ -97,41 +97,7 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
 
     @Test
     public void shouldGetTypedWaypointsFailValidationWhenBboxNotNullButInvalid() throws Exception {
-        Method method = WaypointEndpoint.class.getMethod("getTypedWaypoints", BoundingBox.class);
-        BoundingBox bbox = BoundingBox.ofBottomTop(Coordinates.ofLatLng(1111d, 12313d), Coordinates.ofLatLng(1111d, 12313d));
-        Object[] parameterValues = { bbox };
-
-        assertBoundingBoxValidation(method, parameterValues);
-    }
-
-    @Test
-    public void shouldGetTypedWaypointsWontFail() {
-        when(mockWaypointService.findWaypoints(any())).thenReturn(emptyList());
-        List<TypedWaypoint> result = endpoint.getTypedWaypoints(null);
-
-        assertThat(result).isNotNull().isEmpty();
-    }
-
-    @Test
-    public void shouldGetWalkwaysFailValidationWhenBboxNotNullButInvalid() throws Exception {
-        Method method = WaypointEndpoint.class.getMethod("getWalkways", BoundingBox.class);
-        BoundingBox bbox = BoundingBox.ofBottomTop(Coordinates.ofLatLng(1111d, 12313d), Coordinates.ofLatLng(1111d, 12313d));
-        Object[] parameterValues = { bbox };
-
-        assertBoundingBoxValidation(method, parameterValues);
-    }
-
-    @Test
-    public void shouldGetWalkwayWontFail() {
-        when(mockWaypointService.findWaypoints(any())).thenReturn(emptyList());
-        List<Walkway> result = endpoint.getWalkways(null);
-
-        assertThat(result).isNotNull().isEmpty();
-    }
-
-    @Test
-    public void shouldGetPoisFailValidationWhenBboxIsNotNullButInvalid() throws Exception {
-        Method method = WaypointEndpoint.class.getMethod("getPois", BoundingBox.class, String.class);
+        Method method = WaypointEndpoint.class.getMethod("getTypedWaypoints", BoundingBox.class, Integer.class);
         BoundingBox bbox = BoundingBox.ofBottomTop(Coordinates.ofLatLng(1111d, 12313d), Coordinates.ofLatLng(1111d, 12313d));
         Object[] parameterValues = { bbox, null };
 
@@ -139,9 +105,43 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
     }
 
     @Test
+    public void shouldGetTypedWaypointsWontFail() {
+        when(mockWaypointService.findWaypoints(any())).thenReturn(emptyList());
+        List<TypedWaypoint> result = endpoint.getTypedWaypoints(null, null);
+
+        assertThat(result).isNotNull().isEmpty();
+    }
+
+    @Test
+    public void shouldGetWalkwaysFailValidationWhenBboxNotNullButInvalid() throws Exception {
+        Method method = WaypointEndpoint.class.getMethod("getWalkways", BoundingBox.class, Integer.class);
+        BoundingBox bbox = BoundingBox.ofBottomTop(Coordinates.ofLatLng(1111d, 12313d), Coordinates.ofLatLng(1111d, 12313d));
+        Object[] parameterValues = { bbox, null };
+
+        assertBoundingBoxValidation(method, parameterValues);
+    }
+
+    @Test
+    public void shouldGetWalkwayWontFail() {
+        when(mockWaypointService.findWaypoints(any())).thenReturn(emptyList());
+        List<Walkway> result = endpoint.getWalkways(null, null);
+
+        assertThat(result).isNotNull().isEmpty();
+    }
+
+    @Test
+    public void shouldGetPoisFailValidationWhenBboxIsNotNullButInvalid() throws Exception {
+        Method method = WaypointEndpoint.class.getMethod("getPois", BoundingBox.class, String.class, Integer.class);
+        BoundingBox bbox = BoundingBox.ofBottomTop(Coordinates.ofLatLng(1111d, 12313d), Coordinates.ofLatLng(1111d, 12313d));
+        Object[] parameterValues = { bbox, null, null };
+
+        assertBoundingBoxValidation(method, parameterValues);
+    }
+
+    @Test
     public void shouldGetPoisWontFail() {
         when(mockWaypointService.findWaypoints(any())).thenReturn(emptyList());
-        List<Poi> result = endpoint.getPois(null, null);
+        List<Poi> result = endpoint.getPois(null, null, null);
 
         assertThat(result).isNotNull().isEmpty();
     }
@@ -224,17 +224,17 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
 
     @Test
     public void shouldGetPoiSuggestionsFailValidationWhenBboxIsNotNullButInvalid() throws Exception {
-        Method method = WaypointEndpoint.class.getMethod("getPoiSuggestions", BoundingBox.class, String.class);
+        Method method = WaypointEndpoint.class.getMethod("getPoiSuggestions", BoundingBox.class, String.class, Integer.class);
         BoundingBox bbox = BoundingBox.ofBottomTop(Coordinates.ofLatLng(1111d, 12313d), Coordinates.ofLatLng(1111d, 12313d));
-        Object[] parameterValues = { bbox, null };
+        Object[] parameterValues = { bbox, null, null };
 
         assertBoundingBoxValidation(method, parameterValues);
     }
 
     @Test
     public void shouldGetPoiSuggestionsWontFail() {
-        when(mockWaypointService.findPoisForNameCompletion(any(), any())).thenReturn(emptyList());
-        List<Poi> result = endpoint.getPoiSuggestions(null, null);
+        when(mockWaypointService.findPoisForNameCompletion(any(), any(), any())).thenReturn(emptyList());
+        List<Poi> result = endpoint.getPoiSuggestions(null, null, null);
 
         assertThat(result).isNotNull().isEmpty();
     }
