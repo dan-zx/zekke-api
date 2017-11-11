@@ -25,6 +25,7 @@ public interface ObjectPatch {
     /**
      * Performs an update to a object.
      * 
+     * @param <T> the object type.
      * @param target the object to be updated.
      * @return the updated object.
      * @throws ObjectPatchException if it is not possible to complete the update.

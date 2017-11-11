@@ -36,7 +36,7 @@ public class BearerAuthorizationHeaderExtractor extends AuthorizationHeaderExtra
      * 
      * @param headerInfo the header information
      * @return the token.
-     * @throw IllegalArgumentException when the token cannot be extracted.
+     * @throws IllegalArgumentException when the token cannot be extracted.
      */
     public String getToken(String headerInfo) {
         return Optional.ofNullable(headerInfo)

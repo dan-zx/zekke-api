@@ -112,7 +112,7 @@ public class Strings {
 
     /**
      * @param s a string. 
-     * @return if {@code null} "{@value #NULL}"; "{@value #HIDDEN}" otherwise.
+     * @return if {@code null} "null"; "{@literal <hidden>}" otherwise.
      */
     public static String hidden(String s) {
         return s == null ? NULL : HIDDEN;

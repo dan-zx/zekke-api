@@ -39,7 +39,7 @@ public class BasicAuthorizationHeaderExtractor extends AuthorizationHeaderExtrac
      * @param headerInfo the header information
      * @return an array of strings with the first index is the user and the second is the
      *         password.
-     * @throw IllegalArgumentException when the information cannot be extracted.
+     * @throws IllegalArgumentException when the information cannot be extracted.
      */
     public Credentials getCredentials(String headerInfo) {
         return Optional.ofNullable(headerInfo)
