@@ -22,9 +22,9 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import com.github.danzx.zekke.domain.BoundingBox;
+import com.github.danzx.zekke.data.filter.waypoint.LocationWaypointFilterOptions;
+import com.github.danzx.zekke.data.filter.waypoint.WaypointFilterOptions;
 import com.github.danzx.zekke.domain.Waypoint;
-import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.persistence.dao.WaypointDao;
 import com.github.danzx.zekke.service.WaypointService;
 
@@ -63,23 +63,15 @@ public class WaypointServiceImpl implements WaypointService {
     }
 
     @Override
-    public List<Waypoint> findWaypoints(WaypointsQuery query) {
-        log.debug("findWaypoints: {}", query);
-        return Optional.ofNullable(query.getBoundingBox())
-            .map(bbox -> dao.findWithinBox(bbox, query.getWaypointType(), query.getNameQuery(), false, query.getLimit()))
-            .orElse(dao.findOptionallyByTypeAndNameQuery(query.getWaypointType(), query.getNameQuery(), query.getLimit()));
+    public List<Waypoint> findWaypoints(WaypointFilterOptions filterOptions) {
+        log.debug("findWaypoints: {}", filterOptions);
+        return dao.findFiltered(filterOptions);
     }
 
     @Override
-    public List<Waypoint> findNearWaypoints(NearWaypointsQuery query) {
-        log.debug("findNearWaypoints: {}", query);
-        return dao.findNear(query.getLocation(), query.getMaxDistance(), query.getLimit(), query.getWaypointType());
-    }
-
-    @Override
-    public List<Waypoint> findPoisForNameCompletion(BoundingBox bbox, String nameQuery, Integer limit) {
-        log.debug("findPoisForNameCompletion: { bbox: {}, nameQuery: {}, limit: {} }", bbox, nameQuery, limit);
-        return dao.findWithinBox(bbox, Type.POI, nameQuery, true, limit);
+    public List<Waypoint> findWaypointsNearALocation(LocationWaypointFilterOptions filterOptions) {
+        log.debug("findWaypointsNearALocation: {}", filterOptions);
+        return dao.findNearALocationFiltered(filterOptions);
     }
 
     @Override

@@ -233,7 +233,7 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
 
     @Test
     public void shouldGetPoiSuggestionsWontFail() {
-        when(mockWaypointService.findPoisForNameCompletion(any(), any(), any())).thenReturn(emptyList());
+        when(mockWaypointService.findWaypoints(any())).thenReturn(emptyList());
         List<Poi> result = endpoint.getPoiSuggestions(null, null, null);
 
         assertThat(result).isNotNull().isEmpty();
@@ -265,7 +265,7 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
 
     @Test
     public void shouldGetNearTypedWaypointsWontFail() {
-        when(mockWaypointService.findNearWaypoints(any())).thenReturn(emptyList());
+        when(mockWaypointService.findWaypointsNearALocation(any())).thenReturn(emptyList());
         List<TypedWaypoint> result = endpoint.getNearTypedWaypoints(Coordinates.ofLatLng(12.43, 43.5), null, null);
 
         assertThat(result).isNotNull().isEmpty();
@@ -297,7 +297,7 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
 
     @Test
     public void shouldGetNearPoisWontFail() {
-        when(mockWaypointService.findNearWaypoints(any())).thenReturn(emptyList());
+        when(mockWaypointService.findWaypointsNearALocation(any())).thenReturn(emptyList());
         List<Poi> result = endpoint.getNearPois(Coordinates.ofLatLng(12.43, 43.5), null, null);
 
         assertThat(result).isNotNull().isEmpty();
@@ -329,7 +329,7 @@ public class WaypointEndpointTest extends BaseSpringValidationTest {
 
     @Test
     public void shouldGetNearWalkwaysWontFail() {
-        when(mockWaypointService.findNearWaypoints(any())).thenReturn(emptyList());
+        when(mockWaypointService.findWaypointsNearALocation(any())).thenReturn(emptyList());
         List<Walkway> result = endpoint.getNearWalways(Coordinates.ofLatLng(12.43, 43.5), null, null);
 
         assertThat(result).isNotNull().isEmpty();

@@ -17,10 +17,9 @@ package com.github.danzx.zekke.persistence.dao;
 
 import java.util.List;
 
-import com.github.danzx.zekke.domain.BoundingBox;
-import com.github.danzx.zekke.domain.Coordinates;
+import com.github.danzx.zekke.data.filter.waypoint.LocationWaypointFilterOptions;
+import com.github.danzx.zekke.data.filter.waypoint.WaypointFilterOptions;
 import com.github.danzx.zekke.domain.Waypoint;
-import com.github.danzx.zekke.domain.Waypoint.Type;
 
 /**
  * Waypoint CRUD DAO.
@@ -33,44 +32,18 @@ public interface WaypointDao extends CrudDao<Waypoint, Long> {
     int DEFAULT_MAX_DISTANCE = 500;
 
     /**
-     * Filters waypoints by type and/or name containing a string.
+     * Filters waypoints with several options.
      * 
-     * @param waypointType the desired waypoint type.
-     * @param nameQuery a partial POI name. If specified the paramater waypointType will be ignored
-     *        and use POI instead
-     * @param limit limits the results to the given number, if not present it will return all
-     *        results.
+     * @param filterOptions the filter options.
      * @return a list of waypoints or an empty list.
      */
-    List<Waypoint> findOptionallyByTypeAndNameQuery(Type waypointType, String nameQuery, Integer limit);
+    List<Waypoint> findFiltered(WaypointFilterOptions filterOptions);
 
     /**
-     * Finds the nearest waypoints to given location.
+     * Finds waypoints near a location and filters them with several options.
      * 
-     * @param location a location.
-     * @param maxDistance limits the results to those Waypoints that are at most the specified
-     *        distance from the location (meters). if not present {@value #DEFAULT_MAX_DISTANCE}
-     *        will be used.
-     * @param limit limits the results to the given number, if not present it will return all
-     *        results.
-     * @param waypointType the desired waypoint type.
+     * @param filterOptions the filter options.
      * @return a list of waypoints or an empty list.
      */
-    List<Waypoint> findNear(Coordinates location, Integer maxDistance, Integer limit, Type waypointType);
-
-    /**
-     * Finds the waypoints that are within the bounds of a rectangle, you must specify the bottom
-     * left and top right corners of the rectangle. Optionally, this list can be filtered by
-     * {@link Type} and name containing a string.
-     * 
-     * @param bbox the bounding box.
-     * @param waypointType the desired waypoint type.
-     * @param nameQuery a partial POI name. If specified the paramater waypointType will be ignored
-     *        and use POI instead
-     * @param onlyIdAndName if only retrieve the id and the name of the waypoints.
-     * @param limit limits the results to the given number, if not present it will return all
-     *        results.
-     * @return a list of waypoints or an empty list.
-     */
-    List<Waypoint> findWithinBox(BoundingBox bbox, Type waypointType, String nameQuery, boolean onlyIdAndName, Integer limit);
+    List<Waypoint> findNearALocationFiltered(LocationWaypointFilterOptions filterOptions);
 }

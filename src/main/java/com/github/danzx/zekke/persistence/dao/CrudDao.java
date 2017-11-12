@@ -16,7 +16,6 @@
 package com.github.danzx.zekke.persistence.dao;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Optional;
 
 import com.github.danzx.zekke.domain.BaseEntity;
@@ -38,13 +37,6 @@ public interface CrudDao<E extends BaseEntity<ID>, ID extends Serializable> {
      * @return the optional entity.
      */
     Optional<E> findById(ID id);
-
-    /**
-     * Finds all entities.
-     * 
-     * @return a list of entities or an empty list.
-     */
-    List<E> findAll();
 
     /**
      * Saves or updates the given entity.

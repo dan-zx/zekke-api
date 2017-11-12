@@ -18,7 +18,6 @@ package com.github.danzx.zekke.persistence.dao.morphia;
 import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Optional;
 
 import com.github.danzx.zekke.domain.BaseEntity;
@@ -79,12 +78,6 @@ abstract class BaseMorphiaCrudDao<E extends BaseEntity<ID>, ID extends Serializa
         log.debug("Find {}, id: {}", collectionClass, id);
         requireNonNull(id);
         return Optional.ofNullable(createQuery().field(Fields.Common.ID).equal(id).get());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<E> findAll() {
-        return createQuery().asList();
     }
 
     /** @return a new query. */

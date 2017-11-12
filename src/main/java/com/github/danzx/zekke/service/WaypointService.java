@@ -15,18 +15,15 @@
  */
 package com.github.danzx.zekke.service;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import com.github.danzx.zekke.base.Buildable;
 import com.github.danzx.zekke.constraint.NotNullId;
-import com.github.danzx.zekke.domain.BoundingBox;
-import com.github.danzx.zekke.domain.Coordinates;
+import com.github.danzx.zekke.data.filter.waypoint.LocationWaypointFilterOptions;
+import com.github.danzx.zekke.data.filter.waypoint.WaypointFilterOptions;
 import com.github.danzx.zekke.domain.Waypoint;
 import com.github.danzx.zekke.domain.Waypoint.Type;
 
@@ -57,31 +54,20 @@ public interface WaypointService {
     Optional<Waypoint> findWaypointById(long id);
 
     /**
-     * Finds all waypoints matching the given query.
+     * Filters waypoints with several options.
      * 
-     * @param query a query.
+     * @param filterOptions the filter options.
      * @return a list of waypoints or an empty list.
      */
-    List<Waypoint> findWaypoints(@NotNull WaypointsQuery query);
+    List<Waypoint> findWaypoints(@NotNull WaypointFilterOptions filterOptions);
 
     /**
-     * Finds all waypoints near a point matching the given query.
+     * Finds waypoints near a location and filters them with several options.
      * 
-     * @param query a query.
+     * @param filterOptions the filter options.
      * @return a list of waypoints or an empty list.
      */
-    List<Waypoint> findNearWaypoints(@NotNull NearWaypointsQuery query);
-
-    /**
-     * Finds all POIs with only its id and name initialized matching the given query.
-     * 
-     * @param bbox the a rectangle bound.
-     * @param nameQuery a name query.
-     * @param limit limits the results to the given number, if not present it will return all
-     *        results.
-     * @return a list of waypoints or an empty list.
-     */
-    List<Waypoint> findPoisForNameCompletion(@NotNull @Valid BoundingBox bbox, String nameQuery, Integer limit);
+    List<Waypoint> findWaypointsNearALocation(@NotNull LocationWaypointFilterOptions filterOptions);
 
     /**
      * Deletes the given waypoint from the underlying datastore.
@@ -90,131 +76,4 @@ public interface WaypointService {
      * @return true if the object with given was deleted; otherwise false.
      */
     boolean delete(@NotNull @NotNullId Waypoint waypoint);
-
-    class WaypointsQuery {
-        private final Builder builder;
-
-        private WaypointsQuery(Builder builder) {
-            this.builder = builder;
-        }
-
-        public BoundingBox getBoundingBox() {
-            return builder.boundingBox;
-        }
-
-        public String getNameQuery() {
-            return builder.nameQuery;
-        }
-
-        public Type getWaypointType() {
-            return builder.waypointType;
-        }
-
-        public Integer getLimit() {
-            return builder.limit;
-        }
-
-        @Override
-        public String toString() {
-            return "{ bbox: " + getBoundingBox() + ", nameQuery: " + getNameQuery()
-                    + ", type: " + getWaypointType() + ", limit: " + getLimit() + " }";
-        }
-
-        public static class Builder implements Buildable<WaypointsQuery> {
-            private BoundingBox boundingBox;
-            private String nameQuery;
-            private Type waypointType;
-            private Integer limit;
-
-            public Builder withinBoundingBox(BoundingBox bbox) {
-                boundingBox = bbox;
-                return this;
-            }
-
-            public Builder withNameContaining(String name) {
-                nameQuery = Optional.ofNullable(name).map(String::trim).orElse(null);
-                return this;
-            }
-
-            public Builder ofType(Type waypointType) {
-                this.waypointType = waypointType;
-                return this;
-            }
-
-            public Builder limitResulsTo(Integer limit) {
-                this.limit = limit;
-                return this;
-            }
-
-            @Override
-            public WaypointsQuery build() {
-                return new WaypointsQuery(this);
-            }
-        }
-    }
-
-    class NearWaypointsQuery {
-        private final Builder builder;
-
-        private NearWaypointsQuery(Builder builder) {
-            this.builder = builder;
-        }
-
-        public Coordinates getLocation() {
-            return builder.location;
-        }
-
-        public Integer getMaxDistance() {
-            return builder.maxDistance;
-        }
-
-        public Integer getLimit() {
-            return builder.limit;
-        }
-
-        public Type getWaypointType() {
-            return builder.waypointType;
-        }
-
-        @Override
-        public String toString() {
-            return "{ location: " + getLocation() + ", maxDistance: " + getMaxDistance()
-                    + ", limit: " + getLimit() + ", type: " + getWaypointType() + " }";
-        }
-
-        public static class Builder implements Buildable<NearWaypointsQuery> {
-            private final Coordinates location;
-            private Integer maxDistance;
-            private Integer limit;
-            private Type waypointType;
-
-            public static Builder nearLocation(Coordinates location) {
-                return new Builder(location);
-            }
-
-            private Builder(Coordinates location) {
-                this.location = requireNonNull(location);
-            }
-
-            public Builder maximumSearchDistance(Integer maxDistance) {
-                this.maxDistance = maxDistance;
-                return this;
-            }
-
-            public Builder limitResulsTo(Integer limit) {
-                this.limit = limit;
-                return this;
-            }
-
-            public Builder byType(Type waypointType) {
-                this.waypointType = waypointType;
-                return this;
-            }
-
-            @Override
-            public NearWaypointsQuery build() {
-                return new NearWaypointsQuery(this);
-            }
-        }
-    }
 }

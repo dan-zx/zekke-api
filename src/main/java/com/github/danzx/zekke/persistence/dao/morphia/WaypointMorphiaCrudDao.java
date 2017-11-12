@@ -18,10 +18,11 @@ package com.github.danzx.zekke.persistence.dao.morphia;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.inject.Inject;
 
+import com.github.danzx.zekke.data.filter.waypoint.LocationWaypointFilterOptions;
+import com.github.danzx.zekke.data.filter.waypoint.WaypointFilterOptions;
 import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.Waypoint;
@@ -34,6 +35,7 @@ import com.github.danzx.zekke.transformer.Transformer;
 
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.geo.Point;
+import org.mongodb.morphia.query.FindOptions;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.Shape;
 
@@ -78,55 +80,37 @@ public class WaypointMorphiaCrudDao extends BaseMorphiaCrudDao<Waypoint, Long> i
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public List<Waypoint> findOptionallyByTypeAndNameQuery(Type waypointType, String nameQuery, Integer limit) {
-        log.debug("type: {}, name: {}, limit: {}", waypointType, nameQuery, limit);
-        Optional<Type> optionalWaypointType = Optional.ofNullable(waypointType);
-        Optional<String> optionalNameQuery = Optional.ofNullable(nameQuery);
-        Optional<Integer> optionalLimit = Optional.ofNullable(limit);
+    public List<Waypoint> findFiltered(WaypointFilterOptions filterOptions) {
+        log.debug("Filter: {}", filterOptions);
+        requireNonNull(filterOptions);
         Query<Waypoint> query = createQuery();
-        optionalWaypointType.ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));
-        optionalNameQuery.ifPresent(name -> query.criteria(Fields.Waypoint.NAME).containsIgnoreCase(name));
-        optionalLimit.ifPresent(query::limit);
-        return query.asList();
+        filterOptions.getBoundingBox().ifPresent(bbox -> query.and(query.criteria(Fields.Waypoint.LOCATION).within(boundingBoxTransformer.convertAtoB(bbox))));
+        if (filterOptions.getNameQuery().isPresent()) {
+            String nameQuery = filterOptions.getNameQuery().get();
+            query.and(
+                query.criteria(Fields.Waypoint.NAME).containsIgnoreCase(nameQuery),
+                query.criteria(Fields.Waypoint.TYPE).equal(Type.POI)
+            );
+        } else filterOptions.getWaypointType().ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));
+        if (filterOptions.onlyIdAndName()) query.project(Fields.Waypoint.NAME, true);
+        return filterOptions.getLimit()
+                .map(limit -> new FindOptions().limit(limit))
+                .map(query::asList)
+                .orElseGet(query::asList);
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public List<Waypoint> findNear(Coordinates location, Integer maxDistance, Integer limit, Type waypointType) {
-        log.debug("location: {}, maxDistance: {}, limit: {}, type: {}", location, maxDistance, limit, waypointType);
-        requireNonNull(location);
-        Optional<Integer> optionalMaxDistance = Optional.ofNullable(maxDistance);
-        Optional<Integer> optionalLimit = Optional.ofNullable(limit);
-        Optional<Type> optionalWaypointType = Optional.ofNullable(waypointType);
+    public List<Waypoint> findNearALocationFiltered(LocationWaypointFilterOptions filterOptions) {
+        log.debug("Filter: {}", filterOptions);
+        requireNonNull(filterOptions);
         Query<Waypoint> query = createQuery()
                 .field(Fields.Waypoint.LOCATION)
                 // A NullPointerException is thrown here but it seems to be working anyways WTF?
-                .near(coordinatesTransformer.convertAtoB(location), optionalMaxDistance.orElse(DEFAULT_MAX_DISTANCE));
-        // Deprecated but I don't now what other options can be used.
-        optionalLimit.ifPresent(query::limit);
-        optionalWaypointType.ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));
-        return query.asList();
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public List<Waypoint> findWithinBox(BoundingBox bbox, Type waypointType, String nameQuery, boolean onlyIdAndName, Integer limit) {
-        log.debug("bbox: {}, type: {}, nameQuery: {}, onlyIdAndName: {}, limit: {}", bbox, waypointType, nameQuery, onlyIdAndName, limit);
-        requireNonNull(bbox);
-        Optional<Type> optionalWaypointType = Optional.ofNullable(waypointType);
-        Optional<String> optionalNameQuery = Optional.ofNullable(nameQuery);
-        Optional<Integer> optionalLimit = Optional.ofNullable(limit);
-        Query<Waypoint> query = createQuery();
-        query.criteria(Fields.Waypoint.LOCATION).within(boundingBoxTransformer.convertAtoB(bbox));
-        if (optionalNameQuery.isPresent()) {
-            query.and(
-                query.criteria(Fields.Waypoint.NAME).containsIgnoreCase(optionalNameQuery.get()),
-                query.criteria(Fields.Waypoint.TYPE).equal(Type.POI)
-            );
-        } else optionalWaypointType.ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));
-        if (onlyIdAndName) query.project(Fields.Waypoint.NAME, true);
-        optionalLimit.ifPresent(query::limit);
-        return query.asList();
+                .near(coordinatesTransformer.convertAtoB(filterOptions.getLocation()), filterOptions.getMaxDistance().orElse(DEFAULT_MAX_DISTANCE));
+        filterOptions.getWaypointType().ifPresent(type -> query.and(query.criteria(Fields.Waypoint.TYPE).equal(type)));
+        return filterOptions.getLimit()
+                .map(limit -> new FindOptions().limit(limit))
+                .map(query::asList)
+                .orElseGet(query::asList);
     }
 }

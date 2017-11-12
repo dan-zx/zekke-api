@@ -39,6 +39,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.github.danzx.zekke.constraint.NullId;
+import com.github.danzx.zekke.data.filter.waypoint.LocationWaypointFilterOptions;
+import com.github.danzx.zekke.data.filter.waypoint.WaypointFilterOptions;
 import com.github.danzx.zekke.domain.BoundingBox;
 import com.github.danzx.zekke.domain.Coordinates;
 import com.github.danzx.zekke.domain.User;
@@ -47,8 +49,6 @@ import com.github.danzx.zekke.domain.Waypoint.Type;
 import com.github.danzx.zekke.message.MessageSource;
 import com.github.danzx.zekke.message.impl.MessageSourceFactory;
 import com.github.danzx.zekke.service.WaypointService;
-import com.github.danzx.zekke.service.WaypointService.NearWaypointsQuery;
-import com.github.danzx.zekke.service.WaypointService.WaypointsQuery;
 import com.github.danzx.zekke.transformer.Transformer;
 import com.github.danzx.zekke.ws.rest.MediaTypes;
 import com.github.danzx.zekke.ws.rest.PATCH;
@@ -108,7 +108,11 @@ public class WaypointEndpoint {
             @Valid @QueryParam("bbox") BoundingBox bbox,
             @QueryParam("limit") Integer limit) {
         log.info("GET /waypoints?bbox={}&limit={}", bbox, limit);
-        List<Waypoint> waypoints = queryWaypoints(null, bbox, null, limit);
+        WaypointFilterOptions filterOptions = new WaypointFilterOptions.Builder()
+                .withinBoundingBox(bbox)
+                .limitResulsTo(limit)
+                .build();
+        List<Waypoint> waypoints = waypointService.findWaypoints(filterOptions);
         return waypointToTypedWaypointTransformer.convertListAtoListB(waypoints);
     }
 
@@ -130,7 +134,13 @@ public class WaypointEndpoint {
             @QueryParam("query") String queryStr,
             @QueryParam("limit") Integer limit) {
         log.info("GET /waypoints/pois?bbox={}&query={}&limit={}", bbox, queryStr, limit);
-        List<Waypoint> waypoints = queryWaypoints(Type.POI, bbox, queryStr, limit);
+        WaypointFilterOptions filterOptions = new WaypointFilterOptions.Builder()
+                .byType(Type.POI)
+                .withinBoundingBox(bbox)
+                .withNameContaining(queryStr)
+                .limitResulsTo(limit)
+                .build();
+        List<Waypoint> waypoints = waypointService.findWaypoints(filterOptions);
         return waypointToPoiTransformer.convertListAtoListB(waypoints);
     }
 
@@ -150,7 +160,12 @@ public class WaypointEndpoint {
             @Valid @QueryParam("bbox") BoundingBox bbox,
             @QueryParam("limit") Integer limit) {
         log.info("GET /waypoints/walkways?bbox={}&limit={}", bbox, limit);
-        List<Waypoint> waypoints = queryWaypoints(Type.WALKWAY, bbox, null, limit);
+        WaypointFilterOptions filterOptions = new WaypointFilterOptions.Builder()
+                .byType(Type.WALKWAY)
+                .withinBoundingBox(bbox)
+                .limitResulsTo(limit)
+                .build();
+        List<Waypoint> waypoints = waypointService.findWaypoints(filterOptions);
         return waypointToWalkwayTransformer.convertListAtoListB(waypoints);
     }
 
@@ -189,9 +204,16 @@ public class WaypointEndpoint {
             @Valid @QueryParam("bbox") BoundingBox bbox, 
             @QueryParam("query") String queryStr,
             @QueryParam("limit") Integer limit) {
-        log.info("GET /waypoints/pois/suggestnames?bbox={}&query={}&limit={}", bbox);
-        List<Waypoint> pois = waypointService.findPoisForNameCompletion(bbox, queryStr, limit);
-        return waypointToPoiTransformer.convertListAtoListB(pois);
+        log.info("GET /waypoints/pois/names?bbox={}&query={}&limit={}", bbox);
+        WaypointFilterOptions filterOptions = new WaypointFilterOptions.Builder()
+                .byType(Type.POI)
+                .withinBoundingBox(bbox)
+                .withNameContaining(queryStr)
+                .onlyIdAndName()
+                .limitResulsTo(limit)
+                .build();
+        List<Waypoint> waypoints = waypointService.findWaypoints(filterOptions);
+        return waypointToPoiTransformer.convertListAtoListB(waypoints);
     }
 
     /**
@@ -211,7 +233,12 @@ public class WaypointEndpoint {
             @QueryParam("distance") Integer distance,
             @QueryParam("limit") Integer limit) {
         log.info("GET /waypoints/near?location={}&distance={}&limit={}", location, distance, limit);
-        List<Waypoint> waypoints = queryNearWaypoints(null, location, distance, limit);
+        LocationWaypointFilterOptions filterOptions = LocationWaypointFilterOptions.Builder
+                .nearLocation(location)
+                .maximumSearchDistance(distance)
+                .limitResulsTo(limit)
+                .build();
+        List<Waypoint> waypoints = waypointService.findWaypointsNearALocation(filterOptions);
         return waypointToTypedWaypointTransformer.convertListAtoListB(waypoints);
     }
 
@@ -232,7 +259,13 @@ public class WaypointEndpoint {
             @QueryParam("distance") Integer distance,
             @QueryParam("limit") Integer limit) {
         log.info("GET /waypoints/pois/near?location={}&distance={}&limit={}", location, distance, limit);
-        List<Waypoint> waypoints = queryNearWaypoints(Type.POI, location, distance, limit);
+        LocationWaypointFilterOptions filterOptions = LocationWaypointFilterOptions.Builder
+                .nearLocation(location)
+                .byType(Type.POI)
+                .maximumSearchDistance(distance)
+                .limitResulsTo(limit)
+                .build();
+        List<Waypoint> waypoints = waypointService.findWaypointsNearALocation(filterOptions);
         return waypointToPoiTransformer.convertListAtoListB(waypoints);
     }
 
@@ -253,7 +286,13 @@ public class WaypointEndpoint {
             @QueryParam("distance") Integer distance,
             @QueryParam("limit") Integer limit) {
         log.info("GET /waypoints/walkways?location={}&distance={}&limit={}", location, distance, limit);
-        List<Waypoint> waypoints = queryNearWaypoints(Type.WALKWAY, location, distance, limit);
+        LocationWaypointFilterOptions filterOptions = LocationWaypointFilterOptions.Builder
+                .nearLocation(location)
+                .byType(Type.WALKWAY)
+                .maximumSearchDistance(distance)
+                .limitResulsTo(limit)
+                .build();
+        List<Waypoint> waypoints = waypointService.findWaypointsNearALocation(filterOptions);
         return waypointToWalkwayTransformer.convertListAtoListB(waypoints);
     }
 
@@ -272,7 +311,7 @@ public class WaypointEndpoint {
             @NotNull @HeaderParam("Accept-Language") List<Locale> clientLocales) {
         log.info("GET /waypoints/{} -- Accept-Languages={}", id, clientLocales);
         return waypointService.findWaypointById(id)
-                .map(waypoint -> waypointToTypedWaypointTransformer.convertAtoB(waypoint))
+                .map(waypointToTypedWaypointTransformer::convertAtoB)
                 .map(typedWaypoint -> Response.ok(typedWaypoint).build())
                 .orElseGet(() -> notFoundResponse(clientLocales.stream().findFirst().orElse(Locale.ROOT)));
     }
@@ -328,26 +367,6 @@ public class WaypointEndpoint {
                 })
             .map(typedWaypoint -> Response.ok(typedWaypoint).build())
             .orElseGet(() -> notFoundResponse(clientLocales.stream().findFirst().orElse(Locale.ROOT)));
-    }
-
-    private List<Waypoint> queryWaypoints(Type waypointType, BoundingBox bbox, String queryStr, Integer limit) {
-        WaypointsQuery query = new WaypointsQuery.Builder()
-                .withinBoundingBox(bbox)
-                .ofType(waypointType)
-                .withNameContaining(queryStr)
-                .limitResulsTo(limit)
-                .build();
-        return waypointService.findWaypoints(query);
-    }
-
-    private List<Waypoint> queryNearWaypoints(Type waypointType, Coordinates location, Integer distance, Integer limit) {
-        NearWaypointsQuery query = NearWaypointsQuery.Builder
-                .nearLocation(location)
-                .byType(waypointType)
-                .limitResulsTo(limit)
-                .maximumSearchDistance(distance)
-                .build();
-        return waypointService.findNearWaypoints(query);
     }
 
     private Response notFoundResponse(Locale clientLocale) {
