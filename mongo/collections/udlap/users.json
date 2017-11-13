@@ -1,0 +1,12 @@
+[
+    {
+        "_id": 1,
+        "password": null,
+        "role": "ANONYMOUS"
+    },
+    {
+        "_id": 2,
+        "password": "<PASSWORD_SHA_256>",
+        "role": "ADMIN"
+    }
+]
