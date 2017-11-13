@@ -344,8 +344,9 @@ Retrieve, update and remove a single waypoint object.
 
 ### Partially update a waypoint [PATCH]
 
-* Requires **ADMIN** role
-* Use JSON Patch to specify which parts of the waypoint are going to be updated. See [JSON Pointer](https://tools.ietf.org/html/rfc6901) and [JSON Patch](https://tools.ietf.org/html/rfc6902)
+Requires **ADMIN** role.
+
+Use JSON Patch to specify which parts of the waypoint are going to be updated. See [JSON Pointer](https://tools.ietf.org/html/rfc6901) and [JSON Patch](https://tools.ietf.org/html/rfc6902)
 
 + Request
 
