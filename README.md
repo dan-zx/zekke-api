@@ -31,6 +31,22 @@ REST API
 
 Endpoint documentation, requests and responses [here](API.md)
 
+Technologies/libraries used
+---------------------------
+
+* MongoDB
+* Morphia
+* EmbedMongo
+* Spring Boot
+* Jersey
+* Orika Mapper
+* Hibernate Validator
+* JSON Patch
+* JWT
+* Logback Groovy
+* AssertJ
+* JUnit + JUnitParams
+
 License
 -------
 
