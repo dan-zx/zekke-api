@@ -18,7 +18,8 @@ Getting started
 
     c. Create the geographic [index](mongo/indexes.js) in the location field of waypoints collections.
 
-2. Start ZeKKe services
+2. Set in [application.properties](src/main/resources/application.properties) the config values for your Mongo DB instance.
+3. Start ZeKKe services
 
 ```sh
 $ ./gradlew clean bootRun
@@ -30,22 +31,6 @@ REST API
 --------
 
 Endpoint documentation, requests and responses [here](API.md)
-
-Technologies/libraries used
----------------------------
-
-* MongoDB
-* Morphia
-* EmbedMongo
-* Spring Boot
-* Jersey
-* Orika Mapper
-* Hibernate Validator
-* JSON Patch
-* JWT
-* Logback Groovy
-* AssertJ
-* JUnit + JUnitParams
 
 License
 -------
