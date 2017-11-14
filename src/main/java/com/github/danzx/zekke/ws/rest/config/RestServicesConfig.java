@@ -17,6 +17,16 @@ package com.github.danzx.zekke.ws.rest.config;
 
 import javax.ws.rs.ApplicationPath;
 
+import com.github.danzx.zekke.ws.rest.api.ErrorEndpoint;
+import com.github.danzx.zekke.ws.rest.api.JwtAuthenticationEndpoint;
+import com.github.danzx.zekke.ws.rest.api.WaypointEndpoint;
+import com.github.danzx.zekke.ws.rest.errormapper.AppExceptionMapper;
+import com.github.danzx.zekke.ws.rest.errormapper.ConstraintViolationExceptionMapper;
+import com.github.danzx.zekke.ws.rest.errormapper.GenericExceptionMapper;
+import com.github.danzx.zekke.ws.rest.errormapper.ResourceNotFoundExceptionMapper;
+import com.github.danzx.zekke.ws.rest.patch.jsonpatch.JsonPatchReader;
+import com.github.danzx.zekke.ws.rest.security.jwt.filter.JwtAuthenticationFilter;
+
 import org.glassfish.jersey.server.ResourceConfig;
 
 import org.springframework.stereotype.Component;
@@ -31,6 +41,35 @@ import org.springframework.stereotype.Component;
 public class RestServicesConfig extends ResourceConfig {
 
     public RestServicesConfig() {
-        packages("com.github.danzx.zekke.ws.rest");
+        /*
+         * There is a limitation in Jersey's classpath scanning that raises a
+         * java.io.FileNotFoundException when Spring Boot starts from a fat jar.
+         * To solve this issue is best to register each individual resource.
+         */
+        registerEndpoints();
+        registerExceptionMappers();
+        registerBodyReaders();
+        registerFilters();
+    }
+
+    private void registerEndpoints() {
+        register(ErrorEndpoint.class);
+        register(JwtAuthenticationEndpoint.class);
+        register(WaypointEndpoint.class);
+    }
+
+    private void registerExceptionMappers() {
+        register(AppExceptionMapper.class);
+        register(ConstraintViolationExceptionMapper.class);
+        register(GenericExceptionMapper.class);
+        register(ResourceNotFoundExceptionMapper.class);
+    }
+
+    private void registerBodyReaders() {
+        register(JsonPatchReader.class);
+    }
+
+    private void registerFilters() {
+        register(JwtAuthenticationFilter.class);
     }
 }
