@@ -18,6 +18,7 @@ package com.github.danzx.zekke.ws.rest.patch.jsonpatch;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -75,5 +76,10 @@ public class JsonObjectPatch implements ObjectPatch {
                 .cause(ex)
                 .build();
         }
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toString(patch);
     }
 }
