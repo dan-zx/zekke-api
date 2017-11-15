@@ -17,8 +17,6 @@ package com.github.danzx.zekke.mongo.config;
 
 import static com.github.danzx.zekke.config.Profiles.STAGING;
 
-import java.net.URI;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,14 +33,6 @@ public class StagingMongoDbConfig extends MongoClientConfig {
 
     @Bean
     public MongoDbSettings mongoDbSettings(@Value("#{systemEnvironment['MONGODB_URI']}") String uriStr) {
-        URI mongoDbUri = URI.create(uriStr);
-        String[] userAndPassword = mongoDbUri.getUserInfo().split(":");
-        return MongoDbSettings
-                .ofDatabase(mongoDbUri.getPath())
-                .locatedAt(mongoDbUri.getHost())
-                .withPort(mongoDbUri.getPort())
-                .withUser(userAndPassword[0])
-                .withPassword(userAndPassword[1])
-                .build();
+        return MongoDbSettings.fromUri(uriStr);
     }
 }

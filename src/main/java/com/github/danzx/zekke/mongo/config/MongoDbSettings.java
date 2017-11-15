@@ -18,6 +18,7 @@ package com.github.danzx.zekke.mongo.config;
 import static com.github.danzx.zekke.util.Strings.isNullOrBlank;
 import static com.github.danzx.zekke.util.Strings.requireNonBlank;
 
+import java.net.URI;
 import java.util.Optional;
 
 import com.github.danzx.zekke.base.Buildable;
@@ -47,7 +48,37 @@ public class MongoDbSettings {
         } else credential = null;
     }
 
-    public static Builder ofDatabase(String database) {
+    /**
+     * Builds a new MongoDbSettings with the info from the given URI.
+     * 
+     * @param uri a valid URI string.
+     * @return a new MongoDbSettings built from the give URI
+     */
+    public static MongoDbSettings fromUri(String uri) {
+        requireNonBlank(uri);
+        URI mongoDbUri = URI.create(uri);
+        String[] userAndPassword = Optional.ofNullable(mongoDbUri.getUserInfo())
+                .map(userInfo -> userInfo.split(":"))
+                .filter(userInfoArray -> userInfoArray.length >= 2)
+                .orElseGet(() -> new String[] {null, null});
+        String database = Optional.ofNullable(mongoDbUri.getPath())
+                .map(path -> path.replaceFirst("/", Strings.EMPTY))
+                .orElse(null);
+        return new Builder(database)
+                .locatedAt(mongoDbUri.getHost())
+                .withPort(mongoDbUri.getPort())
+                .withUser(userAndPassword[0])
+                .withPassword(userAndPassword[1])
+                .build();
+    }
+
+    /**
+     * Creates a new MongoDbSettings.Builder object with a database name.
+     * 
+     * @param database the database name.
+     * @return a new MongoDbSettings.Builder.
+     */
+    public static Builder builderFromDatabase(String database) {
         return new Builder(database);
     }
 
@@ -78,12 +109,12 @@ public class MongoDbSettings {
         }
 
         public Builder locatedAt(String host) {
-            this.host = requireNonBlank(host);
+            if (!isNullOrBlank(host)) this.host = host;
             return this;
         }
 
-        public Builder withPort(int port) {
-            this.port = port;
+        public Builder withPort(Integer port) {
+            if (port != null && !port.equals(-1)) this.port = port;
             return this;
         }
 

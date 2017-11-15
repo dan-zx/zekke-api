@@ -31,7 +31,7 @@ public class IntegrationMongoDbConfig {
                                            @Value("${mongodb.host}") String host,
                                            @Value("${mongodb.port}") int port) {
         return MongoDbSettings
-                .ofDatabase(database)
+                .builderFromDatabase(database)
                 .locatedAt(host)
                 .withPort(port)
                 .build();

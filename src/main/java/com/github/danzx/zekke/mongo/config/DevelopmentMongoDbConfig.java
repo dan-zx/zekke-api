@@ -38,7 +38,7 @@ public class DevelopmentMongoDbConfig extends MongoClientConfig {
                                            @Value("${mongodb.db.user:#{null}}") String databaseUser,
                                            @Value("${mongodb.db.password:#{null}}") String databasePassword) {
         return MongoDbSettings
-                .ofDatabase(database)
+                .builderFromDatabase(database)
                 .locatedAt(host)
                 .withPort(port)
                 .withUser(databaseUser)
