@@ -18,8 +18,13 @@ Getting started
 
     c. Create the geographic [index](mongo/indexes.js) in the location field of waypoints collections.
 
-2. Set in [application.properties](src/main/resources/application.properties) the config values for your Mongo DB instance.
-3. Start ZeKKe services
+2. Set your Mongo DB connection settings depending on the configuration you will use (`spring.profiles.active` in [application.properties](src/main/resources/application.properties)):
+
+    * For **development** profile: Set in [application.properties](src/main/resources/application.properties) the connection values for your Mongo DB instance.
+
+    * For **staging** profile: Set the `MONGODB_URI` system property with the connection URI of your Mongo DB instance.
+
+3. Start ZeKKe services with the following command
 
 ```sh
 $ ./gradlew clean bootRun
