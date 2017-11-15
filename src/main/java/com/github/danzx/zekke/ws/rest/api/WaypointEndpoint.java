@@ -170,24 +170,6 @@ public class WaypointEndpoint {
     }
 
     /**
-     * Creates a new waypoint. Requires an admin use this endpoint.
-     * 
-     * @param typedWaypoint a TypedWaypoint.
-     * @return the same TypedWaypoint with an id.
-     */
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @RequireRoleAccess(roleRequired = User.Role.ADMIN)
-    public TypedWaypoint newWaypoint(@NotNull @NullId @Valid TypedWaypoint typedWaypoint) {
-        log.info("POST /waypoints -- body: {}", typedWaypoint);
-        Waypoint waypoint = waypointToTypedWaypointTransformer.convertBtoA(typedWaypoint);
-        waypointService.persist(waypoint);
-        typedWaypoint.setId(waypoint.getId());
-        return typedWaypoint;
-    }
-
-    /**
      * POI name completion.
      * 
      * @param bbox If present, finds all the waypoints within a rectangle specified by a latitude
@@ -314,6 +296,24 @@ public class WaypointEndpoint {
                 .map(waypointToTypedWaypointTransformer::convertAtoB)
                 .map(typedWaypoint -> Response.ok(typedWaypoint).build())
                 .orElseGet(() -> notFoundResponse(clientLocales.stream().findFirst().orElse(Locale.ROOT)));
+    }
+
+    /**
+     * Creates a new waypoint. Requires an admin use this endpoint.
+     * 
+     * @param typedWaypoint a TypedWaypoint.
+     * @return the same TypedWaypoint with an id.
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RequireRoleAccess(roleRequired = User.Role.ADMIN)
+    public TypedWaypoint newWaypoint(@NotNull @NullId @Valid TypedWaypoint typedWaypoint) {
+        log.info("POST /waypoints -- body: {}", typedWaypoint);
+        Waypoint waypoint = waypointToTypedWaypointTransformer.convertBtoA(typedWaypoint);
+        waypointService.persist(waypoint);
+        typedWaypoint.setId(waypoint.getId());
+        return typedWaypoint;
     }
 
     /**
