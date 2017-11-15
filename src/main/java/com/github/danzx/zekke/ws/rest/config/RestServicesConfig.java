@@ -23,10 +23,14 @@ import com.github.danzx.zekke.ws.rest.api.WaypointEndpoint;
 import com.github.danzx.zekke.ws.rest.errormapper.AppExceptionMapper;
 import com.github.danzx.zekke.ws.rest.errormapper.ConstraintViolationExceptionMapper;
 import com.github.danzx.zekke.ws.rest.errormapper.GenericExceptionMapper;
+import com.github.danzx.zekke.ws.rest.errormapper.InvalidPathParamExceptionMapper;
+import com.github.danzx.zekke.ws.rest.errormapper.JsonMappingExceptionMapper;
 import com.github.danzx.zekke.ws.rest.errormapper.ResourceNotFoundExceptionMapper;
 import com.github.danzx.zekke.ws.rest.patch.jsonpatch.JsonPatchReader;
 import com.github.danzx.zekke.ws.rest.security.jwt.filter.JwtAuthenticationFilter;
 
+import org.glassfish.jersey.CommonProperties;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import org.springframework.stereotype.Component;
@@ -41,6 +45,10 @@ import org.springframework.stereotype.Component;
 public class RestServicesConfig extends ResourceConfig {
 
     public RestServicesConfig() {
+        // Disable auto discovery because some default mappers mess up with this application's
+        property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true);
+        register(JacksonFeature.class);
+
         /*
          * There is a limitation in Jersey's classpath scanning that raises a
          * java.io.FileNotFoundException when Spring Boot starts from a fat jar.
@@ -62,6 +70,8 @@ public class RestServicesConfig extends ResourceConfig {
         register(AppExceptionMapper.class);
         register(ConstraintViolationExceptionMapper.class);
         register(GenericExceptionMapper.class);
+        register(InvalidPathParamExceptionMapper.class);
+        register(JsonMappingExceptionMapper.class);
         register(ResourceNotFoundExceptionMapper.class);
     }
 
