@@ -14,15 +14,24 @@ Getting started
 
     a. Create the collections sequences, users and waypoints
 
-    b. Create the stored procedure function [`getNextSequenceValue.js`](mongo/functions/getNextSequenceValue.js) in mongo.
+    b. Create the stored procedure functions located at [fuctions directory](mongo/functions) in your MongoDB with the command.
+    ```javascript
+    db.system.js.save( { _id: "<functionName>", value: <function> } );
+    ```
 
-    c. Create the geographic [index](mongo/indexes.js) in the location field of waypoints collections.
+    c. Create [indexes](mongo/indexes.js) for the ZeKKe collections.
 
-2. Set your Mongo DB connection settings depending on the configuration you will use (`spring.profiles.active` in [application.properties](src/main/resources/application.properties)):
+2. Set your Mongo DB connection settings depending on the configuration you will use `spring.profiles.active` in [application.properties](src/main/resources/application.properties):
 
-    * For **development** profile: Set in [application.properties](src/main/resources/application.properties) the connection values for your Mongo DB instance.
+    * For **dev** profile: Set in [application.properties](src/main/resources/application.properties) file the connection values for your Mongo DB instance:
+        + `dev.mongodb.host`
+        + `dev.mongodb.port`
+        + `dev.mongodb.db`
+        + `dev.mongodb.db.user`
+        + `dev.mongodb.db.password`
 
-    * For **staging** profile: Set the `MONGODB_URI` system property with the connection URI of your Mongo DB instance.
+    * For **staging** profile: Set the `MONGODB_URI` system property with the connection URI of your Mongo DB instance:
+        +  `mongodb:[//[user[:password]@]host[:port]][/database]`
 
 3. Start ZeKKe services with the following command
 

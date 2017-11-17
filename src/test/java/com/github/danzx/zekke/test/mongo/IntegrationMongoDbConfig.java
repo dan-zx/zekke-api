@@ -27,9 +27,9 @@ import org.springframework.context.annotation.Configuration;
 public class IntegrationMongoDbConfig {
 
     @Bean
-    public MongoDbSettings mongoDbSettings(@Value("${mongodb.db}") String database,
-                                           @Value("${mongodb.host}") String host,
-                                           @Value("${mongodb.port}") int port) {
+    public MongoDbSettings mongoDbSettings(@Value("${test.mongodb.db}") String database,
+                                           @Value("${test.mongodb.host}") String host,
+                                           @Value("${test.mongodb.port}") int port) {
         return MongoDbSettings
                 .builderFromDatabase(database)
                 .locatedAt(host)

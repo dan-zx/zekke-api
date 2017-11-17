@@ -32,11 +32,11 @@ import org.springframework.context.annotation.Profile;
 public class DevelopmentMongoDbConfig extends MongoClientConfig {
 
     @Bean
-    public MongoDbSettings mongoDbSettings(@Value("${mongodb.db}") String database,
-                                           @Value("${mongodb.host}") String host,
-                                           @Value("${mongodb.port}") int port,
-                                           @Value("${mongodb.db.user:#{null}}") String databaseUser,
-                                           @Value("${mongodb.db.password:#{null}}") String databasePassword) {
+    public MongoDbSettings mongoDbSettings(@Value("${dev.mongodb.db}") String database,
+                                           @Value("${dev.mongodb.host}") String host,
+                                           @Value("${dev.mongodb.port}") int port,
+                                           @Value("${dev.mongodb.db.user:#{null}}") String databaseUser,
+                                           @Value("${dev.mongodb.db.password:#{null}}") String databasePassword) {
         return MongoDbSettings
                 .builderFromDatabase(database)
                 .locatedAt(host)
