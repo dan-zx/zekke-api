@@ -20,8 +20,8 @@ Getting started
     ```
 
     c. Create [indexes](mongo/indexes.js) for the ZeKKe collections.
-
-2. Set your Mongo DB connection settings depending on the configuration you will use `spring.profiles.active` in [application.properties](src/main/resources/application.properties):
+2. Set the active profile as **dev** or **staging** on the property `spring.profiles.active` in [application.properties](src/main/resources/application.properties) file or as environment variable.
+3. Set your Mongo DB connection settings depending on the active profile:
 
     * For **dev** profile: Set in [application.properties](src/main/resources/application.properties) file the connection values for your Mongo DB instance:
         + `dev.mongodb.host`
@@ -30,13 +30,13 @@ Getting started
         + `dev.mongodb.db.user`
         + `dev.mongodb.db.password`
 
-    * For **staging** profile: Set the `MONGODB_URI` system property with the connection URI of your Mongo DB instance:
+    * For **staging** profile: Set the `MONGODB_URI` environment variable with the connection URI of your Mongo DB instance:
         +  `mongodb:[//[user[:password]@]host[:port]][/database]`
 
-3. Start ZeKKe services with the following command
+4. Start ZeKKe services with the following command
 
 ```sh
-$ ./gradlew clean bootRun
+$ ./gradlew bootRun
 ```
 
 > Look at [Mongo collections](mongo/collections/collections.md) for sample data sets.
