@@ -38,16 +38,86 @@ import org.mongodb.morphia.annotations.Entity;
 public class User extends BaseEntity<Long> {
 
     public enum Role {
-        ANONYMOUS(1), ADMIN(2);
+        ANONYMOUS(1, 1), ADMIN(2, 2);
 
         private final long userId;
+        private final int authorityLevel;
 
-        Role(long userId) {
+        Role(long userId, int authorityLevel) {
             this.userId = userId;
+            this.authorityLevel = authorityLevel;
         }
 
         public long getUserId() {
             return userId;
+        }
+
+        /** @return a non zero value. */
+        public int getAuthorityLevel() {
+            return authorityLevel;
+        }
+
+        /**
+         * Check authority level. Role {@code null} will be treated as 0.
+         * 
+         * @param role a role.
+         * @return {@code true} if {@link #getAuthorityLevel()} of this Role is less to the given;
+         *         {@code false} otherwise.
+         */
+        public boolean hasLessAuthorityThan(Role role) {
+            return compareAuthorityLevel(role) < 0;
+        }
+
+        /**
+         * Check authority level. Role {@code null} will be treated as 0.
+         * 
+         * @param role a role.
+         * @return {@code true} if {@link #getAuthorityLevel()} of this Role is less or equal to the
+         *         given; {@code false} otherwise.
+         */
+        public boolean hasLessOrEqualAuthorityThan(Role role) {
+            return hasLessAuthorityThan(role) || hasEqualAuthorityThan(role);
+        }
+
+        /**
+         * Check authority level. Role {@code null} will be treated as 0.
+         * 
+         * @param role a role.
+         * @return {@code true} if {@link #getAuthorityLevel()} of this Role is greater to the
+         *         given; {@code false} otherwise.
+         */
+        public boolean hasMoreAuthorityThan(Role role) {
+            return compareAuthorityLevel(role) > 0;
+        }
+
+        /**
+         * Check authority level. Role {@code null} will be treated as 0.
+         * 
+         * @param role a role.
+         * @return {@code true} if {@link #getAuthorityLevel()} of this Role is greater or equal to
+         *         the given; {@code false} otherwise.
+         */
+        public boolean hasMoreOrEqualAuthorityThan(Role role) {
+            return hasMoreAuthorityThan(role) || hasEqualAuthorityThan(role);
+        }
+
+        /**
+         * Check authority level. Role {@code null} will be treated as 0.
+         * 
+         * @param role a role.
+         * @return {@code true} if {@link #getAuthorityLevel()} of this Role is equal to the given;
+         *         {@code false} otherwise.
+         */
+        public boolean hasEqualAuthorityThan(Role role) {
+            return compareAuthorityLevel(role) == 0;
+        }
+
+        private int compareAuthorityLevel(Role role) {
+            return Integer.compare(authorityLevel, authorityLevelOf(role));
+        }
+
+        private int authorityLevelOf(Role role) {
+            return Optional.ofNullable(role).map(Role::getAuthorityLevel).orElse(0);
         }
     }
 

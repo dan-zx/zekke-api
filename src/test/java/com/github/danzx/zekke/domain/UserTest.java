@@ -19,10 +19,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.danzx.zekke.domain.User.Role;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+
 import org.apache.commons.beanutils.BeanUtils;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+@RunWith(JUnitParamsRunner.class)
 public class UserTest {
 
     private static final User TEST_USER = newTestUser();
@@ -66,6 +71,80 @@ public class UserTest {
     public void shouldHashCodeBeEqualWhenSameObjectReference() {
         User user2 = newTestUser();
         assertThat(TEST_USER.hashCode()).isEqualTo(TEST_USER.hashCode()).isEqualTo(user2.hashCode());
+    }
+
+    @Test
+    @Parameters(method = "equalAuthorityRolesTest")
+    public void shouldRoleHasEqualAuthorityThanThanReturnBoolean(Role role1, Role role2, boolean expected) {
+        assertThat(role1.hasEqualAuthorityThan(role2)).isEqualTo(expected);
+    }
+
+    @Test
+    @Parameters(method = "greaterAuthorityRolesTest")
+    public void shouldRoleHasMoreAuthorityThanReturnBoolean(Role role1, Role role2, boolean expected) {
+        assertThat(role1.hasMoreAuthorityThan(role2)).isEqualTo(expected);
+    }
+
+    @Test
+    @Parameters(method = "greaterAuthorityRolesTest")
+    public void shouldRoleHasLessAuthorityThanReturnBoolean(Role role1, Role role2, boolean expected) {
+        assertThat(role1.hasLessAuthorityThan(role2)).isEqualTo(!expected);
+    }
+
+    @Test
+    @Parameters(method = "greaterOrEqualAuthorityRolesTest")
+    public void shouldRoleHasMoreOrEqualAuthorityThanReturnBoolean(Role role1, Role role2, boolean expected) {
+        assertThat(role1.hasMoreOrEqualAuthorityThan(role2)).isEqualTo(expected);
+    }
+
+    @Test
+    @Parameters(method = "lessOrEqualAuthorityRolesTest")
+    public void shouldRoleHasLessOrEqualAuthorityThanReturnBoolean(Role role1, Role role2, boolean expected) {
+        assertThat(role1.hasLessOrEqualAuthorityThan(role2)).isEqualTo(expected);
+    }
+
+    public Object[] greaterOrEqualAuthorityRolesTest() {
+        return new Object[][] {
+            {Role.ANONYMOUS, Role.ANONYMOUS, true},
+            {Role.ADMIN, Role.ADMIN, true},
+            {Role.ANONYMOUS, Role.ADMIN, false},
+            {Role.ADMIN, Role.ANONYMOUS, true},
+            {Role.ANONYMOUS, null, true},
+            {Role.ADMIN, null, true},
+            {Role.ANONYMOUS, Role.ADMIN, false},
+        };
+    }
+
+    public Object[] lessOrEqualAuthorityRolesTest() {
+        return new Object[][] {
+            {Role.ANONYMOUS, Role.ANONYMOUS, true},
+            {Role.ADMIN, Role.ADMIN, true},
+            {Role.ANONYMOUS, Role.ADMIN, true},
+            {Role.ADMIN, Role.ANONYMOUS, false},
+            {Role.ANONYMOUS, null, false},
+            {Role.ADMIN, null, false},
+            {Role.ANONYMOUS, Role.ADMIN, true},
+        };
+    }
+
+    public Object[] equalAuthorityRolesTest() {
+        return new Object[][] {
+            {Role.ANONYMOUS, Role.ANONYMOUS, true},
+            {Role.ADMIN, Role.ADMIN, true},
+            {Role.ADMIN, null, false},
+            {Role.ANONYMOUS, null, false},
+            {Role.ADMIN, Role.ANONYMOUS, false},
+            {Role.ANONYMOUS, Role.ADMIN, false}
+        };
+    }
+
+    public Object[] greaterAuthorityRolesTest() {
+        return new Object[][] {
+            {Role.ADMIN, Role.ANONYMOUS, true},
+            {Role.ANONYMOUS, null, true},
+            {Role.ADMIN, null, true},
+            {Role.ANONYMOUS, Role.ADMIN, false},
+        };
     }
 
     private static User newTestUser() {

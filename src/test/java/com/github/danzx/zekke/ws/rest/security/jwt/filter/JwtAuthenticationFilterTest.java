@@ -148,6 +148,24 @@ public class JwtAuthenticationFilterTest extends BaseMockitoTest {
         verify(requestContext).abortWith(any());
     }
 
+    @Test
+    public void shouldNotAbortRequestIfTokenAdminWhenRequiredIsAnonymous() throws Exception {
+        String token = TOKEN_FACTORY.newToken(User.Role.ADMIN);
+        String headerInfo = "Bearer " + token;
+
+        when(resourceInfo.getResourceClass()).thenAnswer(new Answer<Class<?>>() {
+            @Override public Class<?> answer(InvocationOnMock invocation) throws Throwable {
+                return AnnotatedClassWithAnnotatedMethod.class;
+            }
+        });
+        when(resourceInfo.getResourceMethod()).thenReturn(AnnotatedClassWithAnnotatedMethod.class.getMethod("bar"));
+        when(requestContext.getAcceptableLanguages()).thenReturn(emptyList());
+        when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)).thenReturn(headerInfo);
+        filter.filter(requestContext);
+
+        verify(requestContext, never()).abortWith(any());
+    }
+
     @RequireRoleAccess
     private static class AnnotatedClass { 
         @SuppressWarnings("unused") public void foo() { }
@@ -158,6 +176,9 @@ public class JwtAuthenticationFilterTest extends BaseMockitoTest {
         
         @RequireRoleAccess(roleRequired = User.Role.ADMIN)
         public void foo() { }
+
+        @SuppressWarnings("unused")
+        public void bar() { }
     }
 
     @SuppressWarnings("unused") private static class NotAnnotatedClass {

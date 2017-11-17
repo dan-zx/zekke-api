@@ -49,7 +49,6 @@ public abstract class BaseJwtVerifier implements JwtVerifier {
     }
 
     protected void verifyUserPrivileges(User.Role expectedRole, String subject) throws JwtVerificationException {
-        log.debug("{} == {}", expectedRole, subject);
         User.Role subjectRole;
         try {
             subjectRole = User.Role.valueOf(subject);
@@ -59,7 +58,8 @@ public abstract class BaseJwtVerifier implements JwtVerifier {
                 .cause(ex)
                 .build();
         }
-        if (expectedRole != subjectRole) {
+        log.debug("{} >= {}", subjectRole, expectedRole);
+        if (subjectRole.hasLessAuthorityThan(expectedRole)) {
             throw new JwtVerificationException.Builder()
                 .messageKey("authorization.error")
                 .build();

@@ -71,7 +71,6 @@ public class JjwtVerifierTest {
             {"testIssuer", "anotherIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(30L), User.Role.ADMIN.name(), User.Role.ADMIN},
             {"testIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_2, Instant.now().plusSeconds(30L), User.Role.ADMIN.name(), User.Role.ADMIN},
             {"testIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(-60L), User.Role.ADMIN.name(), User.Role.ADMIN},
-            {"testIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(30L), User.Role.ADMIN.name(), User.Role.ANONYMOUS},
             {"anotherIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(30L), User.Role.ADMIN.name(), User.Role.ADMIN},
             {"testIssuer", "testIssuer", KEY_HOLDER_2, KEY_HOLDER_1, Instant.now().plusSeconds(30L), User.Role.ADMIN.name(), User.Role.ADMIN},
             {"testIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(30L), "notARoleSubject", User.Role.ADMIN},
