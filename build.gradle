@@ -50,6 +50,7 @@ dependencies {
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile "org.assertj:assertj-core:${assertjVersion}"
     testCompile "pl.pragmatists:JUnitParams:${junitParamsVersion}"
+    testCompile 'org.glassfish.jersey.test-framework.providers:jersey-test-framework-provider-grizzly2:2.25.1'
 }
 
 jacocoTestReport {

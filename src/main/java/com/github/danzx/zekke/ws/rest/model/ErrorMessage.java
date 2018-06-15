@@ -28,10 +28,12 @@ public class ErrorMessage {
 
     public enum Type { PARAM_VALIDATION, NOT_FOUND, SERVER_ERROR, AUTHORIZATION, OTHER }
 
-    private final int statusCode;
-    private final String errorDetail;
-    private final Type errorType;
-    private final Map<String, String> paramErrors;
+    private int statusCode;
+    private String errorDetail;
+    private Type errorType;
+    private Map<String, String> paramErrors;
+
+    public ErrorMessage() {}
 
     private ErrorMessage(Builder builder) {
         statusCode = builder.statusCode;
@@ -44,16 +46,32 @@ public class ErrorMessage {
         return statusCode;
     }
 
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
+
     public String getErrorDetail() {
         return errorDetail;
+    }
+
+    public void setErrorDetail(String errorDetail) {
+        this.errorDetail = errorDetail;
     }
 
     public Type getErrorType() {
         return errorType;
     }
 
+    public void setErrorType(Type errorType) {
+        this.errorType = errorType;
+    }
+
     public Map<String, String> getParamErrors() {
         return paramErrors;
+    }
+
+    public void setParamErrors(Map<String, String> paramErrors) {
+        this.paramErrors = paramErrors;
     }
 
     @Override

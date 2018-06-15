@@ -15,50 +15,39 @@
  */
 package com.github.danzx.zekke.ws.rest.api;
 
-import static java.util.Collections.singletonList;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.github.danzx.zekke.test.assertion.ProjectAssertions.assertThat;
 
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import javax.validation.ConstraintViolation;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
 
-import com.github.danzx.zekke.test.validation.BaseValidationTest;
 import com.github.danzx.zekke.ws.rest.model.ErrorMessage;
 
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 
-public class ErrorEndpointTest extends BaseValidationTest {
+public class ErrorEndpointTest extends JerseyTest {
 
-    private static final ErrorEndpoint ENDPOINT = new ErrorEndpoint();
-
-    @Test
-    public void shouldResourceNotFoundFailValidationWhenLocalesIsNull() throws Exception {
-        Method method = ErrorEndpoint.class.getMethod("resourceNotFound", List.class);
-        Object[] parameterValues = { null };
-        Set<ConstraintViolation<ErrorEndpoint>> violations = validator().forExecutables().validateParameters(
-                ENDPOINT,
-                method,
-                parameterValues
-        );
-        assertThat(violations).isNotNull().isNotEmpty().hasSize(1);
+    @Override
+    protected Application configure() {
+        return new ResourceConfig().register(new ErrorEndpoint());
     }
 
     @Test
     public void shouldResourceNotFoundReturnErrorMessage() {
-        Response response = ENDPOINT.resourceNotFound(singletonList(Locale.ROOT));
+        Response response = target("v1/errors/404")
+                .request()
+                .accept(APPLICATION_JSON_TYPE)
+                .get();
 
-        assertThat(response).isNotNull().extracting(Response::getStatusInfo, Response::getMediaType).containsExactly(Response.Status.NOT_FOUND, MediaType.APPLICATION_JSON_TYPE);
-        assertThat(response.getEntity()).isNotNull().isInstanceOf(ErrorMessage.class);
-
-        ErrorMessage entity = (ErrorMessage) response.getEntity();
-        assertThat(entity)
-            .extracting(ErrorMessage::getStatusCode, ErrorMessage::getErrorType, ErrorMessage::getErrorDetail, ErrorMessage::getParamErrors)
-            .containsOnly(404, ErrorMessage.Type.NOT_FOUND, "Resource not found", null);
+        assertThat(response)
+                .produced(APPLICATION_JSON_TYPE)
+                .respondedWith(NOT_FOUND)
+                .extractingEntityAs(ErrorMessage.class)
+                    .extracting(ErrorMessage::getStatusCode, ErrorMessage::getErrorType, ErrorMessage::getErrorDetail, ErrorMessage::getParamErrors)
+                    .containsOnly(404, ErrorMessage.Type.NOT_FOUND, "Resource not found", null);
     }
 }
