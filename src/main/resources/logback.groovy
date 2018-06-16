@@ -17,5 +17,6 @@ logger('org.jvnet.hk2', WARN)
 logger('org.mongodb.driver', WARN)
 logger('org.mongodb.morphia', WARN)
 logger('org.springframework', WARN)
+logger('sun.rmi', WARN)
 
 root(ALL, ['console'])
