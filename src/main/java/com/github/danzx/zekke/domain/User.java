@@ -112,6 +112,16 @@ public class User extends BaseEntity<Long> {
             return compareAuthorityLevel(role) == 0;
         }
 
+        /**
+         * Returns the enum constant with the specified username (enum constant in lower case).
+         *
+         * @param username the username.
+         * @return the enum constant.
+         */
+        public static Role fromUsername(String username) {
+            return Role.valueOf(username.toUpperCase());
+        }
+
         private int compareAuthorityLevel(Role role) {
             return Integer.compare(authorityLevel, authorityLevelOf(role));
         }

@@ -16,6 +16,9 @@
 package com.github.danzx.zekke.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.Arrays;
 
 import com.github.danzx.zekke.domain.User.Role;
 
@@ -101,6 +104,28 @@ public class UserTest {
     @Parameters(method = "lessOrEqualAuthorityRolesTest")
     public void shouldRoleHasLessOrEqualAuthorityThanReturnBoolean(Role role1, Role role2, boolean expected) {
         assertThat(role1.hasLessOrEqualAuthorityThan(role2)).isEqualTo(expected);
+    }
+
+    @Test
+    @Parameters(method = "rolesAndUsernames")
+    public void shouldRoleFromUsernameReturnRole(Role expectedRole, String username) {
+        assertThat(Role.fromUsername(username)).isEqualTo(expectedRole);
+    }
+
+    @Test
+    public void shouldRoleFromUsernameThrowIllegalArgumentException() {
+        assertThatThrownBy(() -> Role.fromUsername("unknown")).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void shouldRoleFromUsernameThrowNullPointerException() {
+        assertThatThrownBy(() -> Role.fromUsername(null)).isInstanceOf(NullPointerException.class);
+    }
+
+    public Object[] rolesAndUsernames() {
+        return Arrays.stream(Role.values())
+                .map(role -> new Object[] {role, role.name().toLowerCase()})
+                .toArray();
     }
 
     public Object[] greaterOrEqualAuthorityRolesTest() {

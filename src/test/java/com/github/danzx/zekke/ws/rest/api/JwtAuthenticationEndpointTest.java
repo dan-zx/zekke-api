@@ -15,96 +15,143 @@
  */
 package com.github.danzx.zekke.ws.rest.api;
 
-import static java.util.Collections.emptyList;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.OK;
+import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+
+import static com.github.danzx.zekke.test.assertion.ProjectAssertions.assertThat;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import java.util.Locale;
 
-import com.github.danzx.zekke.domain.User;
-import com.github.danzx.zekke.security.jwt.SigningKeyHolder;
-import com.github.danzx.zekke.security.jwt.jjwt.JjwtFactory;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Response;
+
+import com.github.danzx.zekke.domain.User.Role;
+import com.github.danzx.zekke.security.jwt.JwtFactory;
 import com.github.danzx.zekke.service.UserService;
+import com.github.danzx.zekke.ws.rest.errormapper.ConstraintViolationExceptionMapper;
 import com.github.danzx.zekke.ws.rest.model.AccessTokenHolder;
 import com.github.danzx.zekke.ws.rest.model.ErrorMessage;
-import com.github.danzx.zekke.ws.rest.model.ErrorMessage.Type;
 import com.github.danzx.zekke.ws.rest.security.BasicAuthorizationHeaderExtractor;
 
-import org.junit.Before;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.test.JerseyTest;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class JwtAuthenticationEndpointTest {
+@RunWith(JUnitParamsRunner.class)
+public class JwtAuthenticationEndpointTest extends JerseyTest {
 
-    private static final String JWT_PATTERN = ".+\\..+\\..+";
-    private static final JjwtFactory TOKEN_FACTORY;
-    private static final BasicAuthorizationHeaderExtractor AUTH_HEADER_EXTRACTOR = new BasicAuthorizationHeaderExtractor();
+    private JwtFactory mockJwtFactory;
+    private UserService mockUserService;
 
-    static {
-        SigningKeyHolder keyHolder = new SigningKeyHolder("keys/test1.key");
-        TOKEN_FACTORY = new JjwtFactory(1L, "testIssuer", keyHolder);
-    }
-
-    private JwtAuthenticationEndpoint endpoint;
-    private UserService userServiceMock;
-
-    @Before
-    public void setup() {
-        userServiceMock = mock(UserService.class);
-        endpoint = new JwtAuthenticationEndpoint(TOKEN_FACTORY, userServiceMock, AUTH_HEADER_EXTRACTOR);
+    @Override
+    protected Application configure() {
+        Locale.setDefault(Locale.ROOT);
+        mockJwtFactory = mock(JwtFactory.class);
+        mockUserService = mock(UserService.class);
+        return new ResourceConfig()
+                .register(new JwtAuthenticationEndpoint(mockJwtFactory, mockUserService, new BasicAuthorizationHeaderExtractor()))
+                .register(new ConstraintViolationExceptionMapper());
     }
 
     @Test
-    public void shouldAuthenticateAnonymouslyCreateToken() {
-        AccessTokenHolder tokenHolder = endpoint.authenticateAnonymously();
-        assertThat(tokenHolder).isNotNull();
-        assertThat(tokenHolder.getAccessToken()).isNotNull().isNotBlank().matches(JWT_PATTERN);
+    public void shouldAuthenticateAnonymouslyReturnTokenWithNoError() {
+        String expectedToken = "mockToken";
+        when(mockJwtFactory.newToken(any())).thenReturn(expectedToken);
+
+        Response response = target("v1/authentication/jwt/anonymous")
+                .request()
+                .accept(APPLICATION_JSON_TYPE)
+                .get();
+
+        verify(mockJwtFactory).newToken(Role.ANONYMOUS);
+        assertThat(response)
+                .produced(APPLICATION_JSON_TYPE)
+                .respondedWith(OK)
+                .extractingEntityAs(AccessTokenHolder.class)
+                    .extracting(AccessTokenHolder::getAccessToken)
+                    .containsOnly(expectedToken);
     }
 
     @Test
-    public void shouldAuthenticateAdminRespondWithInvalidAuthorizationHeaderWhenAuthorizationHeaderIsNotValid() {
-        String authorizationHeader = "Not a valid header";
-        Response response = endpoint.authenticateAdmin(authorizationHeader, emptyList());
+    public void shouldAuthenticateAdminReturnTokenWhenLoginIsValid() {
+        String expectedToken = "mockToken";
+        when(mockJwtFactory.newToken(any())).thenReturn(expectedToken);
+        when(mockUserService.isAdminRegistered(any())).thenReturn(true);
 
-        assertThat(response).isNotNull().extracting(Response::getStatusInfo, Response::hasEntity).containsOnly(Status.BAD_REQUEST, true);
-        ErrorMessage entity = (ErrorMessage) response.getEntity();
-        assertThat(entity).isNotNull().extracting(ErrorMessage::getStatusCode, ErrorMessage::getErrorType).containsOnly(400, Type.PARAM_VALIDATION);
+        Response response = target("v1/authentication/jwt/admin")
+                .request()
+                .accept(APPLICATION_JSON_TYPE)
+                .header("Authorization", "Basic YWRtaW46YWRtaW4=")
+                .get();
+
+        verify(mockJwtFactory).newToken(Role.ADMIN);
+        assertThat(response)
+                .produced(APPLICATION_JSON_TYPE)
+                .respondedWith(OK)
+                .extractingEntityAs(AccessTokenHolder.class)
+                    .extracting(AccessTokenHolder::getAccessToken)
+                    .containsOnly(expectedToken);
     }
 
     @Test
-    public void shouldAuthenticateAdminRespondWithLoginErrorWhenUserIsNotAdmin() {
-        String authorizationHeader = "Basic YW55dXNlcjphZG1pbg==";
-        Response response = endpoint.authenticateAdmin(authorizationHeader, emptyList());
+    @Parameters(method = "invalidHeaders")
+    public void shouldAuthenticateAdminRespondWithError400WhenAuthorizationHeaderIsNotValid(String headerValue, ErrorMessage expectedErrorMessage) {
+        Response response = target("v1/authentication/jwt/admin")
+                .request()
+                .accept(APPLICATION_JSON_TYPE)
+                .header("Authorization", headerValue)
+                .get();
 
-        assertThat(response).isNotNull().extracting(Response::getStatusInfo, Response::hasEntity).containsOnly(Status.UNAUTHORIZED, true);
-        ErrorMessage entity = (ErrorMessage) response.getEntity();
-        assertThat(entity).isNotNull().extracting(ErrorMessage::getStatusCode, ErrorMessage::getErrorType).containsOnly(401, Type.AUTHORIZATION);
+        assertThat(response)
+                .produced(APPLICATION_JSON_TYPE)
+                .respondedWith(BAD_REQUEST)
+                .extractingEntityAs(ErrorMessage.class)
+                    .isEqualTo(expectedErrorMessage);
     }
 
     @Test
-    public void shouldAuthenticateAdminRespondWithLoginErrorWhenUserIsAdminButNotRegistered() {
-        String authorizationHeader = "Basic YWRtaW46YWRtaW4=";
-        when(userServiceMock.isAdminRegistered(any(User.class))).thenReturn(false);
-        Response response = endpoint.authenticateAdmin(authorizationHeader, emptyList());
+    @Parameters(method = "invalidLogins")
+    public void shouldAuthenticateAdminRespondWithError401WhenLoginIsNotValid(String headerValue) {
+        when(mockUserService.isAdminRegistered(any())).thenReturn(false);
+        Response response = target("v1/authentication/jwt/admin")
+                .request()
+                .accept(APPLICATION_JSON_TYPE)
+                .header("Authorization", headerValue)
+                .get();
 
-        assertThat(response).isNotNull().extracting(Response::getStatusInfo, Response::hasEntity).containsOnly(Status.UNAUTHORIZED, true);
-        ErrorMessage entity = (ErrorMessage) response.getEntity();
-        assertThat(entity).isNotNull().extracting(ErrorMessage::getStatusCode, ErrorMessage::getErrorType).containsOnly(401, Type.AUTHORIZATION);
+        assertThat(response)
+                .produced(APPLICATION_JSON_TYPE)
+                .respondedWith(UNAUTHORIZED)
+                .extractingEntityAs(ErrorMessage.class)
+                    .extracting(ErrorMessage::getStatusCode, ErrorMessage::getErrorType, ErrorMessage::getErrorDetail, ErrorMessage::getParamErrors)
+                    .containsOnly(401, ErrorMessage.Type.AUTHORIZATION, "Unauthorized: Invalid user/password combination", null);
     }
 
-    @Test
-    public void shouldAuthenticateAdminRespondWithJwtWhenUserIsARegisteredAdmin() {
-        String authorizationHeader = "Basic YWRtaW46YWRtaW4=";
-        when(userServiceMock.isAdminRegistered(any(User.class))).thenReturn(true);
-        Response response = endpoint.authenticateAdmin(authorizationHeader, emptyList());
+    public Object[] invalidHeaders() {
+        return new Object[][] {
+            {null, new ErrorMessage.Builder().statusCode(400).type(ErrorMessage.Type.PARAM_VALIDATION).detailMessage("Parameter validation failed").addParamError("arg0", "may not be null").build()},
+            {"Not a valid header", new ErrorMessage.Builder().statusCode(400).type(ErrorMessage.Type.PARAM_VALIDATION).detailMessage("Authorization header is invalid").build()},
+        };
+    }
 
-        assertThat(response).isNotNull().extracting(Response::getStatusInfo, Response::hasEntity).containsOnly(Status.OK, true);
-        AccessTokenHolder tokenHolder = (AccessTokenHolder) response.getEntity();
-        assertThat(tokenHolder).isNotNull();
-        assertThat(tokenHolder.getAccessToken()).isNotNull().isNotBlank().matches(JWT_PATTERN);
+    public Object[] invalidLogins() {
+        return new Object[][] {
+            {"Basic YW55dXNlcjphZG1pbg=="}, // anyuser:admin
+            {"Basic YW5vbnltb3VzOmFkbWlu"}, // anonymous:admin
+            {"Basic YWRtaW46YWRtaW4="}, // admin:admin
+        };
     }
 }

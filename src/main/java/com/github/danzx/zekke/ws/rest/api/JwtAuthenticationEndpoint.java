@@ -93,8 +93,8 @@ public class JwtAuthenticationEndpoint {
     @GET
     @Path("/admin")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response authenticateAdmin(@NotNull @HeaderParam("Authorization") String authorizationHeader, 
-                                      @NotNull @HeaderParam("Accept-Language") List<Locale> clientLocales) {
+    public Response authenticateAdmin(@NotNull @HeaderParam("Authorization") String authorizationHeader,
+                                      @HeaderParam("Accept-Language") List<Locale> clientLocales) {
         log.info("GET /authentication/jwt/admin -- Authorization={}, Accept-Language={}", authorizationHeader, clientLocales);
         Locale clientLocale = clientLocales.stream().findFirst().orElse(Locale.ROOT);
         Credentials credentials;
@@ -112,13 +112,17 @@ public class JwtAuthenticationEndpoint {
                 .entity(errorMessage)
                 .build();
         }
-        User.Role adminRole = User.Role.ADMIN;
-        if (!adminRole.name().toLowerCase().equals(credentials.getUserId())) return loginErrorResponse(clientLocale);
-        User adminUser = new User();
-        adminUser.setRole(adminRole);
-        adminUser.setPassword(credentials.getPassword());
-        if (!userService.isAdminRegistered(adminUser)) return loginErrorResponse(clientLocale);
-        String jwt = jwtFactory.newToken(adminRole);
+        User.Role userRole;
+        try {
+            userRole = User.Role.fromUsername(credentials.getUserId());
+        } catch (NullPointerException | IllegalArgumentException ex) {
+            return loginErrorResponse(clientLocale);
+        }
+        User user = new User();
+        user.setRole(userRole);
+        user.setPassword(credentials.getPassword());
+        if (!userService.isAdminRegistered(user)) return loginErrorResponse(clientLocale);
+        String jwt = jwtFactory.newToken(userRole);
         return Response
                 .ok(AccessTokenHolder.of(jwt))
                 .build();

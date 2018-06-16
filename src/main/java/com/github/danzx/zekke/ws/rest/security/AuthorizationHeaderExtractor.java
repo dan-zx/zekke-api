@@ -26,7 +26,7 @@ import com.github.danzx.zekke.util.Strings;
  */
 abstract class AuthorizationHeaderExtractor {
 
-    protected enum Mechanism { BASIC, BEARER };
+    protected enum Mechanism { BASIC, BEARER }
     
     private final String prefix;
 
