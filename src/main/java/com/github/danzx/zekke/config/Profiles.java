@@ -23,8 +23,7 @@ package com.github.danzx.zekke.config;
 public class Profiles {
 
     public static final String DEVELOPMENT = "dev";
-    public static final String STAGING = "staging";
-    public static final String PRODUCTION = "prod";
+    public static final String STAGING = "stage";
 
     protected Profiles() { 
         throw new AssertionError();

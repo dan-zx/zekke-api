@@ -17,6 +17,8 @@ package com.github.danzx.zekke;
 
 import java.util.Locale;
 
+import com.github.danzx.zekke.config.Profiles;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -29,6 +31,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Application {
 
     public static void main(String[] args) {
+        System.setProperty("spring.profiles.default", Profiles.DEVELOPMENT);
         Locale.setDefault(Locale.ROOT); // Force to root messages
         SpringApplication.run(Application.class, args);
     }
