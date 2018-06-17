@@ -101,11 +101,12 @@ public class JwtAuthenticationEndpoint {
         try {
             credentials = authorizationHeaderExtractor.getCredentials(authorizationHeader);
         } catch (IllegalArgumentException ex) {
+            log.error("Invalid authorization header", ex);
             Response.Status status = Response.Status.BAD_REQUEST;
             ErrorMessage errorMessage = new ErrorMessage.Builder()
                 .statusCode(status.getStatusCode())
                 .type(Type.PARAM_VALIDATION)
-                .detailMessage(messageSource.getMessage("authorization.invalid.header", clientLocale))
+                .detailMessage(messageSource.getMessage("basic.auth.header.format.error", clientLocale))
                 .build();
             return Response
                 .status(status)

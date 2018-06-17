@@ -73,11 +73,7 @@ public class JwtAuthenticationFilterTest extends BaseMockitoTest {
         String token = TOKEN_FACTORY.newToken(User.Role.ANONYMOUS);
         String headerInfo = "Bearer " + token;
 
-        when(resourceInfo.getResourceClass()).thenAnswer(new Answer<Class<?>>() {
-            @Override public Class<?> answer(InvocationOnMock invocation) throws Throwable {
-                return AnnotatedClass.class;
-            }
-        });
+        when(resourceInfo.getResourceClass()).thenAnswer(invocation -> AnnotatedClass.class);
         when(resourceInfo.getResourceMethod()).thenReturn(AnnotatedClass.class.getMethod("foo"));
         when(requestContext.getAcceptableLanguages()).thenReturn(emptyList());
         when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)).thenReturn(headerInfo);
@@ -91,11 +87,7 @@ public class JwtAuthenticationFilterTest extends BaseMockitoTest {
         String token = TOKEN_FACTORY.newToken(User.Role.ADMIN);
         String headerInfo = "Bearer " + token;
 
-        when(resourceInfo.getResourceClass()).thenAnswer(new Answer<Class<?>>() {
-            @Override public Class<?> answer(InvocationOnMock invocation) throws Throwable {
-                return AnnotatedClassWithAnnotatedMethod.class;
-            }
-        });
+        when(resourceInfo.getResourceClass()).thenAnswer(invocation -> AnnotatedClassWithAnnotatedMethod.class);
         when(resourceInfo.getResourceMethod()).thenReturn(AnnotatedClassWithAnnotatedMethod.class.getMethod("foo"));
         when(requestContext.getAcceptableLanguages()).thenReturn(emptyList());
         when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)).thenReturn(headerInfo);
@@ -105,24 +97,20 @@ public class JwtAuthenticationFilterTest extends BaseMockitoTest {
     }
 
     @Test
-    public void shouldFilterThrowRuntimeExceptionWhenUsingNotAnnotatedClass() throws Exception {
+    public void shouldFilterThrowUnsupportedOperationExceptionWhenUsingNotAnnotatedClassAndNotAnnotatedMethod() throws Exception {
         String token = TOKEN_FACTORY.newToken(User.Role.ANONYMOUS);
         String headerInfo = "Bearer " + token;
 
-        when(resourceInfo.getResourceClass()).thenAnswer(new Answer<Class<?>>() {
-            @Override public Class<?> answer(InvocationOnMock invocation) throws Throwable {
-                return NotAnnotatedClass.class;
-            }
-        });
+        when(resourceInfo.getResourceClass()).thenAnswer(invocation -> NotAnnotatedClass.class);
         when(resourceInfo.getResourceMethod()).thenReturn(NotAnnotatedClass.class.getMethod("foo"));
         when(requestContext.getAcceptableLanguages()).thenReturn(emptyList());
         when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)).thenReturn(headerInfo);
 
-        assertThatThrownBy(() -> filter.filter(requestContext)).isInstanceOf(RuntimeException.class).hasMessage("Oh no! Call the programmer because he missed something");
+        assertThatThrownBy(() -> filter.filter(requestContext)).isInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test
-    public void shouldAbortRequestIfTokenIsNotFound() throws Exception {
+    public void shouldAbortRequestIfTokenIsNotFound() {
         when(requestContext.getAcceptableLanguages()).thenReturn(emptyList());
         when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)).thenReturn(null);
         filter.filter(requestContext);
@@ -135,11 +123,7 @@ public class JwtAuthenticationFilterTest extends BaseMockitoTest {
         String token = TOKEN_FACTORY.newToken(User.Role.ANONYMOUS);
         String headerInfo = "Bearer " + token;
 
-        when(resourceInfo.getResourceClass()).thenAnswer(new Answer<Class<?>>() {
-            @Override public Class<?> answer(InvocationOnMock invocation) throws Throwable {
-                return AnnotatedClassWithAnnotatedMethod.class;
-            }
-        });
+        when(resourceInfo.getResourceClass()).thenAnswer(invocation -> AnnotatedClassWithAnnotatedMethod.class);
         when(resourceInfo.getResourceMethod()).thenReturn(AnnotatedClassWithAnnotatedMethod.class.getMethod("foo"));
         when(requestContext.getAcceptableLanguages()).thenReturn(emptyList());
         when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)).thenReturn(headerInfo);
@@ -153,12 +137,22 @@ public class JwtAuthenticationFilterTest extends BaseMockitoTest {
         String token = TOKEN_FACTORY.newToken(User.Role.ADMIN);
         String headerInfo = "Bearer " + token;
 
-        when(resourceInfo.getResourceClass()).thenAnswer(new Answer<Class<?>>() {
-            @Override public Class<?> answer(InvocationOnMock invocation) throws Throwable {
-                return AnnotatedClassWithAnnotatedMethod.class;
-            }
-        });
+        when(resourceInfo.getResourceClass()).thenAnswer(invocation -> AnnotatedClassWithAnnotatedMethod.class);
         when(resourceInfo.getResourceMethod()).thenReturn(AnnotatedClassWithAnnotatedMethod.class.getMethod("bar"));
+        when(requestContext.getAcceptableLanguages()).thenReturn(emptyList());
+        when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)).thenReturn(headerInfo);
+        filter.filter(requestContext);
+
+        verify(requestContext, never()).abortWith(any());
+    }
+
+    @Test
+    public void shouldNotAbortRequestWithNotAnnotatedClassAndAnnotationAtMethodLevel() throws Exception {
+        String token = TOKEN_FACTORY.newToken(User.Role.ANONYMOUS);
+        String headerInfo = "Bearer " + token;
+
+        when(resourceInfo.getResourceClass()).thenAnswer(invocation -> NotAnnotatedClass.class);
+        when(resourceInfo.getResourceMethod()).thenReturn(NotAnnotatedClass.class.getMethod("bar"));
         when(requestContext.getAcceptableLanguages()).thenReturn(emptyList());
         when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)).thenReturn(headerInfo);
         filter.filter(requestContext);
@@ -181,7 +175,11 @@ public class JwtAuthenticationFilterTest extends BaseMockitoTest {
         public void bar() { }
     }
 
-    @SuppressWarnings("unused") private static class NotAnnotatedClass {
+    private static class NotAnnotatedClass {
         public void foo() { }
+
+        @RequireRoleAccess
+        @SuppressWarnings("unused")
+        public void bar() { }
     }
 }

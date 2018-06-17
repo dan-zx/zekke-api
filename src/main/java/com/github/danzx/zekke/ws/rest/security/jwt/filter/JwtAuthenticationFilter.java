@@ -15,9 +15,8 @@
  */
 package com.github.danzx.zekke.ws.rest.security.jwt.filter;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.Locale;
+import java.util.Optional;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
@@ -62,7 +61,7 @@ public class JwtAuthenticationFilter implements ContainerRequestFilter {
     private final MessageSource messageSource = MessageSourceFactory.defaultSource();
 
     @Override
-    public void filter(ContainerRequestContext requestContext) throws IOException {
+    public void filter(ContainerRequestContext requestContext) {
         log.debug("Accept-Languages={}", requestContext.getAcceptableLanguages());
         Locale clientLocale = requestContext.getAcceptableLanguages().stream().findFirst().orElse(Locale.ROOT);
         String headerInfo = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
@@ -72,11 +71,11 @@ public class JwtAuthenticationFilter implements ContainerRequestFilter {
             token = authorizationHeaderExtractor.getToken(headerInfo);
         } catch (IllegalArgumentException ex) {
             log.error("Invalid authorization header", ex);
-            Response.Status status = Response.Status.UNAUTHORIZED;
+            Response.Status status = Response.Status.BAD_REQUEST;
             ErrorMessage errorMessage = new ErrorMessage.Builder()
                     .statusCode(status.getStatusCode())
-                    .type(Type.AUTHORIZATION)
-                    .detailMessage(messageSource.getMessage("authorization.invalid.header", clientLocale))
+                    .type(Type.PARAM_VALIDATION)
+                    .detailMessage(messageSource.getMessage("bearer.auth.header.format.error", clientLocale))
                     .build();
             requestContext.abortWith(Response
                         .status(status)
@@ -106,15 +105,21 @@ public class JwtAuthenticationFilter implements ContainerRequestFilter {
     }
 
     private User.Role getRequiredRoleToAccessResource() {
-        Class<?> resourceClass = resourceInfo.getResourceClass();
-        RequireRoleAccess classAnnotation = resourceClass.getAnnotation(RequireRoleAccess.class);
-        User.Role userRole = null;
-        if (classAnnotation != null) userRole = classAnnotation.roleRequired();
-        Method resourceMethod = resourceInfo.getResourceMethod();
-        RequireRoleAccess methodAnnotation = resourceMethod.getAnnotation(RequireRoleAccess.class);
-        if (methodAnnotation != null) userRole = methodAnnotation.roleRequired();
-        if (userRole != null) return userRole;
-        throw new RuntimeException("Oh no! Call the programmer because he missed something");
+        Optional<User.Role> roleInClassAnnotation = Optional.of(resourceInfo.getResourceClass())
+                .flatMap(resourceClass -> Optional.ofNullable(resourceClass.getAnnotation(RequireRoleAccess.class)))
+                .map(RequireRoleAccess::roleRequired);
+
+        Optional<User.Role> roleInMethodAnnotation = Optional.of(resourceInfo.getResourceMethod())
+                .flatMap(resourceMethod -> Optional.ofNullable(resourceMethod.getAnnotation(RequireRoleAccess.class)))
+                .map(RequireRoleAccess::roleRequired);
+
+        return roleInMethodAnnotation
+                .orElseGet(() -> roleInClassAnnotation
+                        .orElseThrow(() -> {
+                            String location = resourceInfo.getResourceClass().getName() + "." + resourceInfo.getResourceMethod().getName() + "()";
+                            log.error("@RequireRoleAccess annotation missing. Filter cannot work here: {}", location);
+                            return new UnsupportedOperationException("@RequireRoleAccess annotation missing. Filter cannot work here: " + location);
+                        }));
     }
 
     public void setResourceInfo(ResourceInfo resourceInfo) {

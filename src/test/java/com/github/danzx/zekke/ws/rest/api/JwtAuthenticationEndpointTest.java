@@ -143,7 +143,7 @@ public class JwtAuthenticationEndpointTest extends JerseyTest {
     public Object[] invalidHeaders() {
         return new Object[][] {
             {null, new ErrorMessage.Builder().statusCode(400).type(ErrorMessage.Type.PARAM_VALIDATION).detailMessage("Parameter validation failed").addParamError("arg0", "may not be null").build()},
-            {"Not a valid header", new ErrorMessage.Builder().statusCode(400).type(ErrorMessage.Type.PARAM_VALIDATION).detailMessage("Authorization header is invalid").build()},
+            {"Not a valid header", new ErrorMessage.Builder().statusCode(400).type(ErrorMessage.Type.PARAM_VALIDATION).detailMessage("Authorization header bad format. Expected: Basic [Base64<username:password>]").build()},
         };
     }
 
