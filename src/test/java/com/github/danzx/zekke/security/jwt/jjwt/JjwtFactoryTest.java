@@ -17,21 +17,34 @@ package com.github.danzx.zekke.security.jwt.jjwt;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.github.danzx.zekke.domain.User;
-import com.github.danzx.zekke.security.jwt.SigningKeyHolder;
+import javax.inject.Inject;
 
+import com.github.danzx.zekke.domain.User;
+import com.github.danzx.zekke.security.jwt.JwtSettings;
+import com.github.danzx.zekke.test.spring.BaseSpringTest;
+
+import org.junit.Before;
 import org.junit.Test;
 
-public class JjwtFactoryTest {
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+
+@ContextConfiguration(classes = JwtSettings.class)
+@TestPropertySource(locations = "classpath:test.properties")
+public class JjwtFactoryTest extends BaseSpringTest {
 
     private static final String JWT_PATTERN = ".+\\..+\\..+";
 
+    private @Inject JwtSettings jwtSettings;
+
+    @Before
+    public void setUp() {
+        assertThat(jwtSettings).isNotNull();
+    }
+
     @Test
     public void shouldCreateToken() {
-        SigningKeyHolder keyHolder = new SigningKeyHolder("keys/test1.key");
-        String issuer = "testIssuer";
-        long expirationTimeInMinutes = 1L;
-        JjwtFactory jwtFactory = new JjwtFactory(expirationTimeInMinutes, issuer, keyHolder);
+        JjwtFactory jwtFactory = new JjwtFactory(jwtSettings);
         String token = jwtFactory.newToken(User.Role.ANONYMOUS);
         assertThat(token).isNotNull().isNotBlank().matches(JWT_PATTERN);
     }

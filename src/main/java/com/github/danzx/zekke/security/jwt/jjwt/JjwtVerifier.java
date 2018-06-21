@@ -21,8 +21,8 @@ import javax.inject.Inject;
 
 import com.github.danzx.zekke.domain.User;
 import com.github.danzx.zekke.security.jwt.BaseJwtVerifier;
+import com.github.danzx.zekke.security.jwt.JwtSettings;
 import com.github.danzx.zekke.security.jwt.JwtVerificationException;
-import com.github.danzx.zekke.security.jwt.SigningKeyHolder;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -33,7 +33,6 @@ import io.jsonwebtoken.SignatureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -46,8 +45,11 @@ public class JjwtVerifier extends BaseJwtVerifier {
 
     private static final Logger log = LoggerFactory.getLogger(JjwtVerifier.class);
 
-    public @Inject JjwtVerifier(@Value("${jwt.issuer}") String issuer, SigningKeyHolder signingKeyHolder) {
-        super(issuer, signingKeyHolder);
+    private final byte[] signingKey;
+
+    public @Inject JjwtVerifier(JwtSettings jwtSettings) {
+        super(jwtSettings.getIssuer());
+        signingKey = jwtSettings.getSigningKey();
     }
 
     @Override
@@ -55,9 +57,9 @@ public class JjwtVerifier extends BaseJwtVerifier {
         log.debug("JWT: {}, expectedRole: {}", compactJws, role);
         requireNonNull(compactJws);
         requireNonNull(role);
-        Jws<Claims> claims = null;
+        Jws<Claims> claims;
         try {
-            claims = Jwts.parser().setSigningKey(getSigningKeyHolder().getKey()).parseClaimsJws(compactJws);
+            claims = Jwts.parser().setSigningKey(signingKey).parseClaimsJws(compactJws);
         } catch (ExpiredJwtException ex) {
             throw new JwtVerificationException.Builder()
                 .messageKey("jwt.expired")

@@ -17,6 +17,7 @@ package com.github.danzx.zekke.security.jwt;
 
 import static java.util.Objects.requireNonNull;
 
+import java.time.Duration;
 import java.time.Instant;
 
 import com.github.danzx.zekke.domain.User;
@@ -28,23 +29,17 @@ import com.github.danzx.zekke.domain.User;
  */
 public abstract class BaseJwtFactory implements JwtFactory {
 
-    private static final long ONE_MINUTE_IN_SECONDS = 60;
+    private final Duration expiration;
 
-    private final long expirationTimeInMinutes;
-    private final String issuer;
-    private final SigningKeyHolder signingKeyHolder;
-
-    protected BaseJwtFactory(long expirationTimeInMinutes, String issuer, SigningKeyHolder signingKeyHolder) {
-        this.expirationTimeInMinutes = expirationTimeInMinutes;
-        this.issuer = requireNonNull(issuer);
-        this.signingKeyHolder = requireNonNull(signingKeyHolder);
+    protected BaseJwtFactory(Duration expiration) {
+        this.expiration = requireNonNull(expiration);
     }
 
     @Override
     public String newToken(User.Role role) {
         requireNonNull(role);
         Instant issueTime = Instant.now();
-        Instant expirationTime = issueTime.plusSeconds(expirationTimeInMinutes * ONE_MINUTE_IN_SECONDS);
+        Instant expirationTime = issueTime.plus(expiration);
         return createToken(issueTime, expirationTime, role.name());
     }
 
@@ -57,12 +52,4 @@ public abstract class BaseJwtFactory implements JwtFactory {
      * @return a compacted JWT.
      */
     protected abstract String createToken(Instant issueTime, Instant expirationTime, String subject);
-
-    protected String getIssuer() {
-        return issuer;
-    }
-
-    protected SigningKeyHolder getSigningKeyHolder() {
-        return signingKeyHolder;
-    }
 }

@@ -17,6 +17,7 @@ package com.github.danzx.zekke.ws.rest.security.jwt.filter;
 
 import static java.util.Collections.emptyList;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import static org.mockito.Matchers.any;
@@ -24,15 +25,18 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.HttpHeaders;
 
 import com.github.danzx.zekke.domain.User;
-import com.github.danzx.zekke.security.jwt.SigningKeyHolder;
+import com.github.danzx.zekke.security.jwt.JwtFactory;
+import com.github.danzx.zekke.security.jwt.JwtSettings;
+import com.github.danzx.zekke.security.jwt.JwtVerifier;
 import com.github.danzx.zekke.security.jwt.jjwt.JjwtFactory;
 import com.github.danzx.zekke.security.jwt.jjwt.JjwtVerifier;
-import com.github.danzx.zekke.test.mockito.BaseMockitoTest;
+import com.github.danzx.zekke.test.spring.BaseMockitoSpringTest;
 import com.github.danzx.zekke.ws.rest.security.BearerAuthorizationHeaderExtractor;
 import com.github.danzx.zekke.ws.rest.security.RequireRoleAccess;
 
@@ -41,36 +45,36 @@ import org.junit.Test;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
-public class JwtAuthenticationFilterTest extends BaseMockitoTest {
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 
-    private static final JjwtVerifier VERIFIER;
-    private static final JjwtFactory TOKEN_FACTORY;
+@ContextConfiguration(classes = JwtSettings.class)
+@TestPropertySource(locations = "classpath:test.properties")
+public class JwtAuthenticationFilterTest extends BaseMockitoSpringTest {
+
     private static final BearerAuthorizationHeaderExtractor AUTH_HEADER_EXTRACTOR = new BearerAuthorizationHeaderExtractor();
 
-    static {
-        SigningKeyHolder keyHolder = new SigningKeyHolder("keys/test1.key");
-        String issuer = "testIssuer";
-        VERIFIER = new JjwtVerifier(issuer, keyHolder);
-        TOKEN_FACTORY = new JjwtFactory(1L, issuer, keyHolder);
-    }
-
+    private @Inject JwtSettings jwtSettings;
     private @Mock ContainerRequestContext requestContext;
     private @Mock ResourceInfo resourceInfo;
-    
     private @InjectMocks JwtAuthenticationFilter filter;
+
+    private JwtVerifier jwtVerifier;
+    private JwtFactory jwtFactory;
 
     @Before
     public void setUp() {
-        filter.setJwtVerifier(VERIFIER);
+        assertThat(jwtSettings).isNotNull();
+        jwtVerifier = new JjwtVerifier(jwtSettings);
+        jwtFactory = new JjwtFactory(jwtSettings);
+        filter.setJwtVerifier(jwtVerifier);
         filter.setAuthorizationHeaderExtractor(AUTH_HEADER_EXTRACTOR);
     }
 
     @Test
     public void shouldNotAbortRequestWithAnnotationAtClassLevel() throws Exception {
-        String token = TOKEN_FACTORY.newToken(User.Role.ANONYMOUS);
+        String token = jwtFactory.newToken(User.Role.ANONYMOUS);
         String headerInfo = "Bearer " + token;
 
         when(resourceInfo.getResourceClass()).thenAnswer(invocation -> AnnotatedClass.class);
@@ -84,7 +88,7 @@ public class JwtAuthenticationFilterTest extends BaseMockitoTest {
 
     @Test
     public void shouldNotAbortRequestWithAnnotationAtClassLevelAndAnnotatedMethod() throws Exception {
-        String token = TOKEN_FACTORY.newToken(User.Role.ADMIN);
+        String token = jwtFactory.newToken(User.Role.ADMIN);
         String headerInfo = "Bearer " + token;
 
         when(resourceInfo.getResourceClass()).thenAnswer(invocation -> AnnotatedClassWithAnnotatedMethod.class);
@@ -98,7 +102,7 @@ public class JwtAuthenticationFilterTest extends BaseMockitoTest {
 
     @Test
     public void shouldFilterThrowUnsupportedOperationExceptionWhenUsingNotAnnotatedClassAndNotAnnotatedMethod() throws Exception {
-        String token = TOKEN_FACTORY.newToken(User.Role.ANONYMOUS);
+        String token = jwtFactory.newToken(User.Role.ANONYMOUS);
         String headerInfo = "Bearer " + token;
 
         when(resourceInfo.getResourceClass()).thenAnswer(invocation -> NotAnnotatedClass.class);
@@ -120,7 +124,7 @@ public class JwtAuthenticationFilterTest extends BaseMockitoTest {
 
     @Test
     public void shouldAbortRequestIfTokenIsInvalid() throws Exception {
-        String token = TOKEN_FACTORY.newToken(User.Role.ANONYMOUS);
+        String token = jwtFactory.newToken(User.Role.ANONYMOUS);
         String headerInfo = "Bearer " + token;
 
         when(resourceInfo.getResourceClass()).thenAnswer(invocation -> AnnotatedClassWithAnnotatedMethod.class);
@@ -134,7 +138,7 @@ public class JwtAuthenticationFilterTest extends BaseMockitoTest {
 
     @Test
     public void shouldNotAbortRequestIfTokenAdminWhenRequiredIsAnonymous() throws Exception {
-        String token = TOKEN_FACTORY.newToken(User.Role.ADMIN);
+        String token = jwtFactory.newToken(User.Role.ADMIN);
         String headerInfo = "Bearer " + token;
 
         when(resourceInfo.getResourceClass()).thenAnswer(invocation -> AnnotatedClassWithAnnotatedMethod.class);
@@ -148,7 +152,7 @@ public class JwtAuthenticationFilterTest extends BaseMockitoTest {
 
     @Test
     public void shouldNotAbortRequestWithNotAnnotatedClassAndAnnotationAtMethodLevel() throws Exception {
-        String token = TOKEN_FACTORY.newToken(User.Role.ANONYMOUS);
+        String token = jwtFactory.newToken(User.Role.ANONYMOUS);
         String headerInfo = "Bearer " + token;
 
         when(resourceInfo.getResourceClass()).thenAnswer(invocation -> NotAnnotatedClass.class);

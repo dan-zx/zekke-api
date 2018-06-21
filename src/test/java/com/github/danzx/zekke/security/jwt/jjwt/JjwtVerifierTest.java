@@ -15,35 +15,66 @@
  */
 package com.github.danzx.zekke.security.jwt.jjwt;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 
 import java.time.Instant;
 
+import javax.inject.Inject;
+
 import com.github.danzx.zekke.domain.User;
+import com.github.danzx.zekke.security.jwt.JwtSettings;
 import com.github.danzx.zekke.security.jwt.JwtVerificationException;
-import com.github.danzx.zekke.security.jwt.SigningKeyHolder;
+import com.github.danzx.zekke.test.spring.BaseSpringTest;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+
 @RunWith(JUnitParamsRunner.class)
-public class JjwtVerifierTest {
+@ContextConfiguration(classes = JwtSettings.class)
+@TestPropertySource(locations = "classpath:test.properties")
+public class JjwtVerifierTest extends BaseSpringTest {
     
-    private static final SigningKeyHolder KEY_HOLDER_1 = new SigningKeyHolder("keys/test1.key");
-    private static final SigningKeyHolder KEY_HOLDER_2 = new SigningKeyHolder("keys/test2.key");
+    
+    private static final class SigningKeyPaths {
+        private static final String KEY_1 = "keys/test1.key";
+        private static final String KEY_2 = "keys/test2.key";
+
+        private SigningKeyPaths() {
+            throw new AssertionError();
+        }
+    }
+
+    private static final class Issuers {
+        private static final String TEST = "testIssuer";
+        private static final String OTHER = "anotherIssuer";
+        
+        private Issuers() { 
+            throw new AssertionError();
+        }
+    }
+
+    private @Inject JwtSettings baseJwtSettings;
+
+    @Before
+    public void setUp() {
+        assertThat(baseJwtSettings).isNotNull();
+    }
 
     @Test
     public void shouldVerifyToken() {
-        String issuer = "testIssuer";
-        long expirationTimeInMinutes = 1L;
-        JjwtFactory jwtFactory = new JjwtFactory(expirationTimeInMinutes, issuer, KEY_HOLDER_1);
+        JjwtFactory jwtFactory = new JjwtFactory(baseJwtSettings);
         User.Role role = User.Role.ADMIN;
         String token = jwtFactory.newToken(role);
-        JjwtVerifier jwtVerifier = new JjwtVerifier(issuer, KEY_HOLDER_1);
+        JjwtVerifier jwtVerifier = new JjwtVerifier(baseJwtSettings);
         try {
             jwtVerifier.verify(token, role);
         } catch (JwtVerificationException ex) {
@@ -55,26 +86,62 @@ public class JjwtVerifierTest {
     @Parameters(method = "verificationParams")
     public void shouldVerifyTokenThrowJwtVerificationException(String factoryIssuer,
                                                                String verifierIssuer,
-                                                               SigningKeyHolder factoryKeyHolder,
-                                                               SigningKeyHolder verifierKeyHolder,
+                                                               String factoryKeyPath,
+                                                               String verifierKeyPath,
                                                                Instant expirationTime,
                                                                String issuerSubject,
                                                                User.Role verificationSubject) {
-        JjwtFactory jwtFactory = new JjwtFactory(1L, factoryIssuer, factoryKeyHolder);
+        JwtSettings factorySettings = JwtSettingsBuilder.fromOther(baseJwtSettings)
+                .setIssuer(factoryIssuer)
+                .setKeyFilePath(factoryKeyPath)
+                .build();
+        JwtSettings verifierSettings = JwtSettingsBuilder.fromOther(baseJwtSettings)
+                .setIssuer(verifierIssuer)
+                .setKeyFilePath(verifierKeyPath)
+                .build();
+        JjwtFactory jwtFactory = new JjwtFactory(factorySettings);
+        JjwtVerifier jwtVerifier = new JjwtVerifier(verifierSettings);
         String token = jwtFactory.createToken(Instant.now(), expirationTime, issuerSubject);
-        JjwtVerifier jwtVerifier = new JjwtVerifier(verifierIssuer, verifierKeyHolder);
         assertThatThrownBy(() -> jwtVerifier.verify(token, verificationSubject)).isInstanceOf(JwtVerificationException.class);
     }
 
     protected Object[][] verificationParams() {
         return new Object[][] {
-            {"testIssuer", "anotherIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(30L), User.Role.ADMIN.name(), User.Role.ADMIN},
-            {"testIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_2, Instant.now().plusSeconds(30L), User.Role.ADMIN.name(), User.Role.ADMIN},
-            {"testIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(-60L), User.Role.ADMIN.name(), User.Role.ADMIN},
-            {"anotherIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(30L), User.Role.ADMIN.name(), User.Role.ADMIN},
-            {"testIssuer", "testIssuer", KEY_HOLDER_2, KEY_HOLDER_1, Instant.now().plusSeconds(30L), User.Role.ADMIN.name(), User.Role.ADMIN},
-            {"testIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(30L), "notARoleSubject", User.Role.ADMIN},
-            {"testIssuer", "testIssuer", KEY_HOLDER_1, KEY_HOLDER_1, Instant.now().plusSeconds(30L), User.Role.ANONYMOUS.name(), User.Role.ADMIN}
+            {Issuers.TEST, Issuers.OTHER, SigningKeyPaths.KEY_1, SigningKeyPaths.KEY_1, Instant.now().plusSeconds(30L), User.Role.ADMIN.name(), User.Role.ADMIN},
+            {Issuers.TEST, Issuers.TEST, SigningKeyPaths.KEY_1, SigningKeyPaths.KEY_2, Instant.now().plusSeconds(30L), User.Role.ADMIN.name(), User.Role.ADMIN},
+            {Issuers.TEST, Issuers.TEST, SigningKeyPaths.KEY_1, SigningKeyPaths.KEY_1, Instant.now().plusSeconds(-60L), User.Role.ADMIN.name(), User.Role.ADMIN},
+            {Issuers.OTHER, Issuers.TEST, SigningKeyPaths.KEY_1, SigningKeyPaths.KEY_1, Instant.now().plusSeconds(30L), User.Role.ADMIN.name(), User.Role.ADMIN},
+            {Issuers.TEST, Issuers.TEST, SigningKeyPaths.KEY_2, SigningKeyPaths.KEY_1, Instant.now().plusSeconds(30L), User.Role.ADMIN.name(), User.Role.ADMIN},
+            {Issuers.TEST, Issuers.TEST, SigningKeyPaths.KEY_1, SigningKeyPaths.KEY_1, Instant.now().plusSeconds(30L), "notARoleSubject", User.Role.ADMIN},
+            {Issuers.TEST, Issuers.TEST, SigningKeyPaths.KEY_1, SigningKeyPaths.KEY_1, Instant.now().plusSeconds(30L), User.Role.ANONYMOUS.name(), User.Role.ADMIN}
         };
+    }
+
+    private static class JwtSettingsBuilder {
+        private String expirationExpression;
+        private String issuer;
+        private String signatureAlgorithm;
+        private String keyFilePath;
+
+        private static JwtSettingsBuilder fromOther(JwtSettings jwtSettings) {
+            JwtSettingsBuilder builder = new JwtSettingsBuilder();
+            builder.expirationExpression = jwtSettings.getExpiration().toString();
+            builder.signatureAlgorithm = jwtSettings.getSignatureAlgorithm();
+            return builder;
+        }
+
+        public JwtSettingsBuilder setIssuer(String issuer) {
+            this.issuer = issuer;
+            return this;
+        }
+
+        public JwtSettingsBuilder setKeyFilePath(String keyFilePath) {
+            this.keyFilePath = keyFilePath;
+            return this;
+        }
+
+        public JwtSettings build() {
+            return new JwtSettings(expirationExpression, issuer, signatureAlgorithm, keyFilePath);
+        }
     }
 }

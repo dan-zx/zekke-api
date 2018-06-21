@@ -32,11 +32,9 @@ public abstract class BaseJwtVerifier implements JwtVerifier {
     private static final Logger log = LoggerFactory.getLogger(BaseJwtVerifier.class);
 
     private final String issuer;
-    private final SigningKeyHolder signingKeyHolder;
 
-    public BaseJwtVerifier(String issuer, SigningKeyHolder signingKeyHolder) {
+    public BaseJwtVerifier(String issuer) {
         this.issuer = requireNonNull(issuer);
-        this.signingKeyHolder = requireNonNull(signingKeyHolder);
     }
 
     protected void verifyIssuer(String issuer) throws JwtVerificationException {
@@ -64,9 +62,5 @@ public abstract class BaseJwtVerifier implements JwtVerifier {
                 .messageKey("authorization.error")
                 .build();
         }
-    }
-
-    protected SigningKeyHolder getSigningKeyHolder() {
-        return signingKeyHolder;
     }
 }
