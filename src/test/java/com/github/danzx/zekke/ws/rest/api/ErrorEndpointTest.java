@@ -20,21 +20,14 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
 import static com.github.danzx.zekke.test.assertion.ProjectAssertions.assertThat;
 
-import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
 
+import com.github.danzx.zekke.test.jersey.BaseJerseyTest;
 import com.github.danzx.zekke.ws.rest.model.ErrorMessage;
 
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 
-public class ErrorEndpointTest extends JerseyTest {
-
-    @Override
-    protected Application configure() {
-        return new ResourceConfig().register(new ErrorEndpoint());
-    }
+public class ErrorEndpointTest extends BaseJerseyTest {
 
     @Test
     public void shouldResourceNotFoundReturnErrorMessage() {

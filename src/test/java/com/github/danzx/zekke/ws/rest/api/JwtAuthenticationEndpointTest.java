@@ -15,7 +15,6 @@
  */
 package com.github.danzx.zekke.ws.rest.api;
 
-
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.OK;
@@ -24,59 +23,37 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static com.github.danzx.zekke.test.assertion.ProjectAssertions.assertThat;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Locale;
-
-import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
 
 import com.github.danzx.zekke.domain.User.Role;
-import com.github.danzx.zekke.security.jwt.JwtFactory;
-import com.github.danzx.zekke.service.UserService;
-import com.github.danzx.zekke.ws.rest.errormapper.ConstraintViolationExceptionMapper;
+import com.github.danzx.zekke.test.jersey.BaseJerseyTest;
 import com.github.danzx.zekke.ws.rest.model.AccessTokenHolder;
 import com.github.danzx.zekke.ws.rest.model.ErrorMessage;
-import com.github.danzx.zekke.ws.rest.security.BasicAuthorizationHeaderExtractor;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.test.JerseyTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(JUnitParamsRunner.class)
-public class JwtAuthenticationEndpointTest extends JerseyTest {
-
-    private JwtFactory mockJwtFactory;
-    private UserService mockUserService;
-
-    @Override
-    protected Application configure() {
-        Locale.setDefault(Locale.ROOT);
-        mockJwtFactory = mock(JwtFactory.class);
-        mockUserService = mock(UserService.class);
-        return new ResourceConfig()
-                .register(new JwtAuthenticationEndpoint(mockJwtFactory, mockUserService, new BasicAuthorizationHeaderExtractor()))
-                .register(new ConstraintViolationExceptionMapper());
-    }
+public class JwtAuthenticationEndpointTest extends BaseJerseyTest {
 
     @Test
     public void shouldAuthenticateAnonymouslyReturnTokenWithNoError() {
         String expectedToken = "mockToken";
-        when(mockJwtFactory.newToken(any())).thenReturn(expectedToken);
+        doReturn(expectedToken).when(getJwtFactory()).newToken(any());
 
         Response response = target("v1/authentication/jwt/anonymous")
                 .request()
                 .accept(APPLICATION_JSON_TYPE)
                 .get();
 
-        verify(mockJwtFactory).newToken(Role.ANONYMOUS);
+        verify(getJwtFactory()).newToken(Role.ANONYMOUS);
         assertThat(response)
                 .produced(APPLICATION_JSON_TYPE)
                 .respondedWith(OK)
@@ -88,8 +65,8 @@ public class JwtAuthenticationEndpointTest extends JerseyTest {
     @Test
     public void shouldAuthenticateAdminReturnTokenWhenLoginIsValid() {
         String expectedToken = "mockToken";
-        when(mockJwtFactory.newToken(any())).thenReturn(expectedToken);
-        when(mockUserService.isAdminRegistered(any())).thenReturn(true);
+        doReturn(expectedToken).when(getJwtFactory()).newToken(any());
+        when(getMockUserService().isAdminRegistered(any())).thenReturn(true);
 
         Response response = target("v1/authentication/jwt/admin")
                 .request()
@@ -97,7 +74,7 @@ public class JwtAuthenticationEndpointTest extends JerseyTest {
                 .header("Authorization", "Basic YWRtaW46YWRtaW4=")
                 .get();
 
-        verify(mockJwtFactory).newToken(Role.ADMIN);
+        verify(getJwtFactory()).newToken(Role.ADMIN);
         assertThat(response)
                 .produced(APPLICATION_JSON_TYPE)
                 .respondedWith(OK)
@@ -125,7 +102,7 @@ public class JwtAuthenticationEndpointTest extends JerseyTest {
     @Test
     @Parameters(method = "invalidLogins")
     public void shouldAuthenticateAdminRespondWithError401WhenLoginIsNotValid(String headerValue) {
-        when(mockUserService.isAdminRegistered(any())).thenReturn(false);
+        when(getMockUserService().isAdminRegistered(any())).thenReturn(false);
         Response response = target("v1/authentication/jwt/admin")
                 .request()
                 .accept(APPLICATION_JSON_TYPE)

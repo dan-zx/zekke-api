@@ -13,14 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.zekke.test.config;
+package com.github.danzx.zekke.test.spring;
 
-import com.github.danzx.zekke.config.Profiles;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-public class TestProfiles extends Profiles {
+import static com.github.danzx.zekke.test.config.TestProfiles.ENDPOINT_TEST;
+import static com.github.danzx.zekke.test.config.TestProfiles.INTEGRATION;
 
-    public static final String INTEGRATION = "integration";
-    public static final String ENDPOINT_TEST = "jersey";
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-    private TestProfiles() { }
-}
+import org.springframework.context.annotation.Profile;
+
+@Profile(ENDPOINT_TEST)
+@Retention(RUNTIME)
+@Target(TYPE)
+@Inherited
+public @interface ForEndpointTest { }
