@@ -261,7 +261,7 @@ public class WaypointEndpoint {
      * @return a list of walkways or an empty list.
      */
     @GET
-    @Path("/walways/near")
+    @Path("/walkways/near")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Walkway> getNearWalways(
             @NotNull @Valid @QueryParam("location") Coordinates location,
@@ -289,8 +289,8 @@ public class WaypointEndpoint {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getWaypoint(
-            @NotNull @PathParam("id") Long id,
-            @NotNull @HeaderParam("Accept-Language") List<Locale> clientLocales) {
+            @PathParam("id") long id,
+            @HeaderParam("Accept-Language") List<Locale> clientLocales) {
         log.info("GET /waypoints/{} -- Accept-Languages={}", id, clientLocales);
         return waypointService.findWaypointById(id)
                 .map(waypointToTypedWaypointTransformer::convertAtoB)
@@ -327,8 +327,8 @@ public class WaypointEndpoint {
     @Path("/{id}")
     @RequireRoleAccess(roleRequired = User.Role.ADMIN)
     public Response deleteWaypoint(
-            @NotNull @PathParam("id") Long id,
-            @NotNull @HeaderParam("Accept-Language") List<Locale> clientLocales) {
+            @PathParam("id") long id,
+            @HeaderParam("Accept-Language") List<Locale> clientLocales) {
         log.info("DELETE /waypoints/{} -- Accept-Languages={}", id, clientLocales);
         Waypoint waypoint = new Waypoint();
         waypoint.setId(id);
@@ -351,9 +351,9 @@ public class WaypointEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @RequireRoleAccess(roleRequired = User.Role.ADMIN)
     public Response patchWaypoint(
-            @NotNull @PathParam("id") Long id,
+            @PathParam("id") long id,
             @NotNull ObjectPatch patch,
-            @NotNull @HeaderParam("Accept-Language") List<Locale> clientLocales) {
+            @HeaderParam("Accept-Language") List<Locale> clientLocales) {
         log.info("PATCH /waypoints/{} -- body: {} -- Accept-Languages={}", id, patch, clientLocales);
         Optional<Waypoint> optWaypoint = waypointService.findWaypointById(id);
         return optWaypoint

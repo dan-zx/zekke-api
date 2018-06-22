@@ -17,12 +17,29 @@ package com.github.danzx.zekke.test.jersey;
 
 import static com.github.danzx.zekke.test.config.TestProfiles.ENDPOINT_TEST;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.Locale;
 
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -36,6 +53,7 @@ import com.github.danzx.zekke.service.UserService;
 import com.github.danzx.zekke.service.WaypointService;
 import com.github.danzx.zekke.test.spring.ForEndpointTest;
 import com.github.danzx.zekke.transformer.Transformer;
+import com.github.danzx.zekke.ws.rest.MediaTypes;
 import com.github.danzx.zekke.ws.rest.api.ErrorEndpoint;
 import com.github.danzx.zekke.ws.rest.api.JwtAuthenticationEndpoint;
 import com.github.danzx.zekke.ws.rest.api.WaypointEndpoint;
@@ -53,6 +71,8 @@ import com.github.danzx.zekke.ws.rest.errormapper.ResourceNotFoundExceptionMappe
 import com.github.danzx.zekke.ws.rest.model.Poi;
 import com.github.danzx.zekke.ws.rest.model.TypedWaypoint;
 import com.github.danzx.zekke.ws.rest.model.Walkway;
+import com.github.danzx.zekke.ws.rest.patch.ObjectPatch;
+import com.github.danzx.zekke.ws.rest.patch.jsonpatch.JsonObjectPatch;
 import com.github.danzx.zekke.ws.rest.patch.jsonpatch.JsonPatchReader;
 import com.github.danzx.zekke.ws.rest.security.BasicAuthorizationHeaderExtractor;
 import com.github.danzx.zekke.ws.rest.security.BearerAuthorizationHeaderExtractor;
@@ -60,7 +80,10 @@ import com.github.danzx.zekke.ws.rest.security.jwt.filter.JwtAuthenticationFilte
 
 import net.rakugakibox.spring.boot.orika.OrikaAutoConfiguration;
 
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.CommonProperties;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
@@ -82,8 +105,8 @@ public class BaseJerseyTest extends JerseyTest {
     private BearerAuthorizationHeaderExtractor bearerAuthHeaderExtractor;
     private BasicAuthorizationHeaderExtractor basicAuthHeaderExtractor;
     private Transformer<Waypoint, Poi> waypointToPoiTransformer;
-    private Transformer<Waypoint, TypedWaypoint> waypointToWalkwayTransformer;
-    private Transformer<Waypoint, Walkway> waypointToTypedWaypointTransformer;
+    private Transformer<Waypoint, Walkway> waypointToWalkwayTransformer;
+    private Transformer<Waypoint, TypedWaypoint> waypointToTypedWaypointTransformer;
     private JwtSettings jwtSettings;
     private ObjectMapper objectMapper;
 
@@ -93,12 +116,18 @@ public class BaseJerseyTest extends JerseyTest {
         initSpringContextAndFindBeans();
         initMocksAndSpies();
         ResourceConfig resourceConfig = new ResourceConfig();
+        bindBeans(resourceConfig);
         customizeDefaultFeatures(resourceConfig);
         registerExceptionMappers(resourceConfig);
-        registerBodyReaders(resourceConfig);
+        registerBodyHandlers(resourceConfig);
         registerFilters(resourceConfig);
         registerEndpoints(resourceConfig);
         return resourceConfig;
+    }
+
+    @Override
+    protected void configureClient(ClientConfig config) {
+        config.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
     }
 
     @Override
@@ -107,14 +136,23 @@ public class BaseJerseyTest extends JerseyTest {
         context.stop();
     }
 
+    protected void disableSecurity() {
+        final String fakeToken = "fakeToken";
+        doReturn(fakeToken).when(bearerAuthHeaderExtractor).getToken(any());
+        doNothing().when(jwtVerifier).verify(eq(fakeToken), any());
+    }
+
+    protected void enableSecurity() {
+        doCallRealMethod().when(bearerAuthHeaderExtractor).getToken(any());
+        doCallRealMethod().when(jwtVerifier).verify(any(), any());
+    }
+
     @SuppressWarnings("unchecked")
     private void initSpringContextAndFindBeans() {
         context = new AnnotationConfigApplicationContext();
         context.getEnvironment().setActiveProfiles(ENDPOINT_TEST);
         context.register(InternalConfig.class);
         context.refresh();
-        bearerAuthHeaderExtractor = context.getBean(BearerAuthorizationHeaderExtractor.class);
-        basicAuthHeaderExtractor = context.getBean(BasicAuthorizationHeaderExtractor.class);
         waypointToPoiTransformer = context.getBean("waypointToPoiTransformer", Transformer.class);
         waypointToWalkwayTransformer = context.getBean("waypointToWalkwayTransformer", Transformer.class);
         waypointToTypedWaypointTransformer = context.getBean("waypointToTypedWaypointTransformer", Transformer.class);
@@ -125,6 +163,8 @@ public class BaseJerseyTest extends JerseyTest {
     private void initMocksAndSpies() {
         mockUserService = mock(UserService.class);
         mockWaypointService = mock(WaypointService.class);
+        bearerAuthHeaderExtractor = spy(new BearerAuthorizationHeaderExtractor());
+        basicAuthHeaderExtractor = spy(new BasicAuthorizationHeaderExtractor());
         jwtVerifier = spy(new JjwtVerifier(jwtSettings));
         jwtFactory = spy(new JjwtFactory(jwtSettings));
     }
@@ -145,24 +185,30 @@ public class BaseJerseyTest extends JerseyTest {
                 .register(ResourceNotFoundExceptionMapper.class);
     }
 
-    private void registerBodyReaders(ResourceConfig resourceConfig) {
-        JsonPatchReader jsonPatchReader = new JsonPatchReader();
-        jsonPatchReader.setObjectMapper(objectMapper);
-        resourceConfig.register(jsonPatchReader);
+    private void registerBodyHandlers(ResourceConfig resourceConfig) {
+        resourceConfig.register(JsonPatchReader.class);
     }
 
     private void registerFilters(ResourceConfig resourceConfig) {
-        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter();
-        jwtAuthenticationFilter.setAuthorizationHeaderExtractor(bearerAuthHeaderExtractor);
-        jwtAuthenticationFilter.setJwtVerifier(jwtVerifier);
-        resourceConfig.register(jwtAuthenticationFilter);
+        resourceConfig.register(JwtAuthenticationFilter.class);
+    }
+
+    private void bindBeans(ResourceConfig resourceConfig) {
+        resourceConfig.registerInstances(new AbstractBinder() {
+            @Override
+            protected void configure() {
+                bind(bearerAuthHeaderExtractor).to(BearerAuthorizationHeaderExtractor.class);
+                bind(jwtVerifier).to(JwtVerifier.class);
+                bind(objectMapper).to(ObjectMapper.class);
+            }
+        });
     }
 
     private void registerEndpoints(ResourceConfig resourceConfig) {
         resourceConfig
                 .register(new ErrorEndpoint())
                 .register(new JwtAuthenticationEndpoint(jwtFactory, mockUserService, basicAuthHeaderExtractor))
-                .register(new WaypointEndpoint(mockWaypointService, waypointToPoiTransformer, waypointToTypedWaypointTransformer, waypointToWalkwayTransformer));
+                .register(new WaypointEndpoint(mockWaypointService, waypointToPoiTransformer, waypointToWalkwayTransformer, waypointToTypedWaypointTransformer));
     }
 
     @Import({
@@ -172,8 +218,6 @@ public class BaseJerseyTest extends JerseyTest {
             WaypointToTypedWaypointMapping.class,
             WaypointToWalkwayMapping.class,
             ObjectMapperConfig.class,
-            BearerAuthorizationHeaderExtractor.class,
-            BasicAuthorizationHeaderExtractor.class,
             JwtSettings.class
     })
     @Configuration @ForEndpointTest
@@ -208,11 +252,11 @@ public class BaseJerseyTest extends JerseyTest {
         return waypointToPoiTransformer;
     }
 
-    protected Transformer<Waypoint, TypedWaypoint> getWaypointToWalkwayTransformer() {
+    protected Transformer<Waypoint, Walkway> getWaypointToWalkwayTransformer() {
         return waypointToWalkwayTransformer;
     }
 
-    protected Transformer<Waypoint, Walkway> getWaypointToTypedWaypointTransformer() {
+    protected Transformer<Waypoint, TypedWaypoint> getWaypointToTypedWaypointTransformer() {
         return waypointToTypedWaypointTransformer;
     }
 

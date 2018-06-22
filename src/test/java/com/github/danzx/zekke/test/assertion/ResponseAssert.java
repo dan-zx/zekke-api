@@ -15,13 +15,17 @@
  */
 package com.github.danzx.zekke.test.assertion;
 
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.ObjectAssert;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
 
 public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
 
@@ -41,6 +45,12 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
         return this;
     }
 
+    public ResponseAssert hasEntity() {
+        isNotNull();
+        assertThat(actual.hasEntity()).overridingErrorMessage("Expecting to have entity").isTrue();
+        return this;
+    }
+
     public ResponseAssert doesNotContainEntity() {
         isNotNull();
         assertThat(actual.hasEntity()).overridingErrorMessage("Expecting to not have entity").isFalse();
@@ -48,8 +58,7 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
     }
 
     public <T> ObjectAssert<T> extractingEntityAs(Class<T> entityType) {
-        isNotNull();
-        assertThat(actual.hasEntity()).overridingErrorMessage("Expecting to have entity").isTrue();
+        hasEntity();
         T entity = null;
         try {
             entity = actual.readEntity(entityType);
@@ -57,5 +66,18 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
             failWithMessage("Unexpected error %s", ex);
         }
         return new ObjectAssert<>(entity);
+
+    }
+
+    public <T> ListAssert<T> extractingEntityAsListOf(Class<T> entityType) {
+        hasEntity();
+        List<T> entities = null;
+        try {
+            entities = actual.readEntity(new GenericType<List<T>>() {});
+        } catch (Exception ex) {
+            failWithMessage("Unexpected error %s", ex);
+        }
+        return new ListAssert<>(entities);
+
     }
 }
