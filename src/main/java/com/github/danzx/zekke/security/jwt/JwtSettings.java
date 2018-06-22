@@ -67,24 +67,6 @@ public class JwtSettings {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        JwtSettings that = (JwtSettings) o;
-        return Objects.equals(expiration, that.expiration) &&
-                Objects.equals(issuer, that.issuer) &&
-                Objects.equals(signatureAlgorithm, that.signatureAlgorithm) &&
-                Arrays.equals(signingKey, that.signingKey);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(expiration, issuer, signatureAlgorithm);
-        result = 31 * result + Arrays.hashCode(signingKey);
-        return result;
-    }
-
-    @Override
     public String toString() {
         return "{" +
                 " expiration=" + expiration +
