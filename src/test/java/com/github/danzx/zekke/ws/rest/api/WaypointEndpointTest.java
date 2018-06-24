@@ -410,30 +410,7 @@ public class WaypointEndpointTest extends BaseJerseyTest {
                 .build();
         Object[] test4 = { payload, expectedError }; // bad location
 
-        payload = new TypedWaypoint();
-        payload.setName("A Name");
-        payload.setType(Type.WALKWAY);
-        payload.setLocation(Coordinates.ofLatLng(12.43, 43.5));
-        expectedError = new ErrorMessage.Builder()
-                .detailMessage("Parameter validation failed")
-                .type(PARAM_VALIDATION)
-                .status(BAD_REQUEST)
-                .addParamError("name", "A Waypoint of type WALKWAY may not have name")
-                .build();
-        Object[] test5 = { payload, expectedError }; // walkway should not have a name
-
-        payload = new TypedWaypoint();
-        payload.setType(Type.POI);
-        payload.setLocation(Coordinates.ofLatLng(12.43, 43.5));
-        expectedError = new ErrorMessage.Builder()
-                .detailMessage("Parameter validation failed")
-                .type(PARAM_VALIDATION)
-                .status(BAD_REQUEST)
-                .addParamError("name", "A Waypoint of type POI must have name")
-                .build();
-        Object[] test6 = { payload, expectedError }; // poi should have a name
-
-        return new Object[] { test1, test2, test3, test4, test5, test6 };
+        return new Object[] { test1, test2, test3, test4 };
     }
 
     @Test

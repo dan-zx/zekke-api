@@ -20,15 +20,12 @@ import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
 import com.github.danzx.zekke.domain.Waypoint.Type;
-import com.github.danzx.zekke.ws.rest.model.constraint.CheckTypedWaypoint;
 
 /**
  * Waypoint request/response object with type.
  * 
  * @author Daniel Pedraza-Arcega
  */
-
-@CheckTypedWaypoint
 public class TypedWaypoint extends BaseWaypoint {
 
     @NotNull private Type type;
