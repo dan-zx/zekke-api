@@ -25,6 +25,7 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.OK;
+import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 import static com.github.danzx.zekke.test.assertion.ProjectAssertions.assertThat;
 import static com.github.danzx.zekke.ws.rest.MediaTypes.APPLICATION_JSON_PATCH_TYPE;
@@ -63,15 +64,9 @@ import org.junit.runner.RunWith;
 @RunWith(JUnitParamsRunner.class)
 public class WaypointEndpointTest extends BaseJerseyTest {
 
-    private static final String ENDPOINT_BASE_PATH = "v1/waypoints";
-    private String anonymousToken;
-    private String adminToken;
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        anonymousToken = getJwtFactory().newToken(User.Role.ANONYMOUS);
-        adminToken = getJwtFactory().newToken(User.Role.ADMIN);
         disableSecurity();
     }
 
@@ -510,5 +505,127 @@ public class WaypointEndpointTest extends BaseJerseyTest {
                     .containsOnly(ErrorMessage.Type.NOT_FOUND, NOT_FOUND.getStatusCode(), "Resource not found", null);
 
         verify(getMockWaypointService(), never()).persist(any());
+    }
+
+    @Test
+    @Parameters(method = "GETendpointsAndRequiredParameters")
+    public void shouldGETEndpointThatRequireAuthorizationFailWhenNoAuthorizationHeaderIsPresent(String endpoint, String location) {
+        enableSecurity();
+        Response response = target(endpoint)
+                .queryParam("location", location)
+                .request()
+                .accept(APPLICATION_JSON_TYPE)
+                .get();
+
+        assertThat(response)
+                .produced(APPLICATION_JSON_TYPE)
+                .respondedWith(BAD_REQUEST)
+                .extractingEntityAs(ErrorMessage.class)
+                    .extracting(ErrorMessage::getErrorType, ErrorMessage::getStatusCode, ErrorMessage::getErrorDetail, ErrorMessage::getParamErrors)
+                    .containsOnly(ErrorMessage.Type.PARAM_VALIDATION, BAD_REQUEST.getStatusCode(), "Authorization header bad format. Expected: Bearer <token>", null);
+    }
+
+
+    public Object[] GETendpointsAndRequiredParameters() {
+        String locationNotRequired = "";
+        String locationRequired = Coordinates.ofLatLng(12.43, 43.5).toString();
+
+        return new Object[][] {
+                { "v1/waypoints", locationNotRequired },
+                { "v1/waypoints/1", locationNotRequired },
+                { "v1/waypoints/walkways", locationNotRequired },
+                { "v1/waypoints/pois", locationNotRequired },
+                { "v1/waypoints/pois/names", locationNotRequired },
+                { "v1/waypoints/near", locationRequired },
+                { "v1/waypoints/pois/near", locationRequired },
+                { "v1/waypoints/walkways/near", locationRequired },
+        };
+    }
+
+    @Test
+    @Parameters(method = "authorizationsAndProducedErrors")
+    public void shouldDeleteWaypointFailWhenAuthorizationHeaderIsNotValid(String authorization, Response.Status expectedStatus, ErrorMessage expectedErrorMessage) {
+        enableSecurity();
+        Response response = target("v1/waypoints/1")
+                .request()
+                .accept(APPLICATION_JSON_TYPE)
+                .header("Authorization", authorization)
+                .delete();
+
+        assertThat(response)
+                .produced(APPLICATION_JSON_TYPE)
+                .respondedWith(expectedStatus)
+                .extractingEntityAs(ErrorMessage.class)
+                    .isEqualTo(expectedErrorMessage);
+    }
+
+    @Test
+    @Parameters(method = "authorizationsAndProducedErrors")
+    public void shouldPatchWaypointFailWhenAuthorizationHeaderIsNotValid(String authorization, Response.Status expectedStatus, ErrorMessage expectedErrorMessage) {
+        enableSecurity();
+        Response response = target("v1/waypoints/1")
+                .request()
+                .accept(APPLICATION_JSON_TYPE)
+                .header("Authorization", authorization)
+                .method("PATCH", entity("[]", APPLICATION_JSON_PATCH_TYPE));
+
+        assertThat(response)
+                .produced(APPLICATION_JSON_TYPE)
+                .respondedWith(expectedStatus)
+                .extractingEntityAs(ErrorMessage.class)
+                    .isEqualTo(expectedErrorMessage);
+    }
+
+    @Test
+    @Parameters(method = "authorizationsAndProducedErrors")
+    public void shouldNewWaypointFailWhenAuthorizationHeaderIsNotValid(String authorization, Response.Status expectedStatus, ErrorMessage expectedErrorMessage) {
+        enableSecurity();
+        TypedWaypoint payload = new TypedWaypoint();
+        payload.setName("A Name");
+        payload.setType(Type.POI);
+        payload.setLocation(Coordinates.ofLatLng(12.43, 43.5));
+        Response response = target("v1/waypoints")
+                .request()
+                .accept(APPLICATION_JSON_TYPE)
+                .header("Authorization", authorization)
+                .post(json(payload));
+
+        assertThat(response)
+                .produced(APPLICATION_JSON_TYPE)
+                .respondedWith(expectedStatus)
+                .extractingEntityAs(ErrorMessage.class)
+                    .isEqualTo(expectedErrorMessage);
+    }
+
+    public Object[] authorizationsAndProducedErrors() {
+        return new Object[][]{
+            {
+                "Bearer " + getJwtFactory().newToken(User.Role.ANONYMOUS),
+                UNAUTHORIZED,
+                new ErrorMessage.Builder()
+                        .type(ErrorMessage.Type.AUTHORIZATION)
+                        .status(UNAUTHORIZED)
+                        .detailMessage("Unauthorized: not enough privileges")
+                        .build()
+            },
+            {
+                "Bearer ",
+                BAD_REQUEST,
+                new ErrorMessage.Builder()
+                        .type(ErrorMessage.Type.PARAM_VALIDATION)
+                        .status(BAD_REQUEST)
+                        .detailMessage("Authorization header bad format. Expected: Bearer <token>")
+                        .build()
+            },
+            {
+                "",
+                BAD_REQUEST,
+                new ErrorMessage.Builder()
+                        .type(ErrorMessage.Type.PARAM_VALIDATION)
+                        .status(BAD_REQUEST)
+                        .detailMessage("Authorization header bad format. Expected: Bearer <token>")
+                        .build()
+            }
+        };
     }
 }
