@@ -15,6 +15,8 @@
  */
 package com.github.danzx.zekke.ws.rest.model;
 
+import java.util.Objects;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -45,5 +47,30 @@ public abstract class BaseWaypoint {
 
     public void setLocation(Coordinates location) {
         this.location = location;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        return isBaseWaypointEqualTo((BaseWaypoint) obj);
+    }
+
+    /**
+     * Use this method to complete your equals method.
+     *
+     * @see java.lang.Object#equals(java.lang.Object)
+     * @param other the reference object with which to compare.
+     * @return {@code true} if this object is the same as the argument; {@code false} otherwise.
+     */
+    protected boolean isBaseWaypointEqualTo(BaseWaypoint other) {
+        return Objects.equals(id, other.id) &&
+                Objects.equals(location, other.location);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, location);
     }
 }

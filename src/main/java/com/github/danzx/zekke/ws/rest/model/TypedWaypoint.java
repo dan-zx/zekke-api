@@ -15,15 +15,20 @@
  */
 package com.github.danzx.zekke.ws.rest.model;
 
+import java.util.Objects;
+
 import javax.validation.constraints.NotNull;
 
 import com.github.danzx.zekke.domain.Waypoint.Type;
+import com.github.danzx.zekke.ws.rest.model.constraint.CheckTypedWaypoint;
 
 /**
  * Waypoint request/response object with type.
  * 
  * @author Daniel Pedraza-Arcega
  */
+
+@CheckTypedWaypoint
 public class TypedWaypoint extends BaseWaypoint {
 
     @NotNull private Type type;
@@ -44,6 +49,32 @@ public class TypedWaypoint extends BaseWaypoint {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        return isTypedWaypointEqualTo((TypedWaypoint) obj);
+    }
+
+    /**
+     * Use this method to complete your equals method.
+     *
+     * @see java.lang.Object#equals(java.lang.Object)
+     * @param other the reference object with which to compare.
+     * @return {@code true} if this object is the same as the argument; {@code false} otherwise.
+     */
+    protected boolean isTypedWaypointEqualTo(TypedWaypoint other) {
+        return isBaseWaypointEqualTo(other) &&
+                Objects.equals(name, other.name) &&
+                Objects.equals(type, other.type);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), name, type);
     }
 
     @Override

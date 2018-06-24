@@ -15,6 +15,8 @@
  */
 package com.github.danzx.zekke.ws.rest.model;
 
+import java.util.Objects;
+
 /**
  * POI request/response object.
  * 
@@ -30,6 +32,31 @@ public class Poi extends BaseWaypoint {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        return isPoiEqualTo((Poi) obj);
+    }
+
+    /**
+     * Use this method to complete your equals method.
+     *
+     * @see java.lang.Object#equals(java.lang.Object)
+     * @param other the reference object with which to compare.
+     * @return {@code true} if this object is the same as the argument; {@code false} otherwise.
+     */
+    protected boolean isPoiEqualTo(Poi other) {
+        return isBaseWaypointEqualTo(other) &&
+                Objects.equals(name, other.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), name);
     }
 
     @Override

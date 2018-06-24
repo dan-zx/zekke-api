@@ -15,6 +15,12 @@
  */
 package com.github.danzx.zekke.test.assertion;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.List;
+
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -22,10 +28,6 @@ import javax.ws.rs.core.Response;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.ObjectAssert;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
 
 public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
 
@@ -73,11 +75,39 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
         hasEntity();
         List<T> entities = null;
         try {
-            entities = actual.readEntity(new GenericType<List<T>>() {});
+            entities = actual.readEntity(GenericListType.genericTypeOf(entityType));
         } catch (Exception ex) {
             failWithMessage("Unexpected error %s", ex);
         }
         return new ListAssert<>(entities);
 
+    }
+
+    private static class GenericListType implements ParameterizedType {
+
+        private final Class<?> clazz;
+
+        private static <T> GenericType<List<T>> genericTypeOf(Class<T> clazz) {
+            return new GenericType(new GenericListType(clazz)) {};
+        }
+
+        private GenericListType(Class<?> clazz) {
+            this.clazz = clazz;
+        }
+
+        @Override
+        public Type[] getActualTypeArguments() {
+            return new Type[] { clazz };
+        }
+
+        @Override
+        public Type getRawType() {
+            return List.class;
+        }
+
+        @Override
+        public Type getOwnerType() {
+            return List.class;
+        }
     }
 }

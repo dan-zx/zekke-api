@@ -17,6 +17,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
 import com.github.danzx.zekke.base.Buildable;
 
 /**
@@ -108,13 +111,18 @@ public class ErrorMessage {
 
     public static class Builder implements Buildable<ErrorMessage> {
 
-        private int statusCode = 500;
+        private int statusCode = Status.INTERNAL_SERVER_ERROR.getStatusCode();
         private Type errorType = Type.OTHER;
         private String errorDetail;
         private Map<String, String> paramErrors;
 
         public Builder statusCode(int statusCode) {
             this.statusCode = statusCode;
+            return this;
+        }
+
+        public Builder status(Status status) {
+            statusCode = status.getStatusCode();
             return this;
         }
 
